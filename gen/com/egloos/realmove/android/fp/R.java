@@ -1098,6 +1098,7 @@ containing a value of this type.
         public static final int page_added=0x7f09001b;
         public static final int remove=0x7f090021;
         public static final int remove_all_selected_pages=0x7f090020;
+        public static final int select_page_to_link=0x7f090023;
         public static final int title_selected=0x7f09001a;
         public static final int wrong_project=0x7f090022;
     }

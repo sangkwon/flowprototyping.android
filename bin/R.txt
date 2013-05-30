@@ -381,6 +381,7 @@ int string not_implemented_yet 0x7f09001f
 int string page_added 0x7f09001b
 int string remove 0x7f090021
 int string remove_all_selected_pages 0x7f090020
+int string select_page_to_link 0x7f090023
 int string title_selected 0x7f09001a
 int string wrong_project 0x7f090022
 int style AppBaseTheme 0x7f0a0059
