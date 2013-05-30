@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">FlowPrototyping</string>
+    <string name="no_image">No Image</string>
+    <string name="menu_add_page">Add page</string>
+    <string name="menu_play">Play</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_camera">Camera</string>
+    <string name="menu_web">Web</string>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_remove">Remove</string>
+    <string name="menu_link_to">Link To</string>
+    <string name="menu_create">Create</string>
+    <string name="title_selected">%1$d selected</string>
+    <string name="page_added">Page added</string>
+    <string name="fail_to_add">Fail to add</string>
+    <string name="no_page_selected">No page selected</string>
+    <string name="error_on_loading_project">Error on loading project</string>
+    <string name="not_implemented_yet">Not Implemented Yet</string>
+    <string name="remove_all_selected_pages">Remove all selected pages?</string>
+    <string name="remove">Remove</string>
+    <string name="wrong_project">Wrong project information</string>
+
+</resources>
