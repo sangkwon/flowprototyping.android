@@ -1,15 +1,14 @@
 
-package com.egloos.realmove.android.fp.pagelist;
+package com.egloos.realmove.android.fp.activity;
 
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.egloos.realmove.android.fp.PageEditActivity;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
-import com.egloos.realmove.android.fp.db.ProjectLoadTask;
+import com.egloos.realmove.android.fp.db.PageListLoadTask;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
 import com.egloos.realmove.android.fp.util.ProjectManager;
@@ -176,11 +175,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
         int projectId = getActivity().getIntent().getIntExtra(PageListFragment.EXTRA_PROJECT_ID, 0);
 
-        if (projectId > 0) {
-            load(projectId);
-        } else {
-            loadWorkingProject();
-        }
+        load(projectId);
 
         /* Dialog인 경우에는 onCreateDialog()에서 이미 생성되었다 */
         if (mContentView == null) {
@@ -197,11 +192,6 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-    }
-
-    @Override
     public void onDestroy() {
         if (mImageFetcher != null) {
             mImageFetcher.closeCache();
@@ -213,7 +203,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     }
 
     private void load(int projectId) {
-        ProjectLoadTask mLoadTask = new ProjectLoadTask(mContext, new ProjectLoadTask.Callback() {
+        PageListLoadTask mLoadTask = new PageListLoadTask(mContext, new PageListLoadTask.Callback() {
             @Override
             public void onLoad(Project project) {
                 onProjectLoad(project);
@@ -222,32 +212,29 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
         mLoadTask.execute(projectId);
     }
 
-    private void loadWorkingProject() {
-        int workingProjectId = 0;
-
-        // TODO SharedPreference 에서 읽기
-        workingProjectId = 1;
-
-        if (workingProjectId > 0) {
-            load(workingProjectId);
-        } else {
-            load(-1);
-        }
-    }
-
     void onProjectLoad(Project tmpProj) {
         if (tmpProj == null) {
             Toast.makeText(getActivity(), R.string.error_on_loading_project, Toast.LENGTH_SHORT)
                     .show();
-
-            // TODO what?
-
+            finishActivity();
             return;
         }
 
         mProject = tmpProj;
         mAdapter.setPages(mProject);
         mAdapter.notifyDataSetChanged();
+
+        storeWorkingProject(mProject.getId());
+    }
+
+    private void storeWorkingProject(int id) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public static int loadWorkingProjectId() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
     class SaveTask extends AsyncTask<Void, Void, Void> {
@@ -262,7 +249,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.page_list_option_menu, menu);
+        inflater.inflate(R.menu.menu_page_list_option, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

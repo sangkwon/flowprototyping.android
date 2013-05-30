@@ -2,8 +2,8 @@
 package com.egloos.realmove.android.fp.view;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
+import com.egloos.realmove.android.fp.activity.PageListFragment;
 import com.egloos.realmove.android.fp.model.Link;
-import com.egloos.realmove.android.fp.pagelist.PageListFragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

@@ -1,10 +1,11 @@
 
-package com.egloos.realmove.android.fp;
+package com.egloos.realmove.android.fp.activity;
 
 import com.actionbarsherlock.view.Window;
+import com.egloos.realmove.android.fp.R;
+import com.egloos.realmove.android.fp.R.string;
 import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
 import com.egloos.realmove.android.fp.model.Page;
-import com.egloos.realmove.android.fp.pagelist.PageListFragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

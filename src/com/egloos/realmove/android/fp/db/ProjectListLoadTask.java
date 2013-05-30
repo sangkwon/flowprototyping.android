@@ -10,15 +10,17 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
-public class ProjectLoadTask extends AsyncTask<Integer, Void, Project> {
+import java.util.ArrayList;
 
-    private static final String TAG = ProjectLoadTask.class.getSimpleName();
+public class ProjectListLoadTask extends AsyncTask<Void, Void, ArrayList<Project>> {
+
+    private static final String TAG = ProjectListLoadTask.class.getSimpleName();
 
     private Context mContext;
     private Callback mCallback;
     private Dialog mProgressDialog;
 
-    public ProjectLoadTask(Context context, Callback callback) {
+    public ProjectListLoadTask(Context context, Callback callback) {
         mContext = context;
         mCallback = callback;
     }
@@ -30,17 +32,22 @@ public class ProjectLoadTask extends AsyncTask<Integer, Void, Project> {
     }
 
     @Override
-    protected Project doInBackground(Integer... params) {
-        int projectId = params[0];
-        if (projectId == -1) {
-            return ProjectManager.createSampleProject();
-        } else {
-            return ProjectManager.load(projectId);
+    protected ArrayList<Project> doInBackground(Void... params) {
+        DBAdapter db = null;
+        try {
+            db = new DBAdapter(mContext).open();
+            return db.selectProjects();
+        } catch (Exception ex) {
+            FpLog.e(TAG, ex);
+        } finally {
+            if (db != null)
+                db.close();
         }
+        return null;
     }
 
     @Override
-    protected void onPostExecute(Project tmpProj) {
+    protected void onPostExecute(ArrayList<Project> tmpProj) {
         if (mProgressDialog != null) {
             try {
                 mProgressDialog.dismiss();
@@ -57,6 +64,6 @@ public class ProjectLoadTask extends AsyncTask<Integer, Void, Project> {
     }
 
     public interface Callback {
-        public void onLoad(Project project);
+        public void onLoad(ArrayList<Project> projects);
     }
 }

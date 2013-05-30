@@ -20,6 +20,7 @@ public class Project extends ArrayList<Page> {
 
     private int id;
     private String subject;
+    private String mainImage;
     private Date created;
     private Date updated;
 
@@ -47,12 +48,22 @@ public class Project extends ArrayList<Page> {
         this.created = created;
     }
 
+    public void setCreated(int timeSeconds) {
+        if (timeSeconds > 0)
+            setCreated(new Date(timeSeconds * 1000L));
+    }
+
     public Date getUpdated() {
         return updated;
     }
 
     public void setUpdated(Date updated) {
         this.updated = updated;
+    }
+
+    public void setUpdated(int timeSeconds) {
+        if (timeSeconds > 0)
+            setUpdated(new Date(timeSeconds * 1000L));
     }
 
     public Page findPage(int pageId) {
@@ -84,6 +95,7 @@ public class Project extends ArrayList<Page> {
 
             jsonObj.putOpt("id", this.getId());
             jsonObj.putOpt("subject", this.getSubject());
+            jsonObj.putOpt("mainImage", this.getMainImage());
             if (this.getCreated() != null)
                 jsonObj.putOpt("created", this.getCreated().getTime());
             if (this.getUpdated() != null)
@@ -114,6 +126,7 @@ public class Project extends ArrayList<Page> {
 
             project.setId(jsonObj.getInt("id"));
             project.setSubject(jsonObj.optString("subject"));
+            project.setMainImage(jsonObj.optString("mainImage"));
             project.setCreated(fromTime(jsonObj.optLong("created", Long.MIN_VALUE)));
             project.setUpdated(fromTime(jsonObj.optLong("updated", Long.MIN_VALUE)));
 
@@ -128,6 +141,14 @@ public class Project extends ArrayList<Page> {
             FpLog.e(TAG, ex);
         }
         return null;
+    }
+
+    public String getMainImage() {
+        return mainImage;
+    }
+
+    public void setMainImage(String mainImage) {
+        this.mainImage = mainImage;
     }
 
 }

@@ -1,12 +1,14 @@
 
-package com.egloos.realmove.android.fp;
+package com.egloos.realmove.android.fp.activity;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.egloos.realmove.android.fp.R;
+import com.egloos.realmove.android.fp.R.id;
+import com.egloos.realmove.android.fp.R.layout;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
-import com.egloos.realmove.android.fp.pagelist.PageListFragment;
 import com.egloos.realmove.android.fp.view.LinkImageEditView;
 import com.egloos.realmove.android.fp.view.LinkImageEditView.OnLinkChangeListener;
 import com.example.android.bitmapfun.util.ImageCache;

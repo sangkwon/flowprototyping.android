@@ -1,5 +1,5 @@
 
-package com.egloos.realmove.android.fp.pagelist;
+package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.model.Page;

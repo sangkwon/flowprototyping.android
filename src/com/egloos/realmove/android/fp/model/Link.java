@@ -14,11 +14,11 @@ public class Link implements Serializable {
     private static final long serialVersionUID = 5122289147217498540L;
     private static final String TAG = Link.class.getSimpleName();
 
-    enum Event {
+    public enum Event {
         TOUCH, LONG_TOUCH, SWIPE_LEFT, SWIPE_RIGHT
     };
 
-    enum Anim {
+    public enum Anim {
         NONE, FADE_IN, FADE_OUT, SLIDE_UP, SLIDE_DOWN, SLIDE_LEFT, SLIDE_RIGHT, ZOOM_IN, ZOOM_OUT
     };
 
@@ -27,6 +27,8 @@ public class Link implements Serializable {
         CORNER_LT, CORNER_RT, CORNER_LB, CORNER_RB, CENTER
     }
 
+    private int pageId;
+    private int id;
     private Event event = Event.TOUCH;
     private Anim anim = Anim.NONE;
     private int targetPageId = -1;
@@ -65,6 +67,22 @@ public class Link implements Serializable {
         dstRect.setRight(Math.round(srcRect.getRight() * pWidth));
         dstRect.setTop(Math.round(srcRect.getTop() * pHeight));
         dstRect.setBottom(Math.round(srcRect.getBottom() * pHeight));
+    }
+
+    public int getPageId() {
+        return pageId;
+    }
+
+    public void setPageId(int pageId) {
+        this.pageId = pageId;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**
@@ -108,6 +126,9 @@ public class Link implements Serializable {
         try {
             JSONObject jsonObj = new JSONObject();
 
+            jsonObj.putOpt("pageId", this.getPageId());
+            jsonObj.putOpt("id", this.getId());
+
             if (this.getEvent() != null)
                 jsonObj.putOpt("event", this.getEvent().name());
 
@@ -129,7 +150,9 @@ public class Link implements Serializable {
         try {
             Link link = new Link();
 
-            link.setEvent(Event.valueOf(jsonObj.getString("event")));
+            link.setPageId(jsonObj.optInt("pageId"));
+            link.setId(jsonObj.getInt("id"));
+            link.setEvent(Event.valueOf(jsonObj.optString("event")));
             link.setAnim(Anim.valueOf(jsonObj.optString("anim")));
             link.setTargetPageId(jsonObj.optInt("target", Integer.MIN_VALUE));
             link.setPosition(RectPosition.fromJSONObject(jsonObj.optJSONObject("position")));
