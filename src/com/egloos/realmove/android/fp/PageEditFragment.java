@@ -6,13 +6,12 @@ import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
+import com.egloos.realmove.android.fp.pagelist.PageListFragment;
 import com.egloos.realmove.android.fp.view.LinkImageEditView;
 import com.egloos.realmove.android.fp.view.LinkImageEditView.OnLinkChangeListener;
-import com.egloos.realmove.android.fp.view.LinkSelectDialog;
 import com.example.android.bitmapfun.util.ImageCache;
 import com.example.android.bitmapfun.util.ImageFetcher;
 import com.example.android.bitmapfun.util.ImageWorker;
-import com.example.android.bitmapfun.util.ImageWorker.Callback;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -26,7 +25,8 @@ import android.widget.ImageView;
 import java.io.File;
 import java.util.ArrayList;
 
-public class PageEditFragment extends BaseFragment implements OnLinkChangeListener, Callback {
+public class PageEditFragment extends BaseFragment implements OnLinkChangeListener,
+        ImageWorker.Callback, PageListFragment.SelectCallback {
 
     private static final String TAG = PageEditFragment.class.getSimpleName();
 
@@ -149,8 +149,18 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
     @Override
     public void requestSetTarget(Link link) {
-        LinkSelectDialog.show(getActivity(), getActivity().getSupportFragmentManager(),
-                mPage.getProjectId(), link);
+        if (link == null)
+            return;
+
+        PageListFragment fragment = PageListFragment.newInstance(mPage.getProjectId(),
+                link.getTargetPageId(), PageListFragment.Mode.SELECT);
+        fragment.show(getActivity().getSupportFragmentManager(), PageListFragment.TAG);
+    }
+
+    @Override
+    public void pageSelected(Page page) {
+        // TODO Auto-generated method stub
+
     }
 
 }

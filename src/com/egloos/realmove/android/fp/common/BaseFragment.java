@@ -5,6 +5,7 @@ import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragment;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,12 @@ public class BaseFragment extends SherlockDialogFragment {
             Bundle savedInstanceState) {
         FpLog.d(this.getClass().getSimpleName(), "onCreateView() called");
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        FpLog.d(this.getClass().getSimpleName(), "onCreateDialog() called");
+        return super.onCreateDialog(savedInstanceState);
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {

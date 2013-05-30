@@ -49,7 +49,7 @@ import java.util.List;
 public class PageListFragment extends BaseFragment implements OnItemClickListener,
         OnItemLongClickListener {
 
-    private static final String TAG = PageListFragment.class.getSimpleName();
+    public static final String TAG = PageListFragment.class.getSimpleName();
 
     public static final String EXTRA_PROJECT_ID = "projectId";
 
@@ -60,10 +60,21 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     private static final int REQ_CODE_ADD_PAGE_FROM_CAMERA = 3;
     private static final int REQ_CODE_PAGE_EDIT = 100;
 
+    public enum Mode {
+        /** 수정 등이 가능한 평상시 모드 */
+        NORMAL,
+
+        /** 페이지 선택만 가능한 대화상자 모드 */
+        SELECT
+    }
+
+    private static Mode mMode = Mode.NORMAL;
+
     private PageListAdapter mAdapter;
     private Project mProject;
     private ImageFetcher mImageFetcher;
     private ActionMode mActionMode;
+    private View mContentView;
 
     private Uri mImageCaptureUri;
 
@@ -86,6 +97,10 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     }
 
     public static PageListFragment newInstance(int projectId, int pageId) {
+        return newInstance(projectId, pageId, Mode.NORMAL);
+    }
+
+    public static PageListFragment newInstance(int projectId, int pageId, Mode mode) {
         PageListFragment instance = new PageListFragment();
 
         Bundle args = new Bundle();
@@ -93,26 +108,36 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
         args.putInt("selectedPageId", pageId);
         instance.setArguments(args);
 
+        mMode = mode;
+
         return instance;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                FpLog.d(TAG, "SELECTED");
-            }
-        };
+        FpLog.d(TAG, "onCreateDialog()");
 
-        return new AlertDialog.Builder(getActivity())
-                .setTitle("Page List")
-                .setPositiveButton(android.R.string.ok, listener)
-                .setNegativeButton(android.R.string.cancel, listener)
-                .create();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.select_page_to_link);
+
+        if (mContentView == null) {
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            mContentView = createView(inflater, null);
+            builder.setView(mContentView);
+        }
+
+        return builder.create();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    /**
+     * 실제 view 를 생성한다.
+     * 
+     * @param inflater
+     * @param container
+     * @return
+     */
+    private View createView(LayoutInflater inflater, ViewGroup container) {
+        FpLog.d(TAG, "createView()");
         final View view = inflater.inflate(R.layout.page_list_fragment, container, false);
         final GridView gridView = (GridView) view.findViewById(R.id.grid);
         gridView.setAdapter(mAdapter);
@@ -142,6 +167,13 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
                     }
                 });
 
+        return view;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        FpLog.d(TAG, "onCreateView()");
+
         int projectId = getActivity().getIntent().getIntExtra(PageListFragment.EXTRA_PROJECT_ID, 0);
 
         if (projectId > 0) {
@@ -150,7 +182,18 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
             loadWorkingProject();
         }
 
-        return view;
+        /* Dialog인 경우에는 onCreateDialog()에서 이미 생성되었다 */
+        if (mContentView == null) {
+            mContentView = createView(inflater, container);
+            return mContentView;
+        }
+
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -386,20 +429,32 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (mActionMode != null) {
-            selectPageOn(mAdapter.getItem(position));
-        } else {
-            Intent intent = new Intent(getActivity(), PageEditActivity.class);
-            intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, mProject.getId());
-            // intent.putExtra(PageEditActivity.EXTRA_PAGE_POS, position);
-            intent.putExtra("page", mProject.get(position));
-            startActivityForResult(intent, REQ_CODE_PAGE_EDIT);
+        Page clickedPage = mAdapter.getItem(position);
+        if (mMode == Mode.NORMAL) {
+            if (mActionMode != null) {
+                selectPageOn(clickedPage);
+            } else {
+                Intent intent = new Intent(getActivity(), PageEditActivity.class);
+                intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, mProject.getId());
+                // intent.putExtra(PageEditActivity.EXTRA_PAGE_POS, position);
+                intent.putExtra("page", clickedPage);
+                startActivityForResult(intent, REQ_CODE_PAGE_EDIT);
+            }
+        } else if (mMode == Mode.SELECT) {
+            if (getDialog() != null)
+                this.getDialog().dismiss();
+
+            if (mSelectCallback != null) {
+                mSelectCallback.pageSelected(clickedPage);
+            }
         }
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        selectPageOn(mAdapter.getItem(position));
+        if (mMode == Mode.NORMAL) {
+            selectPageOn(mAdapter.getItem(position));
+        }
         return true;
     }
 
@@ -570,4 +625,15 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
             super.onPostExecute(success);
         }
     }
+
+    private SelectCallback mSelectCallback;
+
+    public void setmSelectCallback(SelectCallback mSelectCallback) {
+        this.mSelectCallback = mSelectCallback;
+    }
+
+    public interface SelectCallback {
+        public void pageSelected(Page page);
+    }
+
 }

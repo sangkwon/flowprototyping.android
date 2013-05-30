@@ -21,5 +21,6 @@
     <string name="remove_all_selected_pages">Remove all selected pages?</string>
     <string name="remove">Remove</string>
     <string name="wrong_project">Wrong project information</string>
+    <string name="select_page_to_link">Select page to link</string>
 
 </resources>
