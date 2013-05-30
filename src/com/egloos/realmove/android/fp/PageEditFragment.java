@@ -13,6 +13,8 @@ import com.example.android.bitmapfun.util.ImageCache;
 import com.example.android.bitmapfun.util.ImageFetcher;
 import com.example.android.bitmapfun.util.ImageWorker;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -95,10 +97,19 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
     @Override
     public void onDestroyView() {
+        if (dirtyFlag) {
+            // TODO save link
+
+            Intent intent = new Intent();
+            intent.putExtra("page", mPage);
+            getActivity().setResult(Activity.RESULT_OK, intent);
+        }
+
         if (mImageFetcher != null) {
             mImageFetcher.closeCache();
             mImageFetcher = null;
         }
+
         super.onDestroyView();
     }
 
@@ -114,21 +125,6 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
             mPageView.setLinkShow(true);
         }
     }
-
-    // TODO 이 부분 어디에 붙여야 하나? onDetachView() ???
-    // @Override
-    // public boolean onKeyDown(int keyCode, KeyEvent event) {
-    // if (keyCode == KeyEvent.KEYCODE_BACK) {
-    // if (dirtyFlag) {
-    // Intent intent = new Intent();
-    // intent.putExtra("page", mPage);
-    // setResult(RESULT_OK, intent);
-    // return super.onKeyDown(keyCode, event); // don't consume
-    // }
-    // }
-    //
-    // return super.onKeyDown(keyCode, event);
-    // }
 
     private boolean dirtyFlag = false;
 
@@ -147,10 +143,14 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
         dirtyFlag = true;
     }
 
+    private Link mSelectedLink;
+
     @Override
     public void requestSetTarget(Link link) {
         if (link == null)
             return;
+
+        mSelectedLink = link;
 
         PageListFragment fragment = PageListFragment.newInstance(mPage.getProjectId(),
                 link.getTargetPageId(), PageListFragment.Mode.SELECT);
@@ -159,8 +159,12 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
     @Override
     public void pageSelected(Page page) {
-        // TODO Auto-generated method stub
+        FpLog.d(TAG, "pageSelected");
+        if (page != null && mSelectedLink != null) {
+            mSelectedLink.setTargetPageId(page.getId());
+        }
 
+        mSelectedLink = null;
     }
 
 }
