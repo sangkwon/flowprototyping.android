@@ -2,12 +2,11 @@
 package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
-import com.egloos.realmove.android.fp.activity.PageListAdapter.ViewHolder;
-import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
 import com.example.android.bitmapfun.util.ImageFetcher;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +26,13 @@ public class ProjectListAdapter extends BaseAdapter {
 
     private ArrayList<Project> mProjects;
     private LayoutInflater mInflater;
+    private Resources mResources;
 
     public ProjectListAdapter(Context context, ImageFetcher imageFetcher) {
         this.mImageFetcher = imageFetcher;
         this.mContext = context;
+
+        this.mResources = mContext.getResources();
 
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -79,6 +81,7 @@ public class ProjectListAdapter extends BaseAdapter {
             mImageFetcher.loadImage(Uri.fromFile(new File(project.getMainImage())), holder.thumb);
         } else {
             holder.thumb.setImageBitmap(null);
+            holder.thumb.setImageDrawable(mResources.getDrawable(R.drawable.ic_launcher));
         }
 
         return view;

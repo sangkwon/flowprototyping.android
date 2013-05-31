@@ -265,9 +265,14 @@ public class DBAdapter {
         try {
             ContentValues values = new ContentValues();
             values.put("SUBJECT", project.getSubject());
-            values.put("MAIN_IMAGE", project.getSubject());
-            values.put("CREATED", project.getSubject());
-            values.put("UPDATED", project.getSubject());
+            values.put("MAIN_IMAGE", project.getMainImage());
+
+            if (project.getCreated() != null)
+                values.put("CREATED", project.getCreated().getTime() / 1000);
+
+            if (project.getUpdated() != null)
+                values.put("UPDATED", project.getUpdated().getTime() / 1000);
+
             mDb.insert(TBL_PROJECTS, null, values);
 
             int newId = getLastId(TBL_PROJECTS);

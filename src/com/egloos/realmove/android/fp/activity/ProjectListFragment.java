@@ -7,6 +7,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.ProjectListLoadTask;
 import com.egloos.realmove.android.fp.db.ProjectListLoadTask.Callback;
 import com.egloos.realmove.android.fp.model.Project;
@@ -16,16 +17,19 @@ import com.example.android.bitmapfun.util.ImageFetcher;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ProjectListFragment extends BaseFragment implements OnItemClickListener, Callback {
 
@@ -129,16 +133,29 @@ public class ProjectListFragment extends BaseFragment implements OnItemClickList
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add: {
+                LayoutInflater factory = LayoutInflater.from(mContext);
+                final View textEntryView = factory.inflate(R.layout.input_project_dialog, null);
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                EditText text = new EditText(mContext);
-                builder.setTitle("Insert project name")
-                        .setView(text)
+                builder.setView(textEntryView)
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(android.R.string.ok,
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        // TODO Auto-generated method stub
+                                        if (which == DialogInterface.BUTTON_POSITIVE) {
+                                            CharSequence txt = ((TextView) textEntryView
+                                                    .findViewById(R.id.subject)).getText();
+                                            if (txt != null) {
+                                                String subject = txt.toString().trim();
+                                                if (subject.length() > 0) {
+                                                    createProject(subject);
+                                                    return;
+                                                }
+                                            }
 
+                                            Toast.makeText(mContext, "Input subject",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 });
                 builder.create().show();
@@ -147,5 +164,37 @@ public class ProjectListFragment extends BaseFragment implements OnItemClickList
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    protected void createProject(String subject) {
+        final Project project = new Project();
+        project.setSubject(subject);
+        project.setCreated(new Date());
+
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                DBAdapter db = null;
+                try {
+                    db = new DBAdapter(mContext).open();
+                    db.insertProject(project);
+                } catch (Exception e) {
+                    FpLog.e(TAG, e);
+                } finally {
+                    if (db != null)
+                        db.close();
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                load();
+                super.onPostExecute(result);
+            }
+
+        }.execute();
     }
 }

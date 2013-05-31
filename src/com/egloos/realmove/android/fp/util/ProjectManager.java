@@ -27,7 +27,7 @@ public class ProjectManager {
     private static final String METAFILE_NAME = "project.json";
 
     public static File getProjectPath(int projectId) {
-        return new File(Environment.getExternalStorageDirectory(), "fp/proj_" + projectId); // TODO
+        return new File(BASE_PATH, "proj_" + projectId);
     }
 
     public static Project load(int projectId) {
