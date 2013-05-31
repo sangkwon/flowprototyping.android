@@ -272,29 +272,67 @@ public class DBAdapter {
     }
 
     public void updateProject(Project project) throws Exception {
-        // TODO
+        try {
+            ContentValues values = new ContentValues();
+            values.put(SUBJECT, project.getSubject());
+            values.put(MAIN_IMAGE, project.getMainImage());
+
+            if (project.getCreated() != null)
+                values.put(CREATED, project.getCreated().getTime() / 1000);
+
+            if (project.getUpdated() != null)
+                values.put(UPDATED, project.getUpdated().getTime() / 1000);
+
+            mDb.update(TBL_PROJECTS, values, ID + "=" + project.getId(), null);
+        } catch (Exception ex) {
+            FpLog.e(TAG, ex);
+        }
     }
 
     public void updatePage(Page page) throws Exception {
-        // TODO
+        try {
+            ContentValues values = new ContentValues();
+            values.put(PROJECT_ID, page.getProjectId());
+            values.put(NAME, page.getName());
+            values.put(IMAGE_PATH, page.getImagePath());
+
+            mDb.update(TBL_PAGES, values, ID + "=" + page.getId(), null);
+        } catch (Exception ex) {
+            FpLog.e(TAG, ex);
+        }
     }
 
     public void updateLink(Link link) throws Exception {
-        // TODO
+        try {
+            ContentValues values = new ContentValues();
+            values.put(PAGE_ID, link.getPageId());
+            values.put(EVENT, link.getEvent().name());
+            values.put(ANIM, link.getAnim().name());
+            values.put(TARGET_PAGE_ID, link.getTargetPageId());
+            RectPosition pos = link.getPosition();
+            if (pos != null) {
+                values.put(POS_LEFT, pos.getLeft());
+                values.put(POS_TOP, pos.getTop());
+                values.put(POS_RIGHT, pos.getRight());
+                values.put(POS_BOTTOM, pos.getBottom());
+            }
+            mDb.update(TBL_LINKS, values, ID + "=" + link.getId(), null);
+        } catch (Exception ex) {
+            FpLog.e(TAG, ex);
+        }
     }
 
     public int insertProject(Project project) throws Exception {
-        Cursor cursor = null;
         try {
             ContentValues values = new ContentValues();
-            values.put("SUBJECT", project.getSubject());
-            values.put("MAIN_IMAGE", project.getMainImage());
+            values.put(SUBJECT, project.getSubject());
+            values.put(MAIN_IMAGE, project.getMainImage());
 
             if (project.getCreated() != null)
-                values.put("CREATED", project.getCreated().getTime() / 1000);
+                values.put(CREATED, project.getCreated().getTime() / 1000);
 
             if (project.getUpdated() != null)
-                values.put("UPDATED", project.getUpdated().getTime() / 1000);
+                values.put(UPDATED, project.getUpdated().getTime() / 1000);
 
             mDb.insert(TBL_PROJECTS, null, values);
 
@@ -303,20 +341,16 @@ public class DBAdapter {
             return newId;
         } catch (Exception ex) {
             FpLog.e(TAG, ex);
-        } finally {
-            if (cursor != null)
-                cursor.close();
         }
         return -1;
     }
 
     public int insertPage(Page page) throws Exception {
-        Cursor cursor = null;
         try {
             ContentValues values = new ContentValues();
-            values.put("PROJECT_ID", page.getProjectId());
-            values.put("NAME", page.getName());
-            values.put("IMAGE_PATH", page.getImagePath());
+            values.put(PROJECT_ID, page.getProjectId());
+            values.put(NAME, page.getName());
+            values.put(IMAGE_PATH, page.getImagePath());
             mDb.insert(TBL_PAGES, null, values);
 
             int newId = getLastId(TBL_PAGES);
@@ -324,16 +358,33 @@ public class DBAdapter {
             return newId;
         } catch (Exception ex) {
             FpLog.e(TAG, ex);
-        } finally {
-            if (cursor != null)
-                cursor.close();
         }
         return -1;
     }
 
     public int insertLink(Link link) throws Exception {
-        // TODO
-        return getLastId(TBL_LINKS);
+        try {
+            ContentValues values = new ContentValues();
+            values.put(PAGE_ID, link.getPageId());
+            values.put(EVENT, link.getEvent().name());
+            values.put(ANIM, link.getAnim().name());
+            values.put(TARGET_PAGE_ID, link.getTargetPageId());
+            RectPosition pos = link.getPosition();
+            if (pos != null) {
+                values.put(POS_LEFT, pos.getLeft());
+                values.put(POS_TOP, pos.getTop());
+                values.put(POS_RIGHT, pos.getRight());
+                values.put(POS_BOTTOM, pos.getBottom());
+            }
+            mDb.insert(TBL_LINKS, null, values);
+
+            int newId = getLastId(TBL_LINKS);
+            link.setId(newId);
+            return newId;
+        } catch (Exception ex) {
+            FpLog.e(TAG, ex);
+        }
+        return -1;
     }
 
 }
