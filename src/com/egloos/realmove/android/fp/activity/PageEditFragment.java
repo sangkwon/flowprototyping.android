@@ -3,10 +3,9 @@ package com.egloos.realmove.android.fp.activity;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.egloos.realmove.android.fp.R;
-import com.egloos.realmove.android.fp.R.id;
-import com.egloos.realmove.android.fp.R.layout;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.view.LinkImageEditView;
@@ -99,14 +98,6 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
     @Override
     public void onDestroyView() {
-        if (dirtyFlag) {
-            // TODO save link
-
-            Intent intent = new Intent();
-            intent.putExtra("page", mPage);
-            getActivity().setResult(Activity.RESULT_OK, intent);
-        }
-
         if (mImageFetcher != null) {
             mImageFetcher.closeCache();
             mImageFetcher = null;
@@ -128,21 +119,32 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
         }
     }
 
-    private boolean dirtyFlag = false;
-
     @Override
     public void linkAdded(Link link) {
-        dirtyFlag = true;
+        FpLog.d(TAG, "linkAdded()");
+
+        DBAdapter db = null;
+        try {
+            db = new DBAdapter(mContext).open();
+            db.insertLink(link);
+        } catch (Exception ex) {
+            FpLog.e(TAG, ex);
+        } finally {
+            if (db != null)
+                db.close();
+        }
     }
 
     @Override
     public void linkRemoved(Link link) {
-        dirtyFlag = true;
+        FpLog.d(TAG, "linkRemoved()");
+
     }
 
     @Override
     public void linkModified(Link link) {
-        dirtyFlag = true;
+        FpLog.d(TAG, "linkModified()");
+
     }
 
     private Link mSelectedLink;

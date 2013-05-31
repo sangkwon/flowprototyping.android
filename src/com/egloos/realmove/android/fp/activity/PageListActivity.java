@@ -20,7 +20,7 @@ public class PageListActivity extends BaseFragmentActivity {
 
         int projectId = getIntent().getIntExtra(PageListFragment.EXTRA_PROJECT_ID, 0);
         if (projectId == 0) {
-            int workingProject = PageListFragment.loadWorkingProjectId();
+            int workingProject = PageListFragment.loadWorkingProjectId(this);
             if (workingProject <= 0) {
                 startActivity(new Intent(this, ProjectListActivity.class));
                 overridePendingTransition(R.anim.hold, R.anim.hold);

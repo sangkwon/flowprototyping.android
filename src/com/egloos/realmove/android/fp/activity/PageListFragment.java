@@ -21,8 +21,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -225,27 +228,34 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
         mAdapter.setPages(mProject);
         mAdapter.notifyDataSetChanged();
 
-        storeWorkingProject(mProject.getId());
+        new Thread() {
+            @Override
+            public void run() {
+                storeWorkingProject(mContext, mProject.getId());
+            }
+        }.start();
     }
 
-    private void storeWorkingProject(int id) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public static int loadWorkingProjectId() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    class SaveTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            ProjectManager.writeMetaFile(mProject);
-            return null;
+    private static void storeWorkingProject(Context context, int id) {
+        try {
+            SharedPreferences pref = context.getSharedPreferences(SP_NAME, 0);
+            Editor editor = pref.edit();
+            editor.putInt(SP_KEY_WORKING_PROJ, id);
+            editor.commit();
+        } catch (Exception ex) {
+            FpLog.e(TAG, ex);
         }
+    }
 
+    public static int loadWorkingProjectId(Context context) {
+        try {
+            SharedPreferences pref = context.getSharedPreferences(SP_NAME, 0);
+            int id = pref.getInt(SP_KEY_WORKING_PROJ, 0);
+            return id;
+        } catch (Exception ex) {
+            FpLog.e(TAG, ex);
+        }
+        return 0;
     }
 
     @Override
@@ -402,11 +412,10 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
             if (Util.copyFile(orgImagePath, newPath)) {
                 mProject.add(page);
-                // success = ProjectManager.writeMetaFile(mProject);
                 DBAdapter db = null;
                 try {
                     db = new DBAdapter(mContext).open();
-                    db.insertPage(page);
+                    success = db.insertPage(page) >= 0;
                 } catch (Exception e) {
                     FpLog.e(TAG, e);
                 } finally {
@@ -563,10 +572,21 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
             for (Page page : pages) {
                 mAdapter.togglePageSelection(page);
 
-                mProject.remove(page);
-                ProjectManager.writeMetaFile(mProject);
+                DBAdapter db = null;
+                try {
+                    db = new DBAdapter(mContext).open();
+                    db.deletePage(page.getId());
 
-                new File(page.getImagePath()).delete();
+                    mProject.remove(page);
+
+                    new File(page.getImagePath()).delete();
+                } catch (Exception ex) {
+                    FpLog.e(TAG, ex);
+                } finally {
+                    if (db != null)
+                        db.close();
+                }
+
             }
             return null;
         }

@@ -387,4 +387,16 @@ public class DBAdapter {
         return -1;
     }
 
+    public void deleteProject(int projectId) throws Exception {
+        mDb.delete(TBL_PROJECTS, ID + "=" + projectId, null);
+    }
+
+    public void deletePage(int pageId) throws Exception {
+        mDb.delete(TBL_PAGES, ID + "=" + pageId, null);
+    }
+
+    public void deleteLink(int linkId) throws Exception {
+        mDb.delete(TBL_LINKS, ID + "=" + linkId, null);
+    }
+
 }
