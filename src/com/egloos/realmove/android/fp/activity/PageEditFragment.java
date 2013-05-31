@@ -139,12 +139,32 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
     public void linkRemoved(Link link) {
         FpLog.d(TAG, "linkRemoved()");
 
+        DBAdapter db = null;
+        try {
+            db = new DBAdapter(mContext).open();
+            db.deleteLink(link.getId());
+        } catch (Exception ex) {
+            FpLog.e(TAG, ex);
+        } finally {
+            if (db != null)
+                db.close();
+        }
     }
 
     @Override
     public void linkModified(Link link) {
         FpLog.d(TAG, "linkModified()");
 
+        DBAdapter db = null;
+        try {
+            db = new DBAdapter(mContext).open();
+            db.updateLink(link);
+        } catch (Exception ex) {
+            FpLog.e(TAG, ex);
+        } finally {
+            if (db != null)
+                db.close();
+        }
     }
 
     private Link mSelectedLink;

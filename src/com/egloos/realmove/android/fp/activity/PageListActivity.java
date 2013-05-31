@@ -32,7 +32,7 @@ public class PageListActivity extends BaseFragmentActivity {
 
         if (getSupportFragmentManager().findFragmentByTag(TAG) == null) {
             final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            mFragment = PageListFragment.newInstance(1, -1);
+            mFragment = PageListFragment.newInstance(projectId, -1);
             ft.add(android.R.id.content, mFragment, TAG);
             ft.commit();
         }
