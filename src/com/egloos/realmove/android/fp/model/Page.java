@@ -55,7 +55,7 @@ public class Page implements Serializable {
         this.id = id;
     }
 
-    private void add(Link link) {
+    public void add(Link link) {
         if (links == null)
             links = new ArrayList<Link>();
         links.add(link);

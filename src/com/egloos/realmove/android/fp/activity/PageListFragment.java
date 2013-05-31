@@ -8,6 +8,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.PageListLoadTask;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
@@ -29,7 +30,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -203,12 +203,13 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     }
 
     private void load(int projectId) {
-        PageListLoadTask mLoadTask = new PageListLoadTask(mContext, new PageListLoadTask.Callback() {
-            @Override
-            public void onLoad(Project project) {
-                onProjectLoad(project);
-            }
-        });
+        PageListLoadTask mLoadTask = new PageListLoadTask(mContext,
+                new PageListLoadTask.Callback() {
+                    @Override
+                    public void onLoad(Project project) {
+                        onProjectLoad(project);
+                    }
+                });
         mLoadTask.execute(projectId);
     }
 
@@ -367,25 +368,27 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
     }
 
+    /**
+     * 프로젝트에 사진추가. worker thread 에서 구동됨.
+     * 
+     * @param name
+     * @param orgImagePath
+     * @return
+     */
     boolean addToProject(String name, String orgImagePath) {
         synchronized (getActivity()) {
-            int newId = mProject.findNewPageId();
-            if (newId < 0) {
-                return false;
-            }
             Page page = new Page();
-            page.setId(newId);
             page.setName(name);
             page.setProjectId(mProject.getId());
 
             String orgFileName = Util.getFileName(orgImagePath);
             String orgFileExt = Util.getFileExtension(orgImagePath);
             File newFile = new File(ProjectManager.getProjectPath(mProject.getId()), orgFileName
-                    + "." + orgFileExt);
+                    + orgFileExt);
             int count = 1;
             while (newFile.exists() && count < 100) {
                 newFile = new File(ProjectManager.getProjectPath(mProject.getId()), orgFileName
-                        + "_" + count + "." + orgFileExt);
+                        + "_" + count + orgFileExt);
                 count++;
             }
 
@@ -397,10 +400,20 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
             boolean success = false;
 
-            // TODO image resize needed?
             if (Util.copyFile(orgImagePath, newPath)) {
                 mProject.add(page);
-                success = ProjectManager.writeMetaFile(mProject);
+                // success = ProjectManager.writeMetaFile(mProject);
+                DBAdapter db = null;
+                try {
+                    db = new DBAdapter(mContext).open();
+                    db.insertPage(page);
+                } catch (Exception e) {
+                    FpLog.e(TAG, e);
+                } finally {
+                    if (db != null)
+                        db.close();
+                }
+
             }
 
             return success;

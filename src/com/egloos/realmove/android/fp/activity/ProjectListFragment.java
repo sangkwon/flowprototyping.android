@@ -138,6 +138,7 @@ public class ProjectListFragment extends BaseFragment implements OnItemClickList
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                 builder.setView(textEntryView)
+                        .setTitle("Input project info")
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(android.R.string.ok,
                                 new DialogInterface.OnClickListener() {

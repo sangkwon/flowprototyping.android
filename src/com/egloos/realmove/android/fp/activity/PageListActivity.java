@@ -1,6 +1,7 @@
 
 package com.egloos.realmove.android.fp.activity;
 
+import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
 
 import android.content.Intent;
@@ -21,9 +22,8 @@ public class PageListActivity extends BaseFragmentActivity {
         if (projectId == 0) {
             int workingProject = PageListFragment.loadWorkingProjectId();
             if (workingProject <= 0) {
-                // TODO ProjectList 로 이동
                 startActivity(new Intent(this, ProjectListActivity.class));
-                // overridePendingTransition(android.R.anim., exitAnim);
+                overridePendingTransition(R.anim.hold, R.anim.hold);
                 finish();
                 return;
             }

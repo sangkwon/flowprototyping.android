@@ -174,18 +174,41 @@ public class DBAdapter {
         return null;
     }
 
+    public Project selectProject(int projectId) throws Exception {
+        Cursor cursor = null;
+        try {
+            String[] projection = new String[] {
+                    ID, SUBJECT, MAIN_IMAGE, CREATED, UPDATED
+            };
+            cursor = mDb.query(TBL_PROJECTS, projection, ID + "=" + projectId, null, null,
+                    null, null, null);
+            if (cursor.moveToNext()) {
+                Project project = new Project();
+                project.setId(cursor.getInt(0));
+                project.setSubject(cursor.getString(1));
+                project.setMainImage(cursor.getString(2));
+                project.setCreated(cursor.getInt(3));
+                project.setUpdated(cursor.getInt(4));
+
+                return project;
+            }
+        } catch (Exception ex) {
+            FpLog.e(TAG, ex);
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
+    }
+
     public ArrayList<Page> selectPages(int projectId) throws Exception {
         Cursor cursor = null;
         try {
             String[] projection = new String[] {
                     ID, PROJECT_ID, NAME, IMAGE_PATH
             };
-            String[] selectionArgs = new String[] {
-                    "" + projectId
-            };
-            cursor = mDb.query(TBL_PROJECTS, projection, "project_i 0--d=", selectionArgs, null,
-                    null,
-                    null, null);
+            cursor = mDb.query(TBL_PAGES, projection, PROJECT_ID + "=" + projectId, null, null,
+                    null, null, null);
             ArrayList<Page> pages = new ArrayList<Page>();
             while (cursor.moveToNext()) {
                 Page page = new Page();
@@ -221,7 +244,7 @@ public class DBAdapter {
                 }
                 selection = selection + pageId;
             }
-            cursor = mDb.query(TBL_PROJECTS, projection, selection, null, null, null, null, null);
+            cursor = mDb.query(TBL_LINKS, projection, selection, null, null, null, null, null);
             ArrayList<Link> links = new ArrayList<Link>();
             while (cursor.moveToNext()) {
                 Link link = new Link();
@@ -288,8 +311,24 @@ public class DBAdapter {
     }
 
     public int insertPage(Page page) throws Exception {
-        // TODO
-        return getLastId(TBL_PAGES);
+        Cursor cursor = null;
+        try {
+            ContentValues values = new ContentValues();
+            values.put("PROJECT_ID", page.getProjectId());
+            values.put("NAME", page.getName());
+            values.put("IMAGE_PATH", page.getImagePath());
+            mDb.insert(TBL_PAGES, null, values);
+
+            int newId = getLastId(TBL_PAGES);
+            page.setId(newId);
+            return newId;
+        } catch (Exception ex) {
+            FpLog.e(TAG, ex);
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return -1;
     }
 
     public int insertLink(Link link) throws Exception {

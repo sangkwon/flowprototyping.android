@@ -22,8 +22,7 @@ public class Util {
     private Util() {
         // do nothing
     }
-    
-    
+
     /**
      * dp를 px로 변환
      * 
@@ -46,8 +45,6 @@ public class Util {
     public static float pxToDp(Context context, float px) {
         return (px * (160 / context.getResources().getDisplayMetrics().density));
     }
-
-
 
     /**
      * 확장자만 반환
@@ -88,6 +85,8 @@ public class Util {
 
     public static boolean copyFile(String oldPath, String newPath) {
         try {
+            // TODO image resize needed?
+
             File oldFile = new File(oldPath);
             File newFile = new File(newPath);
             if (!newFile.exists()) {

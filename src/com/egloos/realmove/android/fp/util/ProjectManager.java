@@ -21,13 +21,10 @@ public class ProjectManager {
 
     private static final String TAG = ProjectManager.class.getSimpleName();
 
-    private static final String BASE_PATH = App.getInstacne().getApplicationContext().getCacheDir()
-            .getAbsolutePath();
-
     private static final String METAFILE_NAME = "project.json";
 
     public static File getProjectPath(int projectId) {
-        return new File(BASE_PATH, "proj_" + projectId);
+        return App.getInstacne().getApplicationContext().getDir("proj_" + projectId, 0);
     }
 
     public static Project load(int projectId) {
