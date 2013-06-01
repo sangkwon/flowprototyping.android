@@ -8,8 +8,8 @@ import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.DBAdapter;
-import com.egloos.realmove.android.fp.db.ProjectListLoadTask;
-import com.egloos.realmove.android.fp.db.ProjectListLoadTask.Callback;
+import com.egloos.realmove.android.fp.db.LoadProjectListTask;
+import com.egloos.realmove.android.fp.db.LoadProjectListTask.Callback;
 import com.egloos.realmove.android.fp.model.Project;
 import com.example.android.bitmapfun.util.ImageCache;
 import com.example.android.bitmapfun.util.ImageFetcher;
@@ -90,7 +90,7 @@ public class ProjectListFragment extends BaseFragment implements OnItemClickList
     }
 
     private void load() {
-        new ProjectListLoadTask(getActivity(), this).execute();
+        new LoadProjectListTask(getActivity(), this).execute();
     }
 
     @Override

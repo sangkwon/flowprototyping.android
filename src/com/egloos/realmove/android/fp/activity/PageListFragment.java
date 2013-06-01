@@ -9,7 +9,7 @@ import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.DBAdapter;
-import com.egloos.realmove.android.fp.db.PageListLoadTask;
+import com.egloos.realmove.android.fp.db.LoadPageListTask;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
 import com.egloos.realmove.android.fp.util.ProjectManager;
@@ -176,7 +176,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         FpLog.d(TAG, "onCreateView()");
 
-        int projectId = getActivity().getIntent().getIntExtra(PageListFragment.EXTRA_PROJECT_ID, 0);
+        int projectId = getArguments().getInt(PageListFragment.EXTRA_PROJECT_ID, 0);
 
         load(projectId);
 
@@ -206,8 +206,8 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     }
 
     private void load(int projectId) {
-        PageListLoadTask mLoadTask = new PageListLoadTask(mContext,
-                new PageListLoadTask.Callback() {
+        LoadPageListTask mLoadTask = new LoadPageListTask(mContext,
+                new LoadPageListTask.Callback() {
                     @Override
                     public void onLoad(Project project) {
                         onProjectLoad(project);

@@ -12,15 +12,15 @@ import android.os.AsyncTask;
 
 import java.util.ArrayList;
 
-public class ProjectListLoadTask extends AsyncTask<Void, Void, ArrayList<Project>> {
+public class LoadProjectListTask extends AsyncTask<Void, Void, ArrayList<Project>> {
 
-    private static final String TAG = ProjectListLoadTask.class.getSimpleName();
+    private static final String TAG = LoadProjectListTask.class.getSimpleName();
 
     private Context mContext;
     private Callback mCallback;
     private Dialog mProgressDialog;
 
-    public ProjectListLoadTask(Context context, Callback callback) {
+    public LoadProjectListTask(Context context, Callback callback) {
         mContext = context;
         mCallback = callback;
     }

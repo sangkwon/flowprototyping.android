@@ -122,6 +122,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
     @Override
     public void linkAdded(Link link) {
         FpLog.d(TAG, "linkAdded()");
+        link.setPageId(mPage.getId());
 
         DBAdapter db = null;
         try {
