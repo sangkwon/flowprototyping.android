@@ -114,7 +114,7 @@ public class LinkImageEditView extends LinkImageView implements OnMenuItemClickL
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.link_to:
-                if ( mListener != null ) {
+                if (mListener != null) {
                     mListener.requestSetTarget(selected);
                 }
                 break;
@@ -370,10 +370,19 @@ public class LinkImageEditView extends LinkImageView implements OnMenuItemClickL
 
     @Override
     protected void drawLink(Canvas canvas, Paint paint, Link link) {
-        super.drawLink(canvas, paint, link);
+        int baseColorRect = 0x33b5e5;
+        int baseColorResizeCirclr = 0x0099cc;
+
+        if (link.getTargetPageId() == Link.NO_TARGET_SPECIFIED) {
+            baseColorRect = 0xff4444;
+            baseColorResizeCirclr = 0xcc0000;
+        }
+
+        paint2.setColor(0x80000000 | baseColorRect);
+        super.drawLink(canvas, paint2, link);
+
         if (selected != null && selected == link) {
-            // dstRect 는 super의 drawLink 에서 구했음.
-            paint2.setColor(0xff33b5e5);
+            paint2.setColor(0xff000000 | baseColorRect);
 
             float[] pts = new float[] {
                     dstRect.getLeft(), dstRect.getTop(),
@@ -392,15 +401,13 @@ public class LinkImageEditView extends LinkImageView implements OnMenuItemClickL
             vHalf = dstRect.getTop() + (dstRect.getBottom() - dstRect.getTop()) / 2;
 
             if (getState() == State.RESIZING || getState() == State.SELECTING_CORNER) {
-                paint2.setColor(0xff33b5e5);
                 drawCircle(canvas, circleRadiusSelected, paint2, selectedArea);
 
-                paint2.setColor(0xff0099cc);
+                paint2.setColor(0xff000000 | baseColorResizeCirclr);
                 drawCircles(canvas, circleRadius, paint2);
             } else {
                 drawCircles(canvas, circleRadius, paint2);
             }
-
         }
     }
 
@@ -456,7 +463,7 @@ public class LinkImageEditView extends LinkImageView implements OnMenuItemClickL
         public void linkRemoved(Link link);
 
         public void linkModified(Link link);
-        
+
         public void requestSetTarget(Link link);
     }
 

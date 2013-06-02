@@ -37,6 +37,8 @@ public class PageListAdapter extends BaseAdapter {
             android.widget.AbsListView.LayoutParams.MATCH_PARENT);
     private int mNumColumns;
 
+    private int mSelectedPageId;
+
     public PageListAdapter(Context context, ImageFetcher imageFetcher) {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -97,7 +99,8 @@ public class PageListAdapter extends BaseAdapter {
 
         Page page = getItem(position);
         holder.text.setText(page.getName());
-        holder.selectedBox.setVisibility(mSelectedPages.contains(page) ? View.VISIBLE : View.GONE);
+        boolean selected = page.getId() == mSelectedPageId || mSelectedPages.contains(page);
+        holder.selectedBox.setVisibility(selected ? View.VISIBLE : View.GONE);
         mImageFetcher.loadImage(Uri.fromFile(new File(page.getImagePath())), holder.thumb);
 
         return view;
@@ -175,6 +178,10 @@ public class PageListAdapter extends BaseAdapter {
 
     public HashSet<Page> getSelectedPages() {
         return mSelectedPages;
+    }
+
+    public void setSelectedPageId(int selectedPageId) {
+        mSelectedPageId = selectedPageId;
     }
 
 }

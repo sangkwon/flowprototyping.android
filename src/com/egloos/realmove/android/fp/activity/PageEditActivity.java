@@ -32,13 +32,13 @@ public class PageEditActivity extends BaseFragmentActivity {
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
         Bundle extra = getIntent().getExtras();
-        Page page = (Page) extra.get("page");
+        int pageId = extra.getInt(PageEditFragment.EXTRA_PAGE_ID);
 
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
         if (getSupportFragmentManager().findFragmentByTag(TAG) == null) {
             final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            mFragment = PageEditFragment.newInstance(page);
+            mFragment = PageEditFragment.newInstance(pageId);
             ft.add(android.R.id.content, mFragment, TAG);
             ft.commit();
         }

@@ -10,6 +10,8 @@ import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.LoadPageListTask;
+import com.egloos.realmove.android.fp.db.LoadPageListTask.Callback;
+import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
 import com.egloos.realmove.android.fp.util.ProjectManager;
@@ -49,11 +51,13 @@ import java.util.Date;
 import java.util.List;
 
 public class PageListFragment extends BaseFragment implements OnItemClickListener,
-        OnItemLongClickListener {
+        OnItemLongClickListener, Callback {
 
     public static final String TAG = PageListFragment.class.getSimpleName();
+    public static final String TAG_DIALOG = "DIALOG_" + PageListFragment.class.getSimpleName();
 
     public static final String EXTRA_PROJECT_ID = "projectId";
+    public static final String EXTRA_SELECTED_PAGE_ID = "selected_page_id";
 
     public static final String SP_NAME = "fp";
     public static final String SP_KEY_WORKING_PROJ = "working_proj";
@@ -72,8 +76,10 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
     private static Mode mMode = Mode.NORMAL;
 
-    private PageListAdapter mAdapter;
     private Project mProject;
+    private int mSelectedPageId;
+
+    private PageListAdapter mAdapter;
     private ImageFetcher mImageFetcher;
     private ActionMode mActionMode;
     private View mContentView;
@@ -107,7 +113,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
         Bundle args = new Bundle();
         args.putInt(PageListFragment.EXTRA_PROJECT_ID, projectId);
-        args.putInt("selectedPageId", pageId);
+        args.putInt(PageListFragment.EXTRA_SELECTED_PAGE_ID, pageId);
         instance.setArguments(args);
 
         mMode = mode;
@@ -177,6 +183,8 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
         FpLog.d(TAG, "onCreateView()");
 
         int projectId = getArguments().getInt(PageListFragment.EXTRA_PROJECT_ID, 0);
+        mSelectedPageId = getArguments().getInt(PageListFragment.EXTRA_SELECTED_PAGE_ID,
+                Link.NO_TARGET_SPECIFIED);
 
         load(projectId);
 
@@ -206,17 +214,11 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     }
 
     private void load(int projectId) {
-        LoadPageListTask mLoadTask = new LoadPageListTask(mContext,
-                new LoadPageListTask.Callback() {
-                    @Override
-                    public void onLoad(Project project) {
-                        onProjectLoad(project);
-                    }
-                });
+        LoadPageListTask mLoadTask = new LoadPageListTask(mContext, this);
         mLoadTask.execute(projectId);
     }
 
-    void onProjectLoad(Project tmpProj) {
+    public void onLoad(Project tmpProj) {
         if (tmpProj == null) {
             Toast.makeText(getActivity(), R.string.error_on_loading_project, Toast.LENGTH_SHORT)
                     .show();
@@ -226,6 +228,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
         mProject = tmpProj;
         mAdapter.setPages(mProject);
+        mAdapter.setSelectedPageId(mSelectedPageId);
         mAdapter.notifyDataSetChanged();
 
         new Thread() {
@@ -292,11 +295,11 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
                 startActivityForResult(intent, REQ_CODE_ADD_PAGE_FROM_CAMERA);
                 break;
             }
-            case R.id.web: {
-                Toast.makeText(getActivity(), R.string.not_implemented_yet, Toast.LENGTH_SHORT)
-                        .show();
-                break;
-            }
+            // case R.id.web: {
+            // Toast.makeText(getActivity(), R.string.not_implemented_yet, Toast.LENGTH_SHORT)
+            // .show();
+            // break;
+            // }
             case R.id.play:
 
                 break;
@@ -445,8 +448,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
             } else {
                 Intent intent = new Intent(getActivity(), PageEditActivity.class);
                 intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, mProject.getId());
-                // intent.putExtra(PageEditActivity.EXTRA_PAGE_POS, position);
-                intent.putExtra("page", clickedPage);
+                intent.putExtra(PageEditFragment.EXTRA_PAGE_ID, clickedPage.getId());
                 startActivityForResult(intent, REQ_CODE_PAGE_EDIT);
             }
         } else if (mMode == Mode.SELECT) {
@@ -648,8 +650,8 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
     private SelectCallback mSelectCallback;
 
-    public void setmSelectCallback(SelectCallback mSelectCallback) {
-        this.mSelectCallback = mSelectCallback;
+    public void setSelectCallback(SelectCallback selectCallback) {
+        this.mSelectCallback = selectCallback;
     }
 
     public interface SelectCallback {

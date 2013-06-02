@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 public class Link implements Serializable {
 
+    public static final int NO_TARGET_SPECIFIED = -1;
     private static final long serialVersionUID = 5122289147217498540L;
     private static final String TAG = Link.class.getSimpleName();
 
@@ -31,7 +32,7 @@ public class Link implements Serializable {
     private int id;
     private Event event = Event.TOUCH;
     private Anim anim = Anim.NONE;
-    private int targetPageId = -1;
+    private int targetPageId = NO_TARGET_SPECIFIED;
     private RectPosition position;
 
     public static final int MAX_WIDTH = 720;

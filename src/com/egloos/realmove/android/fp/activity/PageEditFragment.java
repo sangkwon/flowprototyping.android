@@ -6,6 +6,8 @@ import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.DBAdapter;
+import com.egloos.realmove.android.fp.db.LoadPageTask;
+import com.egloos.realmove.android.fp.db.LoadPageTask.Callback;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.view.LinkImageEditView;
@@ -18,12 +20,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,6 +36,8 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
         ImageWorker.Callback, PageListFragment.SelectCallback {
 
     private static final String TAG = PageEditFragment.class.getSimpleName();
+
+    public static final String EXTRA_PAGE_ID = "pageId";
 
     private Page mPage;
 
@@ -42,9 +48,13 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
     private ActionBar mActionBar;
 
-    public static PageEditFragment newInstance(Page page) {
+    public static PageEditFragment newInstance(int pageId) {
         PageEditFragment fragment = new PageEditFragment();
-        fragment.mPage = page;
+
+        Bundle args = new Bundle();
+        args.putInt(EXTRA_PAGE_ID, pageId);
+        fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -74,7 +84,23 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
         mActionBar.hide();
 
+        load(getArguments().getInt(EXTRA_PAGE_ID));
+
         return view;
+    }
+
+    private void load(int pageId) {
+        new LoadPageTask(mContext, new LoadPageTask.Callback() {
+            @Override
+            public void onLoad(Page page) {
+                if (page == null) {
+                    Toast.makeText(mContext, R.string.fail_to_load_page, Toast.LENGTH_SHORT).show();
+                    finishActivity();
+                }
+                mPage = page;
+                mImageFetcher.loadImage(Uri.fromFile(new File(mPage.getImagePath())), mPageView);
+            }
+        }).execute(pageId);
     }
 
     private void prepareCache() {
@@ -91,8 +117,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
         mImageFetcher = new ImageFetcher(mContext, mWidth, mHeight);
         mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
-        mImageFetcher.setImageFadeIn(true);
-        mImageFetcher.loadImage(Uri.fromFile(new File(mPage.getImagePath())), mPageView);
+        mImageFetcher.setImageFadeIn(false);
         mImageFetcher.setCallback(this);
     }
 
@@ -119,53 +144,77 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
         }
     }
 
+    enum Command {
+        INSERT, DELETE, MODIFY
+    }
+
+    private class LinkTask extends AsyncTask<Void, Void, Boolean> {
+
+        private Link mLink;
+        private Command mCommand;
+
+        public LinkTask(Link link, Command command) {
+            mLink = link;
+            mCommand = command;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            synchronized (mContext) {
+                DBAdapter db = null;
+                try {
+                    db = new DBAdapter(mContext).open();
+                    switch (mCommand) {
+                        case DELETE:
+                            db.deleteLink(mLink.getId());
+                            break;
+                        case INSERT:
+                            db.insertLink(mLink);
+                            break;
+                        case MODIFY:
+                            db.updateLink(mLink);
+                            break;
+                        default:
+                            break;
+                    }
+                    return true;
+                } catch (Exception ex) {
+                    FpLog.e(TAG, ex);
+                    return false;
+                } finally {
+                    if (db != null)
+                        db.close();
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                mPageView.invalidate();
+            }
+            super.onPostExecute(result);
+        }
+
+    }
+
     @Override
     public void linkAdded(Link link) {
         FpLog.d(TAG, "linkAdded()");
         link.setPageId(mPage.getId());
-
-        DBAdapter db = null;
-        try {
-            db = new DBAdapter(mContext).open();
-            db.insertLink(link);
-        } catch (Exception ex) {
-            FpLog.e(TAG, ex);
-        } finally {
-            if (db != null)
-                db.close();
-        }
+        new LinkTask(link, Command.INSERT).execute();
     }
 
     @Override
     public void linkRemoved(Link link) {
         FpLog.d(TAG, "linkRemoved()");
-
-        DBAdapter db = null;
-        try {
-            db = new DBAdapter(mContext).open();
-            db.deleteLink(link.getId());
-        } catch (Exception ex) {
-            FpLog.e(TAG, ex);
-        } finally {
-            if (db != null)
-                db.close();
-        }
+        new LinkTask(link, Command.DELETE).execute();
     }
 
     @Override
     public void linkModified(Link link) {
         FpLog.d(TAG, "linkModified()");
-
-        DBAdapter db = null;
-        try {
-            db = new DBAdapter(mContext).open();
-            db.updateLink(link);
-        } catch (Exception ex) {
-            FpLog.e(TAG, ex);
-        } finally {
-            if (db != null)
-                db.close();
-        }
+        new LinkTask(link, Command.MODIFY).execute();
     }
 
     private Link mSelectedLink;
@@ -179,7 +228,15 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
         PageListFragment fragment = PageListFragment.newInstance(mPage.getProjectId(),
                 link.getTargetPageId(), PageListFragment.Mode.SELECT);
-        fragment.show(getActivity().getSupportFragmentManager(), PageListFragment.TAG);
+        fragment.show(getActivity().getSupportFragmentManager(), PageListFragment.TAG_DIALOG);
+        fragment.setSelectCallback(new PageListFragment.SelectCallback() {
+            public void pageSelected(Page page) {
+                if (page != null) {
+                    mSelectedLink.setTargetPageId(page.getId());
+                    new LinkTask(mSelectedLink, Command.MODIFY).execute();
+                }
+            }
+        });
     }
 
     @Override

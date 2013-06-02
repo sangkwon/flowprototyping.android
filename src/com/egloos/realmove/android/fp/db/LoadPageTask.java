@@ -29,7 +29,7 @@ public class LoadPageTask extends AsyncTask<Integer, Void, Page> {
 
     @Override
     protected void onPreExecute() {
-        mProgressDialog = LoadingDialog.show(mContext);
+        //mProgressDialog = LoadingDialog.show(mContext);
         super.onPreExecute();
     }
 
