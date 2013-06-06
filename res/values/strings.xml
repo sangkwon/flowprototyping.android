@@ -23,5 +23,7 @@
     <string name="wrong_project">Wrong project information</string>
     <string name="select_page_to_link">Select page to link</string>
     <string name="fail_to_load_page">Fail to load page</string>
+    <string name="input_project_info">Input project info</string>
+    <string name="error_subject_empty">Input subject</string>
 
 </resources>

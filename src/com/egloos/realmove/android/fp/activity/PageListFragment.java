@@ -146,7 +146,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
      */
     private View createView(LayoutInflater inflater, ViewGroup container) {
         FpLog.d(TAG, "createView()");
-        final View view = inflater.inflate(R.layout.page_list_fragment, container, false);
+        final View view = inflater.inflate(R.layout.page_list_fragment, container, true);
         final GridView gridView = (GridView) view.findViewById(R.id.grid);
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(this);

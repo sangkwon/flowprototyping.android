@@ -66,4 +66,16 @@ public class BaseFragment extends SherlockDialogFragment {
         FpLog.d(this.getClass().getSimpleName(), "onDestroyView() called");
     }
 
+    @Override
+    public void onPause() {
+        FpLog.d(this.getClass().getSimpleName(), "onPause() called");
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        FpLog.d(this.getClass().getSimpleName(), "onResume() called");
+        super.onResume();
+    }
+
 }

@@ -138,7 +138,7 @@ public class ProjectListFragment extends BaseFragment implements OnItemClickList
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                 builder.setView(textEntryView)
-                        .setTitle("Input project info")
+                        .setTitle(R.string.input_project_info)
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(android.R.string.ok,
                                 new DialogInterface.OnClickListener() {
@@ -154,7 +154,7 @@ public class ProjectListFragment extends BaseFragment implements OnItemClickList
                                                 }
                                             }
 
-                                            Toast.makeText(mContext, "Input subject",
+                                            Toast.makeText(mContext, R.string.error_subject_empty,
                                                     Toast.LENGTH_SHORT).show();
                                         }
                                     }
