@@ -237,6 +237,8 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
                 storeWorkingProject(mContext, mProject.getId());
             }
         }.start();
+
+        getSherlockActivity().getActionBar().setTitle(mProject.getSubject());
     }
 
     private static void storeWorkingProject(Context context, int id) {
@@ -276,11 +278,18 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home: {
+                Intent intent = new Intent(mContext, ProjectListActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                return true;
+            }
+
             case R.id.gallery: {
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
                 startActivityForResult(intent, REQ_CODE_ADD_PAGE_FROM_GALLERY);
-                break;
+                return true;
             }
             case R.id.camera: {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -293,7 +302,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
                 intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
                 startActivityForResult(intent, REQ_CODE_ADD_PAGE_FROM_CAMERA);
-                break;
+                return true;
             }
             // case R.id.web: {
             // Toast.makeText(getActivity(), R.string.not_implemented_yet, Toast.LENGTH_SHORT)
@@ -302,10 +311,10 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
             // }
             case R.id.play:
 
-                break;
+                return true;
             case R.id.edit:
                 setActionMode(true);
-                break;
+                return true;
 
         }
         return super.onOptionsItemSelected(item);

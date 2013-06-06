@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="9"
+        android:minSdkVersion="14"
         android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -20,11 +20,17 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
+            android:name=".activity.ProjectListActivity"
+            android:launchMode="singleTop" >
+        </activity>
+        <activity
             android:name=".activity.PageListActivity"
-            android:parentActivityName="com.egloos.realmove.android.fp.activity.ProjectListActivity" >
+            android:launchMode="singleInstance"
+            android:parentActivityName="com.egloos.realmove.android.fp.activity.ProjectListActivity"
+            android:uiOptions="splitActionBarWhenNarrow" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ProjectListActivity" />
+                android:value="com.egloos.realmove.android.fp.activity.ProjectListActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,14 +40,11 @@
         </activity>
         <activity
             android:name=".activity.PageEditActivity"
+            android:launchMode="singleInstance"
             android:parentActivityName="com.egloos.realmove.android.fp.activity.PageListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".pagelist.PageListActivity" />
-        </activity>
-        <activity
-            android:name=".activity.ProjectListActivity"
-            android:label="Project List" >
+                android:value="com.egloos.realmove.android.fp.activity.PageListActivity" />
         </activity>
     </application>
 

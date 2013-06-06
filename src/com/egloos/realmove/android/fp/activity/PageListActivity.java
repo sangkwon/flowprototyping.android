@@ -3,6 +3,7 @@ package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
+import com.egloos.realmove.android.fp.common.FpLog;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,6 +37,12 @@ public class PageListActivity extends BaseFragmentActivity {
             ft.add(android.R.id.content, mFragment, TAG);
             ft.commit();
         }
+    }
+
+    @Override
+    public boolean onNavigateUp() {
+        FpLog.d(TAG, "onNavigateUp()");
+        return super.onNavigateUp();
     }
 
 }
