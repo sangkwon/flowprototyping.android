@@ -254,6 +254,10 @@ public class DBAdapter {
     }
 
     public ArrayList<Link> selectLinks(int... pageIds) throws Exception {
+        if ( pageIds == null || pageIds.length == 0 ) {
+            return null;
+        }
+        
         Cursor cursor = null;
         try {
             String[] projection = new String[] {
