@@ -32,7 +32,7 @@ public class LinkSelectDialog extends Dialog {
             return;
 
         PageListFragment fragment = PageListFragment.newInstance(projectId, link.getTargetPageId(),
-                PageListFragment.Mode.SELECT);
+                PageListFragment.Mode.ONLY_SELECT);
         fragment.show(fm, PageListFragment.TAG);
     }
     

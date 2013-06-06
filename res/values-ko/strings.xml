@@ -21,5 +21,7 @@
     <string name="remove_all_selected_pages">선택된 페이지를 모두 삭제할까요?</string>
     <string name="remove">삭제</string>
     <string name="wrong_project">프로젝트 정보 오류</string>
+    <string name="select_page_to_link">연결할 페이지를 선택하세요</string>
+    <string name="fail_to_load_page">페이지 로딩 실패</string>
 
 </resources>

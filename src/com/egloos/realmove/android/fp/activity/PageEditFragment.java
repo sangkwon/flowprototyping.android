@@ -227,7 +227,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
         mSelectedLink = link;
 
         PageListFragment fragment = PageListFragment.newInstance(mPage.getProjectId(),
-                link.getTargetPageId(), PageListFragment.Mode.SELECT);
+                link.getTargetPageId(), PageListFragment.Mode.ONLY_SELECT);
         fragment.show(getActivity().getSupportFragmentManager(), PageListFragment.TAG_DIALOG);
         fragment.setSelectCallback(new PageListFragment.SelectCallback() {
             public void pageSelected(Page page) {

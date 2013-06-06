@@ -71,7 +71,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
         NORMAL,
 
         /** 페이지 선택만 가능한 대화상자 모드 */
-        SELECT
+        ONLY_SELECT
     }
 
     private static Mode mMode = Mode.NORMAL;
@@ -460,7 +460,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
                 intent.putExtra(PageEditFragment.EXTRA_PAGE_ID, clickedPage.getId());
                 startActivityForResult(intent, REQ_CODE_PAGE_EDIT);
             }
-        } else if (mMode == Mode.SELECT) {
+        } else if (mMode == Mode.ONLY_SELECT) {
             if (getDialog() != null)
                 this.getDialog().dismiss();
 
