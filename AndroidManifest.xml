@@ -46,6 +46,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.egloos.realmove.android.fp.activity.PageListActivity" />
         </activity>
+        <activity
+            android:name=".activity.PlayActivity"
+            android:launchMode="singleInstance" >
+        </activity>
     </application>
 
 </manifest>

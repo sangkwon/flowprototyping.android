@@ -2,12 +2,14 @@
 package com.egloos.realmove.android.fp.activity;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.LoadPageTask;
-import com.egloos.realmove.android.fp.db.LoadPageTask.Callback;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.view.LinkImageEditView;
@@ -16,7 +18,6 @@ import com.example.android.bitmapfun.util.ImageCache;
 import com.example.android.bitmapfun.util.ImageFetcher;
 import com.example.android.bitmapfun.util.ImageWorker;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -60,6 +61,8 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        
         final View view = inflater.inflate(R.layout.page_edit_fragment, container, false);
         mPageView = (LinkImageEditView) view.findViewById(R.id.page);
         mPageView.setOnLinkChangeListener(this);
@@ -82,7 +85,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
          * mPageView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE); }
          */
 
-        mActionBar.hide();
+        // mActionBar.hide();
 
         load(getArguments().getInt(EXTRA_PAGE_ID));
 
@@ -247,6 +250,25 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
         }
 
         mSelectedLink = null;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_page_edit_option, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.play: {
+                Intent intent = new Intent(mContext, PlayActivity.class);
+                intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, mPage.getProjectId());
+                intent.putExtra(PageListFragment.EXTRA_SELECTED_PAGE_ID, mPage.getId());
+                startActivity(intent);
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

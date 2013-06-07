@@ -39,10 +39,4 @@ public class PageListActivity extends BaseFragmentActivity {
         }
     }
 
-    @Override
-    public boolean onNavigateUp() {
-        FpLog.d(TAG, "onNavigateUp()");
-        return super.onNavigateUp();
-    }
-
 }

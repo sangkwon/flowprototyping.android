@@ -34,8 +34,6 @@ public class PageEditActivity extends BaseFragmentActivity {
         Bundle extra = getIntent().getExtras();
         int pageId = extra.getInt(PageEditFragment.EXTRA_PAGE_ID);
 
-        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-
         if (getSupportFragmentManager().findFragmentByTag(TAG) == null) {
             final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             mFragment = PageEditFragment.newInstance(pageId);

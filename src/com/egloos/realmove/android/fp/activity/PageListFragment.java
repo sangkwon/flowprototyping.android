@@ -86,6 +86,23 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
     private Uri mImageCaptureUri;
 
+    public static PageListFragment newInstance(int projectId, int pageId) {
+        return newInstance(projectId, pageId, Mode.NORMAL);
+    }
+
+    public static PageListFragment newInstance(int projectId, int pageId, Mode mode) {
+        PageListFragment instance = new PageListFragment();
+
+        Bundle args = new Bundle();
+        args.putInt(PageListFragment.EXTRA_PROJECT_ID, projectId);
+        args.putInt(PageListFragment.EXTRA_SELECTED_PAGE_ID, pageId);
+        instance.setArguments(args);
+
+        mMode = mode;
+
+        return instance;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,23 +119,6 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
         mImageFetcher.setImageFadeIn(false);
 
         mAdapter = new PageListAdapter(getActivity(), mImageFetcher);
-    }
-
-    public static PageListFragment newInstance(int projectId, int pageId) {
-        return newInstance(projectId, pageId, Mode.NORMAL);
-    }
-
-    public static PageListFragment newInstance(int projectId, int pageId, Mode mode) {
-        PageListFragment instance = new PageListFragment();
-
-        Bundle args = new Bundle();
-        args.putInt(PageListFragment.EXTRA_PROJECT_ID, projectId);
-        args.putInt(PageListFragment.EXTRA_SELECTED_PAGE_ID, pageId);
-        instance.setArguments(args);
-
-        mMode = mode;
-
-        return instance;
     }
 
     @Override
@@ -146,7 +146,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
      */
     private View createView(LayoutInflater inflater, ViewGroup container) {
         FpLog.d(TAG, "createView()");
-        final View view = inflater.inflate(R.layout.page_list_fragment, container, true);
+        final View view = inflater.inflate(R.layout.page_list_fragment, container, false);
         final GridView gridView = (GridView) view.findViewById(R.id.grid);
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(this);
@@ -271,7 +271,14 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        // TODO "Edit" 메뉴는 상황에 따라 diable 시킴
+        MenuItem edit = menu.findItem(R.id.edit);
+
+        if (mAdapter.getCount() == 0) {
+            edit.setEnabled(false);
+        } else {
+            edit.setEnabled(true);
+        }
+
         super.onPrepareOptionsMenu(menu);
     }
 
