@@ -14,15 +14,15 @@ import android.os.AsyncTask;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class LoadPageListTask extends AsyncTask<Integer, Void, Project> {
+public class LoadProjectTask extends AsyncTask<Integer, Void, Project> {
 
-    private static final String TAG = LoadPageListTask.class.getSimpleName();
+    private static final String TAG = LoadProjectTask.class.getSimpleName();
 
     private Context mContext;
     private Callback mCallback;
     private Dialog mProgressDialog;
 
-    public LoadPageListTask(Context context, Callback callback) {
+    public LoadProjectTask(Context context, Callback callback) {
         mContext = context;
         mCallback = callback;
     }

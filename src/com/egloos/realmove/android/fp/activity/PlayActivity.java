@@ -1,7 +1,6 @@
 
 package com.egloos.realmove.android.fp.activity;
 
-import com.actionbarsherlock.view.Window;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
 

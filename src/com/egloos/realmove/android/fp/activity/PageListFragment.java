@@ -9,8 +9,8 @@ import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.DBAdapter;
-import com.egloos.realmove.android.fp.db.LoadPageListTask;
-import com.egloos.realmove.android.fp.db.LoadPageListTask.Callback;
+import com.egloos.realmove.android.fp.db.LoadProjectTask;
+import com.egloos.realmove.android.fp.db.LoadProjectTask.Callback;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
@@ -214,7 +214,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     }
 
     private void load(int projectId) {
-        LoadPageListTask mLoadTask = new LoadPageListTask(mContext, this);
+        LoadProjectTask mLoadTask = new LoadProjectTask(mContext, this);
         mLoadTask.execute(projectId);
     }
 

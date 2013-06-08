@@ -5,7 +5,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
-import com.egloos.realmove.android.fp.db.LoadPageListTask;
+import com.egloos.realmove.android.fp.db.LoadProjectTask;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
 import com.egloos.realmove.android.fp.view.LinkImageEditView;
@@ -85,7 +85,7 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback {
     }
 
     private void load(int projectId) {
-        new LoadPageListTask(mContext, new LoadPageListTask.Callback() {
+        new LoadProjectTask(mContext, new LoadProjectTask.Callback() {
             @Override
             public void onLoad(Project project) {
                 if (project == null) {
