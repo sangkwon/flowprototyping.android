@@ -6,9 +6,11 @@ import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
+import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
 import com.egloos.realmove.android.fp.view.LinkImageView;
+import com.egloos.realmove.android.fp.view.LinkImageView.OnLinkClickListener;
 import com.example.android.bitmapfun.util.ImageCache;
 import com.example.android.bitmapfun.util.ImageFetcher;
 import com.example.android.bitmapfun.util.ImageWorker;
@@ -25,7 +27,8 @@ import android.widget.Toast;
 
 import java.io.File;
 
-public class PlayFragment extends BaseFragment implements ImageWorker.Callback {
+public class PlayFragment extends BaseFragment implements ImageWorker.Callback,
+        LinkImageView.OnLinkClickListener {
 
     private static final String TAG = PlayFragment.class.getSimpleName();
 
@@ -38,6 +41,20 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback {
 
     private Project mProject;
     private Page mPage;
+
+    enum State {
+        PRELOAD, AFTERLOAD
+    }
+
+    private State state = State.PRELOAD;
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
 
     public static PlayFragment newInstance(int projectId, int pageId) {
         PlayFragment fragment = new PlayFragment();
@@ -54,6 +71,7 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.play_fragment, container, false);
         mPageView = (LinkImageView) view.findViewById(R.id.page);
+        mPageView.setOnLinkClickListener(this);
 
         prepareCache();
 
@@ -107,15 +125,32 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback {
         }
 
         mImageFetcher.loadImage(Uri.fromFile(new File(mPage.getImagePath())), mPageView);
+        setState(State.PRELOAD);
+
+        mPageView.setLinks(null);
+        mPageView.setLinkShow(false);
     }
 
     @Override
     public void onLoadImage(boolean success, ImageView imageView, final BitmapDrawable bd) {
+        setState(State.AFTERLOAD);
         if (!success) {
             // TODO what?
             return;
         }
 
+        mPageView.setLinks(mPage.getLinks());
+        mPageView.setLinkShow(true);
+    }
+
+    @Override
+    public boolean onClickLink(Link link) {
+        FpLog.d(TAG, "onClickLink()", link);
+        if (link != null) {
+            int pageId = link.getTargetPageId();
+            displayPage(pageId);
+        }
+        return false;
     }
 
 }

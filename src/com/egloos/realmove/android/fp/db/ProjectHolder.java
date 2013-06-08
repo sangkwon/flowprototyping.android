@@ -41,6 +41,7 @@ public class ProjectHolder {
     public void load(final Context context, final int projectId, final Callback callback) {
         if (mProject != null && mProject.getId() == projectId) {
             invokeCallback(callback, mProject);
+            return;
         }
 
         loadForce(context, projectId, callback);

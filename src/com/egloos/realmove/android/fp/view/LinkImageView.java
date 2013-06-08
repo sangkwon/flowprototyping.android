@@ -11,8 +11,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
@@ -29,7 +27,7 @@ public class LinkImageView extends ImageView {
 
     protected ArrayList<Link> mLinks;
     protected boolean mLinkShow = false;
-    protected OnLinkClickListener listener;
+    protected OnLinkClickListener mListener;
 
     protected final float CORNER_WIDTH; // 선택할 떄에 코너선택으로 판별할 폭
 
@@ -40,8 +38,8 @@ public class LinkImageView extends ImageView {
 
     }
 
-    public void setOnLinkTouchListener(OnLinkClickListener listener) {
-        this.listener = listener;
+    public void setOnLinkClickListener(OnLinkClickListener listener) {
+        this.mListener = listener;
     }
 
     public void setLinks(ArrayList<Link> links) {
@@ -107,7 +105,8 @@ public class LinkImageView extends ImageView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (listener != null) {
+        FpLog.d(TAG, "onTouchEvent", event.getAction());
+        if (mListener != null) {
             Link link = getTouchedLink(event.getX(), event.getY());
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -115,15 +114,14 @@ public class LinkImageView extends ImageView {
                     break;
                 case MotionEvent.ACTION_UP:
                     if (selected == link) {
-                        listener.onClickLink(link);
-                        return true;
+                        mListener.onClickLink(link);
                     }
                     selected = null;
                     break;
 
             }
         }
-        return super.onTouchEvent(event);
+        return true;
     }
 
     public interface OnLinkClickListener {

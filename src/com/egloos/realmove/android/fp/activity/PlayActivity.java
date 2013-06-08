@@ -19,6 +19,8 @@ public class PlayActivity extends BaseFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        
         int projectId = getIntent().getIntExtra(PageListFragment.EXTRA_PROJECT_ID, -1);
         if (projectId == -1) {
             Toast.makeText(this, R.string.wrong_project, Toast.LENGTH_SHORT).show();
