@@ -1,11 +1,8 @@
 
 package com.egloos.realmove.android.fp.activity;
 
-import com.actionbarsherlock.view.Window;
 import com.egloos.realmove.android.fp.R;
-import com.egloos.realmove.android.fp.R.string;
 import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
-import com.egloos.realmove.android.fp.model.Page;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,14 +26,14 @@ public class PageEditActivity extends BaseFragmentActivity {
             return;
         }
 
-        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+        // requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
         Bundle extra = getIntent().getExtras();
         int pageId = extra.getInt(PageEditFragment.EXTRA_PAGE_ID);
 
         if (getSupportFragmentManager().findFragmentByTag(TAG) == null) {
             final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            mFragment = PageEditFragment.newInstance(pageId);
+            mFragment = PageEditFragment.newInstance(projectId, pageId);
             ft.add(android.R.id.content, mFragment, TAG);
             ft.commit();
         }

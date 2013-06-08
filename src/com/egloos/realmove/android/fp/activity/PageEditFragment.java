@@ -10,8 +10,10 @@ import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.LoadPageTask;
+import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
+import com.egloos.realmove.android.fp.model.Project;
 import com.egloos.realmove.android.fp.view.LinkImageEditView;
 import com.egloos.realmove.android.fp.view.LinkImageEditView.OnLinkChangeListener;
 import com.example.android.bitmapfun.util.ImageCache;
@@ -40,6 +42,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
     public static final String EXTRA_PAGE_ID = "pageId";
 
+    private Project mProject;
     private Page mPage;
 
     private int mWidth;
@@ -49,10 +52,11 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
     private ActionBar mActionBar;
 
-    public static PageEditFragment newInstance(int pageId) {
+    public static PageEditFragment newInstance(int projectId, int pageId) {
         PageEditFragment fragment = new PageEditFragment();
 
         Bundle args = new Bundle();
+        args.putInt(PageListFragment.EXTRA_PROJECT_ID, projectId);
         args.putInt(EXTRA_PAGE_ID, pageId);
         fragment.setArguments(args);
 
@@ -62,7 +66,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        
+
         final View view = inflater.inflate(R.layout.page_edit_fragment, container, false);
         mPageView = (LinkImageEditView) view.findViewById(R.id.page);
         mPageView.setOnLinkChangeListener(this);
@@ -87,23 +91,32 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
         // mActionBar.hide();
 
-        load(getArguments().getInt(EXTRA_PAGE_ID));
+        int projectId = getArguments().getInt(PageListFragment.EXTRA_PROJECT_ID, -1);
+        int pageId = getArguments().getInt(EXTRA_PAGE_ID);
+        load(projectId, pageId);
 
         return view;
     }
 
-    private void load(int pageId) {
-        new LoadPageTask(mContext, new LoadPageTask.Callback() {
+    private void load(final int projectId, final int pageId) {
+        ProjectHolder.getInstance().load(mContext, projectId, new ProjectHolder.Callback() {
             @Override
-            public void onLoad(Page page) {
-                if (page == null) {
+            public void onLoad(Project project) {
+                if (project == null) {
                     Toast.makeText(mContext, R.string.fail_to_load_page, Toast.LENGTH_SHORT).show();
                     finishActivity();
                 }
-                mPage = page;
+
+                mProject = project;
+                mPage = project.findPage(pageId);
+                if (mPage == null) {
+                    Toast.makeText(mContext, R.string.fail_to_load_page, Toast.LENGTH_SHORT).show();
+                    finishActivity();
+                }
+
                 mImageFetcher.loadImage(Uri.fromFile(new File(mPage.getImagePath())), mPageView);
             }
-        }).execute(pageId);
+        });
     }
 
     private void prepareCache() {
