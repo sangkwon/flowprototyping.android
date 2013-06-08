@@ -29,6 +29,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -283,12 +284,12 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home: {
-                Intent intent = new Intent(mContext, ProjectListActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                return true;
-            }
+//            case android.R.id.home: {
+//                Intent intent = new Intent(mContext, ProjectListActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(intent);
+//                return true;
+//            }
 
             case R.id.gallery: {
                 Intent intent = new Intent(Intent.ACTION_PICK);
@@ -315,7 +316,13 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
             // break;
             // }
             case R.id.play:
-
+                if (mProject.size() > 1) {
+                    Intent intent = new Intent(mContext, PlayActivity.class);
+                    intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, mProject.getId());
+                    intent.putExtra(PageListFragment.EXTRA_SELECTED_PAGE_ID, mProject.get(0)
+                            .getId());
+                    startActivity(intent);
+                }
                 return true;
             case R.id.edit:
                 setActionMode(true);
@@ -590,18 +597,44 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
                 mAdapter.togglePageSelection(page);
 
                 DBAdapter db = null;
+                SQLiteDatabase _db = null;
                 try {
                     db = new DBAdapter(mContext).open();
+
+                    _db = db.getDb();
+                    _db.beginTransaction();
+
+                    db.deleteLinkOf(page.getId());
+
                     db.deletePage(page.getId());
 
+                    for (Page src : mProject) {
+                        if (src.getId() != page.getId()) {
+                            if (src.getLinks() != null) {
+                                for (Link link : src.getLinks()) {
+                                    if (link.getTargetPageId() == page.getId()) {
+                                        link.setTargetPageId(Link.NO_TARGET_SPECIFIED);
+                                        db.updateLink(link);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     mProject.remove(page);
+                    _db.setTransactionSuccessful();
 
                     new File(page.getImagePath()).delete();
+
                 } catch (Exception ex) {
                     FpLog.e(TAG, ex);
                 } finally {
+                    if (_db != null)
+                        _db.endTransaction();
+
                     if (db != null)
                         db.close();
+
                 }
 
             }

@@ -22,6 +22,11 @@
         <activity
             android:name=".activity.ProjectListActivity"
             android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activity.PageListActivity"
@@ -31,16 +36,10 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.egloos.realmove.android.fp.activity.ProjectListActivity" />
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activity.PageEditActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:parentActivityName="com.egloos.realmove.android.fp.activity.PageListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -48,7 +47,7 @@
         </activity>
         <activity
             android:name=".activity.PlayActivity"
-            android:launchMode="singleInstance" >
+            android:launchMode="singleTask" >
         </activity>
     </application>
 

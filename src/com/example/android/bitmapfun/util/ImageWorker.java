@@ -326,20 +326,19 @@ public abstract class ImageWorker {
          */
         @Override
         protected void onPostExecute(BitmapDrawable value) {
+            final ImageView imageView = getAttachedImageView();
+            runCallback(imageView, value);
+            
             // if cancel was called on this task or the "exit early" flag is set then we're done
             if (isCancelled() || mExitTasksEarly) {
                 value = null;
             }
 
-            final ImageView imageView = getAttachedImageView();
             if (value != null && imageView != null) {
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "onPostExecute - setting bitmap");
                 }
                 setImageDrawable(imageView, value);
-                runCallback(imageView, value);
-            } else {
-                runCallback(imageView, value);
             }
         }
 

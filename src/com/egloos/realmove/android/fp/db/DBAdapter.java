@@ -129,6 +129,15 @@ public class DBAdapter {
         return this;
     }
 
+    /**
+     * 트랜젝션처리를 위해서.
+     * 
+     * @return
+     */
+    public SQLiteDatabase getDb() {
+        return mDb;
+    }
+
     public void close() {
         if (mDb != null)
             mDb.close();
@@ -254,10 +263,10 @@ public class DBAdapter {
     }
 
     public ArrayList<Link> selectLinks(int... pageIds) throws Exception {
-        if ( pageIds == null || pageIds.length == 0 ) {
+        if (pageIds == null || pageIds.length == 0) {
             return null;
         }
-        
+
         Cursor cursor = null;
         try {
             String[] projection = new String[] {
@@ -428,6 +437,10 @@ public class DBAdapter {
 
     public void deleteLink(int linkId) throws Exception {
         mDb.delete(TBL_LINKS, ID + "=" + linkId, null);
+    }
+
+    public void deleteLinkOf(int pageId) throws Exception {
+        mDb.delete(TBL_LINKS, PAGE_ID + "=" + pageId, null);
     }
 
 }

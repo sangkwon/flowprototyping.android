@@ -264,7 +264,7 @@ public class ImageFetcher extends ImageResizer {
         if (data instanceof Uri) {
             Uri uri = (Uri) data;
             if ("file".equalsIgnoreCase(uri.getScheme())) {
-                processBitmapFile(uri);
+                return processBitmapFile(uri);
             }
         }
         return processBitmap(String.valueOf(data));

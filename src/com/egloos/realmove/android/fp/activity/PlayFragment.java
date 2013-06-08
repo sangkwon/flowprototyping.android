@@ -72,6 +72,7 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback,
         final View view = inflater.inflate(R.layout.play_fragment, container, false);
         mPageView = (LinkImageView) view.findViewById(R.id.page);
         mPageView.setOnLinkClickListener(this);
+        mPageView.setLinkShow(true);
 
         prepareCache();
 
@@ -97,7 +98,7 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback,
 
         mImageFetcher = new ImageFetcher(mContext, mWidth, mHeight);
         mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
-        mImageFetcher.setImageFadeIn(false);
+        // mImageFetcher.setImageFadeIn(false);
         mImageFetcher.setCallback(this);
     }
 
@@ -124,23 +125,23 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback,
             mPage = mProject.get(0);
         }
 
-        mImageFetcher.loadImage(Uri.fromFile(new File(mPage.getImagePath())), mPageView);
-        setState(State.PRELOAD);
+        if (mPage != null) {
+            mPageView.setLinks(mPage.getLinks());
 
-        mPageView.setLinks(null);
-        mPageView.setLinkShow(false);
+            mImageFetcher.loadImage(Uri.fromFile(new File(mPage.getImagePath())), mPageView);
+            setState(State.PRELOAD);
+        }
     }
 
     @Override
     public void onLoadImage(boolean success, ImageView imageView, final BitmapDrawable bd) {
         setState(State.AFTERLOAD);
+
         if (!success) {
             // TODO what?
             return;
         }
 
-        mPageView.setLinks(mPage.getLinks());
-        mPageView.setLinkShow(true);
     }
 
     @Override

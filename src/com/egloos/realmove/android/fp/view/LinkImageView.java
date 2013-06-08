@@ -105,7 +105,7 @@ public class LinkImageView extends ImageView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        FpLog.d(TAG, "onTouchEvent", event.getAction());
+        //FpLog.d(TAG, "onTouchEvent", event.getAction());
         if (mListener != null) {
             Link link = getTouchedLink(event.getX(), event.getY());
             switch (event.getAction()) {
