@@ -24,6 +24,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,7 +76,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
         mActionBar = getSherlockActivity().getSupportActionBar();
 
         // Hide title text and set home as up
-        mActionBar.setDisplayShowTitleEnabled(false);
+        mActionBar.setDisplayShowTitleEnabled(true);
         mActionBar.setDisplayHomeAsUpEnabled(true);
 
         /*
@@ -111,7 +112,10 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
                 if (mPage == null) {
                     Toast.makeText(mContext, R.string.fail_to_load_page, Toast.LENGTH_SHORT).show();
                     finishActivity();
+                    return;
                 }
+
+                mActionBar.setTitle(mPage.getName());
 
                 mImageFetcher.loadImage(Uri.fromFile(new File(mPage.getImagePath())), mPageView);
             }
@@ -272,6 +276,10 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home: {
+                NavUtils.navigateUpFromSameTask(mContext);
+                return true;
+            }
             case R.id.play: {
                 Intent intent = new Intent(mContext, PlayActivity.class);
                 intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, mPage.getProjectId());

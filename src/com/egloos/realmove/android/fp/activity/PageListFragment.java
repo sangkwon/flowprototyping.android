@@ -35,6 +35,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -194,6 +196,10 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
             return mContentView;
         }
 
+        if (mMode == Mode.NORMAL) {
+            getSherlockActivity().getActionBar().setHomeButtonEnabled(true);
+        }
+
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -237,7 +243,9 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
             }
         }.start();
 
-        getSherlockActivity().getActionBar().setTitle(mProject.getSubject());
+        if (mMode == Mode.NORMAL) {
+            getSherlockActivity().getActionBar().setTitle(mProject.getSubject());
+        }
     }
 
     private static void storeWorkingProject(Context context, int id) {
@@ -284,13 +292,17 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-//            case android.R.id.home: {
-//                Intent intent = new Intent(mContext, ProjectListActivity.class);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                startActivity(intent);
-//                return true;
-//            }
-
+            case android.R.id.home: {
+                Intent upIntent = NavUtils.getParentActivityIntent(mContext);
+                if (NavUtils.shouldUpRecreateTask(mContext, upIntent)) {
+                    TaskStackBuilder.create(mContext)
+                            .addNextIntentWithParentStack(upIntent)
+                            .startActivities();
+                } else {
+                    NavUtils.navigateUpTo(mContext, upIntent);
+                }
+                return true;
+            }
             case R.id.gallery: {
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
