@@ -25,7 +25,7 @@
         </activity>
         <activity
             android:name=".activity.PageListActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:parentActivityName="com.egloos.realmove.android.fp.activity.ProjectListActivity"
             android:uiOptions="splitActionBarWhenNarrow" >
             <meta-data
