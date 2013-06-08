@@ -14,13 +14,13 @@ import android.os.Handler;
 public class ProjectHolder {
 
     private Project mProject;
-    private ProjectHolder instance;
+    private static ProjectHolder instance;
 
     private ProjectHolder() {
         // for singleton
     }
 
-    public ProjectHolder getInstance() {
+    public static ProjectHolder getInstance() {
         if (instance == null) {
             synchronized (ProjectHolder.class) {
                 instance = new ProjectHolder();
@@ -29,11 +29,7 @@ public class ProjectHolder {
         return instance;
     }
 
-    public void load(final Context context, final int projectId, final Callback callback) {
-        if (mProject != null && mProject.getId() == projectId) {
-            invokeCallback(callback, mProject);
-        }
-
+    public void loadForce(final Context context, final int projectId, final Callback callback) {
         new LoadProjectTask(context, new LoadProjectTask.Callback() {
             public void onLoad(Project project) {
                 mProject = project;
@@ -42,7 +38,15 @@ public class ProjectHolder {
         }).execute(projectId);
     }
 
-    public void invokeCallback(final Callback callback, final Project project) {
+    public void load(final Context context, final int projectId, final Callback callback) {
+        if (mProject != null && mProject.getId() == projectId) {
+            invokeCallback(callback, mProject);
+        }
+
+        loadForce(context, projectId, callback);
+    }
+
+    private void invokeCallback(final Callback callback, final Project project) {
         if (callback != null) {
             new Handler().post(new Runnable() {
                 public void run() {

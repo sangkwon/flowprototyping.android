@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+@Deprecated
 public class LoadPageTask extends AsyncTask<Integer, Void, Page> {
 
     private static final String TAG = LoadPageTask.class.getSimpleName();
@@ -29,7 +30,7 @@ public class LoadPageTask extends AsyncTask<Integer, Void, Page> {
 
     @Override
     protected void onPreExecute() {
-        //mProgressDialog = LoadingDialog.show(mContext);
+        // mProgressDialog = LoadingDialog.show(mContext);
         super.onPreExecute();
     }
 

@@ -6,6 +6,7 @@ import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.LoadProjectTask;
+import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
 import com.egloos.realmove.android.fp.view.LinkImageEditView;
@@ -85,8 +86,7 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback {
     }
 
     private void load(int projectId) {
-        new LoadProjectTask(mContext, new LoadProjectTask.Callback() {
-            @Override
+        ProjectHolder.getInstance().load(mContext, projectId, new ProjectHolder.Callback() {
             public void onLoad(Project project) {
                 if (project == null) {
                     Toast.makeText(getActivity(), R.string.error_on_loading_project,
@@ -98,7 +98,7 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback {
                 mProject = project;
                 displayPage(getArguments().getInt(PageListFragment.EXTRA_SELECTED_PAGE_ID));
             }
-        }).execute(projectId);
+        });
     }
 
     protected void displayPage(int pageId) {

@@ -9,8 +9,7 @@ import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.DBAdapter;
-import com.egloos.realmove.android.fp.db.LoadProjectTask;
-import com.egloos.realmove.android.fp.db.LoadProjectTask.Callback;
+import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
@@ -51,7 +50,7 @@ import java.util.Date;
 import java.util.List;
 
 public class PageListFragment extends BaseFragment implements OnItemClickListener,
-        OnItemLongClickListener, Callback {
+        OnItemLongClickListener, ProjectHolder.Callback {
 
     public static final String TAG = PageListFragment.class.getSimpleName();
     public static final String TAG_DIALOG = "DIALOG_" + PageListFragment.class.getSimpleName();
@@ -106,7 +105,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        setHasOptionsMenu((mMode == Mode.NORMAL));
 
         ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(getActivity(),
                 "page_list");
@@ -214,8 +213,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     }
 
     private void load(int projectId) {
-        LoadProjectTask mLoadTask = new LoadProjectTask(mContext, this);
-        mLoadTask.execute(projectId);
+        ProjectHolder.getInstance().load(mContext, projectId, this);
     }
 
     public void onLoad(Project tmpProj) {
@@ -360,6 +358,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
                 }
                 case REQ_CODE_PAGE_EDIT: {
                     load(mProject.getId());
+                    // TODO 반영하기
                     break;
                 }
             }
