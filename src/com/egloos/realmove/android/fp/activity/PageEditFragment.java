@@ -9,7 +9,6 @@ import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.DBAdapter;
-import com.egloos.realmove.android.fp.db.LoadPageTask;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
@@ -21,7 +20,7 @@ import com.example.android.bitmapfun.util.ImageFetcher;
 import com.example.android.bitmapfun.util.ImageWorker;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -148,7 +147,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
     }
 
     @Override
-    public void onLoadImage(boolean success, final ImageView pageView, final Bitmap bitmap) {
+    public void onLoadImage(boolean success, final ImageView pageView, final BitmapDrawable bd) {
         if (success) {
             ArrayList<Link> links = mPage.getLinks();
             if (links == null) {

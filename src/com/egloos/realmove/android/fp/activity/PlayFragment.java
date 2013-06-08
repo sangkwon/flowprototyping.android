@@ -5,17 +5,15 @@ import com.actionbarsherlock.app.ActionBar;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
-import com.egloos.realmove.android.fp.db.LoadProjectTask;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
-import com.egloos.realmove.android.fp.view.LinkImageEditView;
 import com.egloos.realmove.android.fp.view.LinkImageView;
 import com.example.android.bitmapfun.util.ImageCache;
 import com.example.android.bitmapfun.util.ImageFetcher;
 import com.example.android.bitmapfun.util.ImageWorker;
 
-import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -112,7 +110,7 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback {
     }
 
     @Override
-    public void onLoadImage(boolean success, ImageView imageView, Bitmap bitmap) {
+    public void onLoadImage(boolean success, ImageView imageView, final BitmapDrawable bd) {
         if (!success) {
             // TODO what?
             return;

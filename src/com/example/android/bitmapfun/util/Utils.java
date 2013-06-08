@@ -24,8 +24,24 @@ import android.os.StrictMode;
  * Class containing some static utility methods.
  */
 public class Utils {
-    private Utils() {
-    };
+    private Utils() {};
+
+    @TargetApi(11)
+    public static void enableStrictMode() {
+        if (Utils.hasGingerbread()) {
+            StrictMode.ThreadPolicy.Builder threadPolicyBuilder =
+                    new StrictMode.ThreadPolicy.Builder()
+                            .detectAll()
+                            .penaltyLog();
+            StrictMode.VmPolicy.Builder vmPolicyBuilder =
+                    new StrictMode.VmPolicy.Builder()
+                            .detectAll()
+                            .penaltyLog();
+
+            StrictMode.setThreadPolicy(threadPolicyBuilder.build());
+            StrictMode.setVmPolicy(vmPolicyBuilder.build());
+        }
+    }
 
     public static boolean hasFroyo() {
         // Can use static final constants like FROYO, declared in later versions

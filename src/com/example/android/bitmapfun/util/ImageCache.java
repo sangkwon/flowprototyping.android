@@ -17,29 +17,39 @@
 package com.example.android.bitmapfun.util;
 
 import com.egloos.realmove.android.fp.BuildConfig;
-import com.egloos.realmove.android.fp.common.FpLog;
 
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.util.LruCache;
+import android.util.Log;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.SoftReference;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
- * This class holds our bitmap caches (memory and disk).
+ * This class handles disk and memory caching of bitmaps in conjunction with the
+ * {@link ImageWorker} class and its subclasses. Use
+ * {@link ImageCache#getInstance(FragmentManager, ImageCacheParams)} to get an instance of this
+ * class, although usually a cache should be added directly to an {@link ImageWorker} by calling
+ * {@link ImageWorker#addImageCache(FragmentManager, ImageCacheParams)}.
  */
 public class ImageCache {
     private static final String TAG = "ImageCache";
@@ -58,44 +68,38 @@ public class ImageCache {
     // Constants to easily toggle various caches
     private static final boolean DEFAULT_MEM_CACHE_ENABLED = true;
     private static final boolean DEFAULT_DISK_CACHE_ENABLED = true;
-    private static final boolean DEFAULT_CLEAR_DISK_CACHE_ON_START = false;
     private static final boolean DEFAULT_INIT_DISK_CACHE_ON_CREATE = false;
 
     private DiskLruCache mDiskLruCache;
-    private LruCache<String, Bitmap> mMemoryCache;
+    private LruCache<String, BitmapDrawable> mMemoryCache;
     private ImageCacheParams mCacheParams;
     private final Object mDiskCacheLock = new Object();
     private boolean mDiskCacheStarting = true;
 
+    private HashSet<SoftReference<Bitmap>> mReusableBitmaps;
+
     /**
-     * Creating a new ImageCache object using the specified parameters.
-     * 
+     * Create a new ImageCache object using the specified parameters. This should not be
+     * called directly by other classes, instead use
+     * {@link ImageCache#getInstance(FragmentManager, ImageCacheParams)} to fetch an ImageCache
+     * instance.
+     *
      * @param cacheParams The cache parameters to use to initialize the cache
      */
-    public ImageCache(ImageCacheParams cacheParams) {
+    private ImageCache(ImageCacheParams cacheParams) {
         init(cacheParams);
     }
 
     /**
-     * Creating a new ImageCache object using the default parameters.
-     * 
-     * @param context The context to use
-     * @param uniqueName A unique name that will be appended to the cache directory
-     */
-    public ImageCache(Context context, String uniqueName) {
-        init(new ImageCacheParams(context, uniqueName));
-    }
-
-    /**
-     * Find and return an existing ImageCache stored in a {@link RetainFragment}, if not found a new
-     * one is created using the supplied params and saved to a {@link RetainFragment}.
-     * 
+     * Return an {@link ImageCache} instance. A {@link RetainFragment} is used to retain the
+     * ImageCache object across configuration changes such as a change in device orientation.
+     *
      * @param fragmentManager The fragment manager to use when dealing with the retained fragment.
-     * @param cacheParams The cache parameters to use if creating the ImageCache
+     * @param cacheParams The cache parameters to use if the ImageCache needs instantiation.
      * @return An existing retained ImageCache object or a new one if one did not exist
      */
-    public static ImageCache findOrCreateCache(FragmentManager fragmentManager,
-            ImageCacheParams cacheParams) {
+    public static ImageCache getInstance(
+            FragmentManager fragmentManager, ImageCacheParams cacheParams) {
 
         // Search for, or create an instance of the non-UI RetainFragment
         final RetainFragment mRetainFragment = findOrCreateRetainFragment(fragmentManager);
@@ -114,7 +118,7 @@ public class ImageCache {
 
     /**
      * Initialize the cache, providing all parameters.
-     * 
+     *
      * @param cacheParams The cache parameters to initialize the cache
      */
     private void init(ImageCacheParams cacheParams) {
@@ -123,16 +127,44 @@ public class ImageCache {
         // Set up memory cache
         if (mCacheParams.memoryCacheEnabled) {
             if (BuildConfig.DEBUG) {
-                FpLog.d(TAG, "Memory cache created (size = " + mCacheParams.memCacheSize + ")");
+                Log.d(TAG, "Memory cache created (size = " + mCacheParams.memCacheSize + ")");
             }
-            mMemoryCache = new LruCache<String, Bitmap>(mCacheParams.memCacheSize) {
+
+            // If we're running on Honeycomb or newer, then
+            if (Utils.hasHoneycomb()) {
+                mReusableBitmaps = new HashSet<SoftReference<Bitmap>>();
+            }
+
+            mMemoryCache = new LruCache<String, BitmapDrawable>(mCacheParams.memCacheSize) {
+
                 /**
-                 * Measure item size in kilobytes rather than units which is more practical for a
-                 * bitmap cache
+                 * Notify the removed entry that is no longer being cached
                  */
                 @Override
-                protected int sizeOf(String key, Bitmap bitmap) {
-                    final int bitmapSize = getBitmapSize(bitmap) / 1024;
+                protected void entryRemoved(boolean evicted, String key,
+                        BitmapDrawable oldValue, BitmapDrawable newValue) {
+                    if (RecyclingBitmapDrawable.class.isInstance(oldValue)) {
+                        // The removed entry is a recycling drawable, so notify it 
+                        // that it has been removed from the memory cache
+                        ((RecyclingBitmapDrawable) oldValue).setIsCached(false);
+                    } else {
+                        // The removed entry is a standard BitmapDrawable
+
+                        if (Utils.hasHoneycomb()) {
+                            // We're running on Honeycomb or later, so add the bitmap
+                            // to a SoftRefrence set for possible use with inBitmap later
+                            mReusableBitmaps.add(new SoftReference<Bitmap>(oldValue.getBitmap()));
+                        }
+                    }
+                }
+
+                /**
+                 * Measure item size in kilobytes rather than units which is more practical
+                 * for a bitmap cache
+                 */
+                @Override
+                protected int sizeOf(String key, BitmapDrawable value) {
+                    final int bitmapSize = getBitmapSize(value) / 1024;
                     return bitmapSize == 0 ? 1 : bitmapSize;
                 }
             };
@@ -147,10 +179,10 @@ public class ImageCache {
     }
 
     /**
-     * Initializes the disk cache. Note that this includes disk access so this should not be
-     * executed on the main/UI thread. By default an ImageCache does not initialize the disk cache
-     * when it is created, instead you should call initDiskCache() to initialize it on a background
-     * thread.
+     * Initializes the disk cache.  Note that this includes disk access so this should not be
+     * executed on the main/UI thread. By default an ImageCache does not initialize the disk
+     * cache when it is created, instead you should call initDiskCache() to initialize it on a
+     * background thread.
      */
     public void initDiskCache() {
         // Set up disk cache
@@ -163,14 +195,14 @@ public class ImageCache {
                     }
                     if (getUsableSpace(diskCacheDir) > mCacheParams.diskCacheSize) {
                         try {
-                            mDiskLruCache = DiskLruCache.open(diskCacheDir, 1, 1,
-                                    mCacheParams.diskCacheSize);
+                            mDiskLruCache = DiskLruCache.open(
+                                    diskCacheDir, 1, 1, mCacheParams.diskCacheSize);
                             if (BuildConfig.DEBUG) {
-                                FpLog.d(TAG, "Disk cache initialized", diskCacheDir);
+                                Log.d(TAG, "Disk cache initialized");
                             }
                         } catch (final IOException e) {
                             mCacheParams.diskCacheDir = null;
-                            FpLog.e(TAG, "initDiskCache - " + e);
+                            Log.e(TAG, "initDiskCache - " + e);
                         }
                     }
                 }
@@ -182,18 +214,22 @@ public class ImageCache {
 
     /**
      * Adds a bitmap to both memory and disk cache.
-     * 
      * @param data Unique identifier for the bitmap to store
-     * @param bitmap The bitmap to store
+     * @param value The bitmap drawable to store
      */
-    public void addBitmapToCache(String data, Bitmap bitmap) {
-        if (data == null || bitmap == null) {
+    public void addBitmapToCache(String data, BitmapDrawable value) {
+        if (data == null || value == null) {
             return;
         }
 
         // Add to memory cache
-        if (mMemoryCache != null && mMemoryCache.get(data) == null) {
-            mMemoryCache.put(data, bitmap);
+        if (mMemoryCache != null) {
+            if (RecyclingBitmapDrawable.class.isInstance(value)) {
+                // The removed entry is a recycling drawable, so notify it 
+                // that it has been added into the memory cache
+                ((RecyclingBitmapDrawable) value).setIsCached(true);
+            }
+            mMemoryCache.put(data, value);
         }
 
         synchronized (mDiskCacheLock) {
@@ -207,8 +243,8 @@ public class ImageCache {
                         final DiskLruCache.Editor editor = mDiskLruCache.edit(key);
                         if (editor != null) {
                             out = editor.newOutputStream(DISK_CACHE_INDEX);
-                            bitmap.compress(mCacheParams.compressFormat,
-                                    mCacheParams.compressQuality, out);
+                            value.getBitmap().compress(
+                                    mCacheParams.compressFormat, mCacheParams.compressQuality, out);
                             editor.commit();
                             out.close();
                         }
@@ -216,16 +252,15 @@ public class ImageCache {
                         snapshot.getInputStream(DISK_CACHE_INDEX).close();
                     }
                 } catch (final IOException e) {
-                    FpLog.e(TAG, e);
+                    Log.e(TAG, "addBitmapToCache - " + e);
                 } catch (Exception e) {
-                    FpLog.e(TAG, e);
+                    Log.e(TAG, "addBitmapToCache - " + e);
                 } finally {
                     try {
                         if (out != null) {
                             out.close();
                         }
-                    } catch (IOException e) {
-                    }
+                    } catch (IOException e) {}
                 }
             }
         }
@@ -233,74 +268,114 @@ public class ImageCache {
 
     /**
      * Get from memory cache.
-     * 
+     *
      * @param data Unique identifier for which item to get
-     * @return The bitmap if found in cache, null otherwise
+     * @return The bitmap drawable if found in cache, null otherwise
      */
-    public Bitmap getBitmapFromMemCache(String data) {
+    public BitmapDrawable getBitmapFromMemCache(String data) {
+        BitmapDrawable memValue = null;
+
         if (mMemoryCache != null) {
-            final Bitmap memBitmap = mMemoryCache.get(data);
-            if (memBitmap != null) {
-                if (BuildConfig.DEBUG) {
-                    //Logger.d(TAG, "getBitmapFromMemCache() hit", data);
-                }
-                return memBitmap;
-            }
+            memValue = mMemoryCache.get(data);
         }
-        return null;
+
+        if (BuildConfig.DEBUG && memValue != null) {
+            Log.d(TAG, "Memory cache hit");
+        }
+
+        return memValue;
     }
 
     /**
      * Get from disk cache.
-     * 
+     *
      * @param data Unique identifier for which item to get
      * @return The bitmap if found in cache, null otherwise
      */
     public Bitmap getBitmapFromDiskCache(String data) {
         final String key = hashKeyForDisk(data);
+        Bitmap bitmap = null;
+
         synchronized (mDiskCacheLock) {
             while (mDiskCacheStarting) {
                 try {
                     mDiskCacheLock.wait();
-                } catch (InterruptedException e) {
-                }
+                } catch (InterruptedException e) {}
             }
             if (mDiskLruCache != null) {
                 InputStream inputStream = null;
                 try {
                     final DiskLruCache.Snapshot snapshot = mDiskLruCache.get(key);
                     if (snapshot != null) {
-                        
+                        if (BuildConfig.DEBUG) {
+                            Log.d(TAG, "Disk cache hit");
+                        }
                         inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
                         if (inputStream != null) {
-                            final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            return bitmap;
+                            FileDescriptor fd = ((FileInputStream) inputStream).getFD();
+
+                            // Decode bitmap, but we don't want to sample so give
+                            // MAX_VALUE as the target dimensions
+                            bitmap = ImageResizer.decodeSampledBitmapFromDescriptor(
+                                    fd, Integer.MAX_VALUE, Integer.MAX_VALUE, this);
                         }
                     }
                 } catch (final IOException e) {
-                    FpLog.e(TAG, e);
+                    Log.e(TAG, "getBitmapFromDiskCache - " + e);
                 } finally {
                     try {
                         if (inputStream != null) {
                             inputStream.close();
                         }
-                    } catch (IOException e) {
-                    }
+                    } catch (IOException e) {}
                 }
             }
-            return null;
+            return bitmap;
         }
     }
 
     /**
-     * Clears both the memory and disk cache associated with this ImageCache object. Note that this
-     * includes disk access so this should not be executed on the main/UI thread.
+     * @param options - BitmapFactory.Options with out* options populated
+     * @return Bitmap that case be used for inBitmap
+     */
+    protected Bitmap getBitmapFromReusableSet(BitmapFactory.Options options) {
+        Bitmap bitmap = null;
+
+        if (mReusableBitmaps != null && !mReusableBitmaps.isEmpty()) {
+            final Iterator<SoftReference<Bitmap>> iterator = mReusableBitmaps.iterator();
+            Bitmap item;
+
+            while (iterator.hasNext()) {
+                item = iterator.next().get();
+
+                if (null != item && item.isMutable()) {
+                    // Check to see it the item can be used for inBitmap
+                    if (canUseForInBitmap(item, options)) {
+                        bitmap = item;
+
+                        // Remove from reusable set so it can't be used again
+                        iterator.remove();
+                        break;
+                    }
+                } else {
+                    // Remove from the set if the reference has been cleared.
+                    iterator.remove();
+                }
+            }
+        }
+
+        return bitmap;
+    }
+
+    /**
+     * Clears both the memory and disk cache associated with this ImageCache object. Note that
+     * this includes disk access so this should not be executed on the main/UI thread.
      */
     public void clearCache() {
         if (mMemoryCache != null) {
             mMemoryCache.evictAll();
             if (BuildConfig.DEBUG) {
-                FpLog.d(TAG, "Memory cache cleared");
+                Log.d(TAG, "Memory cache cleared");
             }
         }
 
@@ -310,10 +385,10 @@ public class ImageCache {
                 try {
                     mDiskLruCache.delete();
                     if (BuildConfig.DEBUG) {
-                        FpLog.d(TAG, "Disk cache cleared");
+                        Log.d(TAG, "Disk cache cleared");
                     }
                 } catch (IOException e) {
-                    FpLog.e(TAG, "clearCache - " + e);
+                    Log.e(TAG, "clearCache - " + e);
                 }
                 mDiskLruCache = null;
                 initDiskCache();
@@ -322,8 +397,8 @@ public class ImageCache {
     }
 
     /**
-     * Flushes the disk cache associated with this ImageCache object. Note that this includes disk
-     * access so this should not be executed on the main/UI thread.
+     * Flushes the disk cache associated with this ImageCache object. Note that this includes
+     * disk access so this should not be executed on the main/UI thread.
      */
     public void flush() {
         synchronized (mDiskCacheLock) {
@@ -331,18 +406,18 @@ public class ImageCache {
                 try {
                     mDiskLruCache.flush();
                     if (BuildConfig.DEBUG) {
-                        FpLog.d(TAG, "Disk cache flushed");
+                        Log.d(TAG, "Disk cache flushed");
                     }
                 } catch (IOException e) {
-                    FpLog.e(TAG, "flush - " + e);
+                    Log.e(TAG, "flush - " + e);
                 }
             }
         }
     }
 
     /**
-     * Closes the disk cache associated with this ImageCache object. Note that this includes disk
-     * access so this should not be executed on the main/UI thread.
+     * Closes the disk cache associated with this ImageCache object. Note that this includes
+     * disk access so this should not be executed on the main/UI thread.
      */
     public void close() {
         synchronized (mDiskCacheLock) {
@@ -352,11 +427,11 @@ public class ImageCache {
                         mDiskLruCache.close();
                         mDiskLruCache = null;
                         if (BuildConfig.DEBUG) {
-                            FpLog.d(TAG, "Disk cache closed");
+                            Log.d(TAG, "Disk cache closed");
                         }
                     }
                 } catch (IOException e) {
-                    FpLog.e(TAG, "close - " + e);
+                    Log.e(TAG, "close - " + e);
                 }
             }
         }
@@ -373,26 +448,32 @@ public class ImageCache {
         public int compressQuality = DEFAULT_COMPRESS_QUALITY;
         public boolean memoryCacheEnabled = DEFAULT_MEM_CACHE_ENABLED;
         public boolean diskCacheEnabled = DEFAULT_DISK_CACHE_ENABLED;
-        public boolean clearDiskCacheOnStart = DEFAULT_CLEAR_DISK_CACHE_ON_START;
         public boolean initDiskCacheOnCreate = DEFAULT_INIT_DISK_CACHE_ON_CREATE;
 
-        public ImageCacheParams(Context context, String uniqueName) {
-            diskCacheDir = getDiskCacheDir(context, uniqueName);
-        }
-
-        public ImageCacheParams(File diskCacheDir) {
-            this.diskCacheDir = diskCacheDir;
+        /**
+         * Create a set of image cache parameters that can be provided to
+         * {@link ImageCache#getInstance(FragmentManager, ImageCacheParams)} or
+         * {@link ImageWorker#addImageCache(FragmentManager, ImageCacheParams)}.
+         * @param context A context to use.
+         * @param diskCacheDirectoryName A unique subdirectory name that will be appended to the
+         *                               application cache directory. Usually "cache" or "images"
+         *                               is sufficient.
+         */
+        public ImageCacheParams(Context context, String diskCacheDirectoryName) {
+            diskCacheDir = getDiskCacheDir(context, diskCacheDirectoryName);
         }
 
         /**
-         * Sets the memory cache size based on a percentage of the max available VM memory. Eg.
-         * setting percent to 0.2 would set the memory cache to one fifth of the available memory.
-         * Throws {@link IllegalArgumentException} if percent is < 0.05 or > .8. memCacheSize is
-         * stored in kilobytes instead of bytes as this will eventually be passed to construct a
-         * LruCache which takes an int in its constructor. This value should be chosen carefully
-         * based on a number of factors Refer to the corresponding Android Training class for more
-         * discussion: http://developer.android.com/training/displaying-bitmaps/
-         * 
+         * Sets the memory cache size based on a percentage of the max available VM memory.
+         * Eg. setting percent to 0.2 would set the memory cache to one fifth of the available
+         * memory. Throws {@link IllegalArgumentException} if percent is < 0.05 or > .8.
+         * memCacheSize is stored in kilobytes instead of bytes as this will eventually be passed
+         * to construct a LruCache which takes an int in its constructor.
+         *
+         * This value should be chosen carefully based on a number of factors
+         * Refer to the corresponding Android Training class for more discussion:
+         * http://developer.android.com/training/displaying-bitmaps/
+         *
          * @param percent Percent of available app memory to use to size memory cache
          */
         public void setMemCacheSizePercent(float percent) {
@@ -405,8 +486,22 @@ public class ImageCache {
     }
 
     /**
+     * @param candidate - Bitmap to check
+     * @param targetOptions - Options that have the out* value populated
+     * @return true if <code>candidate</code> can be used for inBitmap re-use with
+     *      <code>targetOptions</code>
+     */
+    private static boolean canUseForInBitmap(
+            Bitmap candidate, BitmapFactory.Options targetOptions) {
+        int width = targetOptions.outWidth / targetOptions.inSampleSize;
+        int height = targetOptions.outHeight / targetOptions.inSampleSize;
+
+        return candidate.getWidth() == width && candidate.getHeight() == height;
+    }
+
+    /**
      * Get a usable cache directory (external if available, internal otherwise).
-     * 
+     *
      * @param context The context to use
      * @param uniqueName A unique directory name to append to the cache dir
      * @return The cache dir
@@ -414,15 +509,17 @@ public class ImageCache {
     public static File getDiskCacheDir(Context context, String uniqueName) {
         // Check if media is mounted or storage is built-in, if so, try and use external cache dir
         // otherwise use internal cache dir
-        final String cachePath = Environment.MEDIA_MOUNTED.equals(Environment
-                .getExternalStorageState()) || !isExternalStorageRemovable() ? getExternalCacheDir(
-                context).getPath() : context.getCacheDir().getPath();
+        final String cachePath =
+                Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) ||
+                        !isExternalStorageRemovable() ? getExternalCacheDir(context).getPath() :
+                                context.getCacheDir().getPath();
+
         return new File(cachePath + File.separator + uniqueName);
     }
 
     /**
-     * A hashing method that changes a string (like a URL) into a hash suitable for using as a disk
-     * filename.
+     * A hashing method that changes a string (like a URL) into a hash suitable for using as a
+     * disk filename.
      */
     public static String hashKeyForDisk(String key) {
         String cacheKey;
@@ -433,7 +530,6 @@ public class ImageCache {
         } catch (NoSuchAlgorithmException e) {
             cacheKey = String.valueOf(key.hashCode());
         }
-        // Logger.e(TAG, "hashKeyForDisk()", key, "->", cacheKey );
         return cacheKey;
     }
 
@@ -451,13 +547,14 @@ public class ImageCache {
     }
 
     /**
-     * Get the size in bytes of a bitmap.
-     * 
-     * @param bitmap
+     * Get the size in bytes of a bitmap in a BitmapDrawable.
+     * @param value
      * @return size in bytes
      */
     @TargetApi(12)
-    public static int getBitmapSize(Bitmap bitmap) {
+    public static int getBitmapSize(BitmapDrawable value) {
+        Bitmap bitmap = value.getBitmap();
+
         if (Utils.hasHoneycombMR1()) {
             return bitmap.getByteCount();
         }
@@ -467,8 +564,9 @@ public class ImageCache {
 
     /**
      * Check if external storage is built-in or removable.
-     * 
-     * @return True if external storage is removable (like an SD card), false otherwise.
+     *
+     * @return True if external storage is removable (like an SD card), false
+     *         otherwise.
      */
     @TargetApi(9)
     public static boolean isExternalStorageRemovable() {
@@ -480,7 +578,7 @@ public class ImageCache {
 
     /**
      * Get the external app cache directory.
-     * 
+     *
      * @param context The context to use
      * @return The external cache dir
      */
@@ -497,7 +595,7 @@ public class ImageCache {
 
     /**
      * Check how much usable space is available at a given path.
-     * 
+     *
      * @param path The path to check
      * @return The space available in bytes
      */
@@ -511,13 +609,14 @@ public class ImageCache {
     }
 
     /**
-     * Locate an existing instance of this Fragment or if not found, create and add it using
-     * FragmentManager.
-     * 
+     * Locate an existing instance of this Fragment or if not found, create and
+     * add it using FragmentManager.
+     *
      * @param fm The FragmentManager manager to use.
-     * @return The existing instance of the Fragment or the new instance if just created.
+     * @return The existing instance of the Fragment or the new instance if just
+     *         created.
      */
-    public static RetainFragment findOrCreateRetainFragment(FragmentManager fm) {
+    private static RetainFragment findOrCreateRetainFragment(FragmentManager fm) {
         // Check to see if we have retained the worker fragment.
         RetainFragment mRetainFragment = (RetainFragment) fm.findFragmentByTag(TAG);
 
@@ -540,8 +639,7 @@ public class ImageCache {
         /**
          * Empty constructor as per the Fragment documentation
          */
-        public RetainFragment() {
-        }
+        public RetainFragment() {}
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -553,7 +651,7 @@ public class ImageCache {
 
         /**
          * Store a single object in this Fragment.
-         * 
+         *
          * @param object The object to store
          */
         public void setObject(Object object) {
@@ -562,7 +660,7 @@ public class ImageCache {
 
         /**
          * Get the stored object.
-         * 
+         *
          * @return The stored object
          */
         public Object getObject() {
