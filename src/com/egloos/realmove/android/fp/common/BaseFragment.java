@@ -16,27 +16,27 @@ public class BaseFragment extends SherlockDialogFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+//        FpLog.d(this.getClass().getSimpleName(), "onCreate() called");
         super.onCreate(savedInstanceState);
         mContext = getActivity();
-        FpLog.d(this.getClass().getSimpleName(), "onCreate() called");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        FpLog.d(this.getClass().getSimpleName(), "onCreateView() called");
+//        FpLog.d(this.getClass().getSimpleName(), "onCreateView() called");
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        FpLog.d(this.getClass().getSimpleName(), "onCreateDialog() called");
+//        FpLog.d(this.getClass().getSimpleName(), "onCreateDialog() called");
         return super.onCreateDialog(savedInstanceState);
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
+//        FpLog.d(this.getClass().getSimpleName(), "onActivityCreated() called");
         super.onActivityCreated(savedInstanceState);
-        FpLog.d(this.getClass().getSimpleName(), "onActivityCreated() called");
     }
 
     protected void finishActivity() {
@@ -49,32 +49,32 @@ public class BaseFragment extends SherlockDialogFragment {
 
     @Override
     public void onDetach() {
+//        FpLog.d(this.getClass().getSimpleName(), "onDetach() called");
         super.onDetach();
-        FpLog.d(this.getClass().getSimpleName(), "onDetach() called");
     }
 
     @Override
     public void onDestroy() {
+//        FpLog.d(this.getClass().getSimpleName(), "onDestroy() called");
         super.onDestroy();
         mContext = null;
-        FpLog.d(this.getClass().getSimpleName(), "onDestroy() called");
     }
 
     @Override
     public void onDestroyView() {
+//        FpLog.d(this.getClass().getSimpleName(), "onDestroyView() called");
         super.onDestroyView();
-        FpLog.d(this.getClass().getSimpleName(), "onDestroyView() called");
     }
 
     @Override
     public void onPause() {
-        FpLog.d(this.getClass().getSimpleName(), "onPause() called");
+//        FpLog.d(this.getClass().getSimpleName(), "onPause() called");
         super.onPause();
     }
 
     @Override
     public void onResume() {
-        FpLog.d(this.getClass().getSimpleName(), "onResume() called");
+//        FpLog.d(this.getClass().getSimpleName(), "onResume() called");
         super.onResume();
     }
 
