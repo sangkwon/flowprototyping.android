@@ -274,12 +274,9 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home: {
-                NavUtils.navigateUpFromSameTask(mContext);
-                return true;
-            }
             case R.id.play: {
                 Intent intent = new Intent(mContext, PlayActivity.class);
                 intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, mPage.getProjectId());

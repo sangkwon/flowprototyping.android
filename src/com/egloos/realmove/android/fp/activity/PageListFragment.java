@@ -292,17 +292,6 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home: {
-                Intent upIntent = NavUtils.getParentActivityIntent(mContext);
-                if (NavUtils.shouldUpRecreateTask(mContext, upIntent)) {
-                    TaskStackBuilder.create(mContext)
-                            .addNextIntentWithParentStack(upIntent)
-                            .startActivities();
-                } else {
-                    NavUtils.navigateUpTo(mContext, upIntent);
-                }
-                return true;
-            }
             case R.id.gallery: {
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
