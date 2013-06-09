@@ -115,7 +115,11 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback,
                     return;
                 }
                 mProject = project;
-                displayPage(getArguments().getInt(PageListFragment.EXTRA_SELECTED_PAGE_ID));
+                int pageId = getArguments().getInt(PageListFragment.EXTRA_SELECTED_PAGE_ID);
+                if (pageId <= 0) {
+                    pageId = mProject.get(0).getId();
+                }
+                displayPage(pageId);
             }
         });
     }

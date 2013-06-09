@@ -3,10 +3,12 @@ package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
+import com.egloos.realmove.android.fp.common.FpLog;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.view.MotionEvent;
 import android.widget.Toast;
 
 public class PlayActivity extends BaseFragmentActivity {
@@ -20,7 +22,7 @@ public class PlayActivity extends BaseFragmentActivity {
         super.onCreate(savedInstanceState);
 
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        
+
         int projectId = getIntent().getIntExtra(PageListFragment.EXTRA_PROJECT_ID, -1);
         if (projectId == -1) {
             Toast.makeText(this, R.string.wrong_project, Toast.LENGTH_SHORT).show();
@@ -36,6 +38,12 @@ public class PlayActivity extends BaseFragmentActivity {
             ft.add(android.R.id.content, mFragment, TAG);
             ft.commit();
         }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        FpLog.d(TAG, "dispatchTouchEvent()", event.getAction(), event.getPointerCount());
+        return super.dispatchTouchEvent(event);
     }
 
 }

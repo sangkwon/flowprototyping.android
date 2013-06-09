@@ -14,6 +14,7 @@
 
     <TextView
         android:id="@+id/subject"
+        style="@android:style/TextAppearance.DeviceDefault.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/thumb"
@@ -22,11 +23,35 @@
 
     <TextView
         android:id="@+id/created"
+        style="@android:style/TextAppearance.DeviceDefault.Medium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/subject"
         android:layout_below="@id/subject"
         android:hint="created"
         android:singleLine="true" />
+
+    <LinearLayout
+        android:id="@+id/button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/subject"
+        android:layout_below="@id/created"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/menu_play" />
+
+        <Button
+            android:id="@+id/edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/menu_edit" />
+    </LinearLayout>
 
 </RelativeLayout>
