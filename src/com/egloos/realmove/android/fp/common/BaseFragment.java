@@ -85,26 +85,5 @@ public class BaseFragment extends SherlockDialogFragment {
         super.onResume();
     }
 
-    protected void NavigateUp() {
-        Intent upIntent = NavUtils.getParentActivityIntent(mContext);
-        if (NavUtils.shouldUpRecreateTask(mContext, upIntent)) {
-            TaskStackBuilder.create(mContext)
-                    .addNextIntentWithParentStack(upIntent)
-                    .startActivities();
-        } else {
-            NavUtils.navigateUpTo(mContext, upIntent);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                NavigateUp();
-                return true;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
+    
 }

@@ -72,7 +72,7 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback,
         final View view = inflater.inflate(R.layout.play_fragment, container, false);
         mPageView = (LinkImageView) view.findViewById(R.id.page);
         mPageView.setOnLinkClickListener(this);
-        mPageView.setLinkShow(true);
+        mPageView.setLinkShow(false);
 
         prepareCache();
 

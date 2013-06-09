@@ -2,16 +2,19 @@
 package com.egloos.realmove.android.fp.common;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
 
 import android.app.Activity;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.view.KeyEvent;
 
 public class BaseFragmentActivity extends SherlockFragmentActivity {
 
-    protected Context mContext = null;
+    protected BaseFragmentActivity mContext = null;
     protected boolean mActivate = false;
 
     @Override
@@ -65,6 +68,43 @@ public class BaseFragmentActivity extends SherlockFragmentActivity {
     public void onCreateNavigateUpTaskStack(TaskStackBuilder builder) {
         FpLog.d(this.getClass().getSimpleName(), "onCreateNavigateUpTaskStack()");
         super.onCreateNavigateUpTaskStack(builder);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                navigateUp();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            navigateUp();
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
+    }
+
+    protected void navigateUp() {
+        FpLog.d(this.getClass().getSimpleName(), "navigateUp()");
+
+        Intent upIntent = NavUtils.getParentActivityIntent(mContext);
+        
+        if (upIntent == null)
+            return;
+        
+        if (NavUtils.shouldUpRecreateTask(mContext, upIntent)) {
+            TaskStackBuilder.create(mContext)
+                    .addNextIntentWithParentStack(upIntent)
+                    .startActivities();
+        } else {
+            NavUtils.navigateUpTo(mContext, upIntent);
+        }
     }
 
 }
