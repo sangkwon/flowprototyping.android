@@ -22,14 +22,15 @@
         android:background="?android:attr/selectableItemBackground"
         android:contentDescription="@string/menu_play"
         android:scaleType="centerInside"
-        android:src="@android:drawable/ic_menu_slideshow" />
+        android:src="@android:drawable/ic_media_play" />
 
     <View
         android:id="@+id/bar"
         android:layout_width="1dp"
-        android:layout_height="match_parent"
+        android:layout_height="60dp"
+        android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/play"
-        android:background="#ff0000" />
+        android:background="@drawable/dot_grey" />
 
     <LinearLayout
         android:layout_width="match_parent"
