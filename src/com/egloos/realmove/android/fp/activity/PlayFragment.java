@@ -151,11 +151,13 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback,
     }
 
     @Override
-    public boolean onClickLink(Link link) {
+    public boolean onLinkClicked(Link link) {
         FpLog.d(TAG, "onClickLink()", link);
         if (link != null) {
             int pageId = link.getTargetPageId();
             displayPage(pageId);
+        } else {
+            mPageView.blinkLink();
         }
         return false;
     }

@@ -7,14 +7,19 @@ import com.egloos.realmove.android.fp.model.RectPosition;
 import com.egloos.realmove.android.fp.util.Util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * 링크들을 주어진 width, height 에 맞게 화면에 표시해준다. page 이미지 위에 겹쳐쓸 예정.
@@ -51,6 +56,37 @@ public class LinkImageView extends ImageView {
         invalidate();
     }
 
+    enum BlinkState {
+        READY, BLINKING
+    }
+
+    private BlinkState mBlinkState = BlinkState.READY;
+    private Handler mHandler = new Handler();
+    private Runnable mBlinkStopper = new Runnable() {
+        public void run() {
+            stopBlinkLink();
+        }
+    };
+
+    /**
+     * 링크를 살짝 반짝거리게 한다.
+     */
+    public void blinkLink() {
+        if (mBlinkState == BlinkState.READY) {
+            mBlinkState = BlinkState.BLINKING;
+            mHandler.postDelayed(mBlinkStopper, 700);
+            invalidate();
+        }
+    }
+
+    public void stopBlinkLink() {
+        if (mBlinkState == BlinkState.BLINKING) {
+            mHandler.removeCallbacks(mBlinkStopper);
+            mBlinkState = BlinkState.READY;
+            invalidate();
+        }
+    }
+
     /** these for performance of onDraw() */
     Paint paint = new Paint();
     Rect rect = new Rect();
@@ -60,12 +96,23 @@ public class LinkImageView extends ImageView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (mLinkShow && mLinks != null) {
-            paint.setColor(0x8033b5e5);
+        if (mLinks != null) {
+            if (mLinkShow) {
+                paint.setColor(0x8033b5e5);
 
-            int len = mLinks.size();
-            for (int i = 0; i < len; i++) {
-                drawLink(canvas, paint, mLinks.get(i));
+                int len = mLinks.size();
+                for (int i = 0; i < len; i++) {
+                    drawLink(canvas, paint, mLinks.get(i));
+                }
+            } else {
+                if (mBlinkState == BlinkState.BLINKING) {
+                    paint.setColor(0x4033b5e5);
+
+                    int len = mLinks.size();
+                    for (int i = 0; i < len; i++) {
+                        drawLink(canvas, paint, mLinks.get(i));
+                    }
+                }
             }
         }
     }
@@ -105,7 +152,7 @@ public class LinkImageView extends ImageView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        //FpLog.d(TAG, "onTouchEvent", event.getAction());
+        // FpLog.d(TAG, "onTouchEvent", event.getAction());
         if (mListener != null) {
             Link link = getTouchedLink(event.getX(), event.getY());
             switch (event.getAction()) {
@@ -114,7 +161,7 @@ public class LinkImageView extends ImageView {
                     break;
                 case MotionEvent.ACTION_UP:
                     if (selected == link) {
-                        mListener.onClickLink(link);
+                        mListener.onLinkClicked(link);
                     }
                     selected = null;
                     break;
@@ -125,7 +172,25 @@ public class LinkImageView extends ImageView {
     }
 
     public interface OnLinkClickListener {
-        public boolean onClickLink(Link link);
+        public boolean onLinkClicked(Link link);
+    }
+
+    @Override
+    public void setImageResource(int resId) {
+        stopBlinkLink();
+        super.setImageResource(resId);
+    }
+
+    @Override
+    public void setImageDrawable(Drawable drawable) {
+        stopBlinkLink();
+        super.setImageDrawable(drawable);
+    }
+
+    @Override
+    public void setImageBitmap(Bitmap bm) {
+        stopBlinkLink();
+        super.setImageBitmap(bm);
     }
 
 }
