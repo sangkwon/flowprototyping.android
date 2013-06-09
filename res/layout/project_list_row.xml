@@ -18,7 +18,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/thumb"
-        android:hint="subject"
         android:singleLine="true" />
 
     <TextView
@@ -28,7 +27,6 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/subject"
         android:layout_below="@id/subject"
-        android:hint="created"
         android:singleLine="true" />
 
     <LinearLayout
@@ -44,6 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:drawableLeft="@android:drawable/ic_menu_slideshow"
             android:text="@string/menu_play" />
 
         <Button
@@ -51,6 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:drawableLeft="@android:drawable/ic_menu_edit"
             android:text="@string/menu_edit" />
     </LinearLayout>
 
