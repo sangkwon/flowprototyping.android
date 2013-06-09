@@ -26,5 +26,6 @@
     <string name="input_project_info">프로젝트 정보를 입력해주세요.</string>
     <string name="error_subject_empty">제목을 입력해주세요.</string>
     <string name="delete_unlink">연결되지 않은 링크 삭제</string>
+    <string name="subject">제목</string>
 
 </resources>

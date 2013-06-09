@@ -10,7 +10,7 @@
         android:layout_marginLeft="20dip"
         android:layout_marginRight="20dip"
         android:gravity="left"
-        android:text="Subject"
+        android:text="@string/subject"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <EditText

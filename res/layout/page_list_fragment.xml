@@ -6,5 +6,7 @@
     android:columnWidth="@dimen/page_thumbnail_size"
     android:horizontalSpacing="@dimen/page_thumbnail_spacing"
     android:numColumns="auto_fit"
+    android:paddingTop="@dimen/page_thumbnail_spacing"
+    android:paddingBottom="@dimen/page_thumbnail_spacing"
     android:stretchMode="columnWidth"
     android:verticalSpacing="@dimen/page_thumbnail_spacing" />

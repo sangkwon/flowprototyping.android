@@ -1,57 +1,63 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="0dip" >
+    android:orientation="horizontal"
+    android:padding="5dp" >
 
     <ImageView
         android:id="@+id/thumb"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@string/thumbnail"
         android:scaleType="centerCrop" />
 
-    <TextView
-        android:id="@+id/subject"
-        style="@android:style/TextAppearance.DeviceDefault.Large"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/thumb"
-        android:singleLine="true" />
-
-    <TextView
-        android:id="@+id/created"
-        style="@android:style/TextAppearance.DeviceDefault.Medium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/subject"
-        android:layout_below="@id/subject"
-        android:singleLine="true" />
-
     <LinearLayout
-        android:id="@+id/button_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/subject"
-        android:layout_below="@id/created"
-        android:orientation="horizontal" >
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="10dp"
+        android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/play"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/subject"
+            style="?android:attr/textAppearanceLarge"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableLeft="@android:drawable/ic_menu_slideshow"
-            android:text="@string/menu_play" />
+            android:singleLine="true" />
 
-        <Button
-            android:id="@+id/edit"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/created"
+            style="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableLeft="@android:drawable/ic_menu_edit"
-            android:text="@string/menu_edit" />
+            android:singleLine="true" />
+
+        <LinearLayout
+            android:id="@+id/button_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/play"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableLeft="@android:drawable/ic_menu_slideshow"
+                android:text="@string/menu_play" />
+
+            <Button
+                android:id="@+id/edit"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableLeft="@android:drawable/ic_menu_edit"
+                android:text="@string/menu_edit" />
+        </LinearLayout>
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

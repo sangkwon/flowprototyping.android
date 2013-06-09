@@ -26,5 +26,7 @@
     <string name="input_project_info">Input project info</string>
     <string name="error_subject_empty">Input subject</string>
     <string name="delete_unlink">Remove all link unlinked</string>
+    <string name="subject">Subject</string>
+    <string name="thumbnail">Thumbnail</string>
 
 </resources>

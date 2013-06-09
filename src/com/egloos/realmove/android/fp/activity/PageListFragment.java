@@ -440,6 +440,11 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
                 try {
                     db = new DBAdapter(mContext).open();
                     success = db.insertPage(page) >= 0;
+
+                    if (mProject.getMainImage() == null || mProject.getMainImage().length() == 0) {
+                        defineProjectMainImage(db);
+                    }
+
                 } catch (Exception e) {
                     FpLog.e(TAG, e);
                 } finally {
@@ -451,6 +456,21 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
             return success;
         }
+    }
+
+    /**
+     * 프로젝트의 메인 이미지를 고른다.
+     * 
+     * @param db
+     * @throws Exception
+     */
+    private void defineProjectMainImage(DBAdapter db) throws Exception {
+        if ( mProject.size() > 0 ) {
+            mProject.setMainImage(mProject.get(0).getImagePath());
+        } else {
+            mProject.setMainImage(null);
+        }
+        db.updateProject(mProject);
     }
 
     boolean copyFileImage(Uri imageUri) {
@@ -592,16 +612,16 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
         @Override
         protected Void doInBackground(Page... pages) {
-            for (Page page : pages) {
-                mAdapter.togglePageSelection(page);
+            DBAdapter db = null;
+            SQLiteDatabase _db = null;
+            try {
+                db = new DBAdapter(mContext).open();
 
-                DBAdapter db = null;
-                SQLiteDatabase _db = null;
-                try {
-                    db = new DBAdapter(mContext).open();
+                _db = db.getDb();
+                _db.beginTransaction();
 
-                    _db = db.getDb();
-                    _db.beginTransaction();
+                for (Page page : pages) {
+                    mAdapter.togglePageSelection(page);
 
                     db.deleteLinkOf(page.getId());
 
@@ -625,16 +645,17 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
                     new File(page.getImagePath()).delete();
 
-                } catch (Exception ex) {
-                    FpLog.e(TAG, ex);
-                } finally {
-                    if (_db != null)
-                        _db.endTransaction();
-
-                    if (db != null)
-                        db.close();
-
                 }
+                
+                defineProjectMainImage(db);
+            } catch (Exception ex) {
+                FpLog.e(TAG, ex);
+            } finally {
+                if (_db != null)
+                    _db.endTransaction();
+
+                if (db != null)
+                    db.close();
 
             }
             return null;
