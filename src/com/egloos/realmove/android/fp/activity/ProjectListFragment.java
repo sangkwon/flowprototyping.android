@@ -19,11 +19,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +35,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class ProjectListFragment extends BaseFragment implements Callback, OnItemClickListener {
+public class ProjectListFragment extends BaseFragment implements Callback, OnItemClickListener,
+        OnItemLongClickListener {
 
     private static final String TAG = ProjectListFragment.class.getSimpleName();
 
@@ -39,6 +44,8 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
     private ImageFetcher mImageFetcher;
 
     private ArrayList<Project> mProjects;
+
+    private ListView mListView;
 
     public static ProjectListFragment newInstance() {
         return new ProjectListFragment();
@@ -72,10 +79,13 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
     private View createView(LayoutInflater inflater, ViewGroup container) {
         FpLog.d(TAG, "createView()");
         final View view = inflater.inflate(R.layout.project_list_fragment, container, false);
-        final ListView listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setAdapter(mAdapter);
-        listView.setOnItemClickListener(this);
 
+        mListView = (ListView) view.findViewById(android.R.id.list);
+        mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(this);
+        mListView.setOnItemLongClickListener(this);
+
+        registerForContextMenu(mListView);
         return view;
     }
 
@@ -200,4 +210,24 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
         intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, project.getId());
         mContext.startActivity(intent);
     }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        mListView.showContextMenu();
+        return false;
+    }
+
+    @Override
+    public boolean onContextItemSelected(android.view.MenuItem item) {
+
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        android.view.MenuInflater inflater = new android.view.MenuInflater(mContext);
+        inflater.inflate(R.menu.menu_project_list_context, menu);
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
 }

@@ -9,11 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -69,6 +71,7 @@ public class ProjectListAdapter extends BaseAdapter implements View.OnClickListe
         } else {
             view = mInflater.inflate(R.layout.project_list_row, null);
             holder = new ViewHolder();
+            holder.layout = view;
             holder.thumb = (ImageView) view.findViewById(R.id.thumb);
             holder.subject = (TextView) view.findViewById(R.id.subject);
             holder.created = (TextView) view.findViewById(R.id.created);
@@ -96,6 +99,7 @@ public class ProjectListAdapter extends BaseAdapter implements View.OnClickListe
     }
 
     class ViewHolder {
+        View layout;
         ImageView thumb;
         TextView subject;
         TextView created;

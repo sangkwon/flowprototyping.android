@@ -28,5 +28,7 @@
     <string name="delete_unlink">Remove all link unlinked</string>
     <string name="subject">Subject</string>
     <string name="thumbnail">Thumbnail</string>
+    <string name="menu_export">Export</string>
+    <string name="menu_rename">Rename</string>
 
 </resources>
