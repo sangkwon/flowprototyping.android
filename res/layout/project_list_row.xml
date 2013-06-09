@@ -1,23 +1,44 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:layout_height="wrap_content"
     android:padding="5dp" >
 
     <ImageView
         android:id="@+id/thumb"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center_vertical"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
         android:contentDescription="@string/thumbnail"
         android:scaleType="centerCrop" />
+
+    <ImageView
+        android:id="@+id/play"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:contentDescription="@string/menu_play"
+        android:scaleType="centerInside"
+        android:src="@android:drawable/ic_menu_slideshow" />
+
+    <View
+        android:id="@+id/bar"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@id/play"
+        android:background="#ff0000" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="10dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@id/bar"
+        android:layout_toRightOf="@id/thumb"
         android:orientation="vertical" >
 
         <TextView
@@ -29,35 +50,11 @@
 
         <TextView
             android:id="@+id/created"
-            style="?android:attr/textAppearanceMedium"
+            style="?android:attr/textAppearanceSmall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:singleLine="true" />
-
-        <LinearLayout
-            android:id="@+id/button_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-            <Button
-                android:id="@+id/play"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableLeft="@android:drawable/ic_menu_slideshow"
-                android:text="@string/menu_play" />
-
-            <Button
-                android:id="@+id/edit"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableLeft="@android:drawable/ic_menu_edit"
-                android:text="@string/menu_edit" />
-        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

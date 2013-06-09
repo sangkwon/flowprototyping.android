@@ -148,10 +148,12 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback,
             return;
         }
 
-        Intent data = new Intent();
-        data.putExtra(PageListFragment.EXTRA_PROJECT_ID, mProject.getId());
-        data.putExtra(PageListFragment.EXTRA_SELECTED_PAGE_ID, mPage.getId());
-        mContext.setResult(Activity.RESULT_OK, data);
+        if (mContext != null) {
+            Intent data = new Intent();
+            data.putExtra(PageListFragment.EXTRA_PROJECT_ID, mProject.getId());
+            data.putExtra(PageListFragment.EXTRA_SELECTED_PAGE_ID, mPage.getId());
+            mContext.setResult(Activity.RESULT_OK, data);
+        }
     }
 
     @Override

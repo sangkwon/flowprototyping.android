@@ -31,7 +31,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class ProjectListFragment extends BaseFragment implements Callback {
+public class ProjectListFragment extends BaseFragment implements Callback, OnItemClickListener {
 
     private static final String TAG = ProjectListFragment.class.getSimpleName();
 
@@ -74,6 +74,7 @@ public class ProjectListFragment extends BaseFragment implements Callback {
         final View view = inflater.inflate(R.layout.project_list_fragment, container, false);
         final ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setAdapter(mAdapter);
+        listView.setOnItemClickListener(this);
 
         return view;
     }
@@ -189,5 +190,14 @@ public class ProjectListFragment extends BaseFragment implements Callback {
             }
 
         }.execute();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Project project = mProjects.get(position);
+
+        Intent intent = new Intent(mContext, PageListActivity.class);
+        intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, project.getId());
+        mContext.startActivity(intent);
     }
 }

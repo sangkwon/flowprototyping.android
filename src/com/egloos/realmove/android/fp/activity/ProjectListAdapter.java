@@ -72,11 +72,9 @@ public class ProjectListAdapter extends BaseAdapter implements View.OnClickListe
             holder.thumb = (ImageView) view.findViewById(R.id.thumb);
             holder.subject = (TextView) view.findViewById(R.id.subject);
             holder.created = (TextView) view.findViewById(R.id.created);
-            holder.btnPlay = (Button) view.findViewById(R.id.play);
-            holder.btnEdit = (Button) view.findViewById(R.id.edit);
+            holder.btnPlay = view.findViewById(R.id.play);
 
             holder.btnPlay.setOnClickListener(this);
-            holder.btnEdit.setOnClickListener(this);
 
             view.setTag(holder);
         }
@@ -93,7 +91,6 @@ public class ProjectListAdapter extends BaseAdapter implements View.OnClickListe
         }
 
         holder.btnPlay.setTag(project);
-        holder.btnEdit.setTag(project);
 
         return view;
     }
@@ -102,8 +99,8 @@ public class ProjectListAdapter extends BaseAdapter implements View.OnClickListe
         ImageView thumb;
         TextView subject;
         TextView created;
-        Button btnPlay;
-        Button btnEdit;
+        View btnPlay;
+        View btnEdit;
     }
 
     @Override
