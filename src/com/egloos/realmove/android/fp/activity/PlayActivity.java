@@ -40,10 +40,36 @@ public class PlayActivity extends BaseFragmentActivity {
         }
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        FpLog.d(TAG, "dispatchTouchEvent()", event.getAction(), event.getPointerCount());
-        return super.dispatchTouchEvent(event);
+    private float gap = 0;
+
+    private float calcGap(MotionEvent event) {
+        float x = Math.abs(event.getX(1) - event.getX(0));
+        float y = Math.abs(event.getY(1) - event.getY(0));
+        return (float) Math.sqrt(x * x + y * y);
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        // FpLog.d(TAG, "dispatchTouchEvent()", event.getAction(), event.getPointerCount());
+        if (event.getPointerCount() == 2) {
+            FpLog.d(TAG, "dispatchTouchEvent()", event.getAction() & MotionEvent.ACTION_MASK,
+                    event.getX(0), event.getX(1));
+            int action = event.getAction();
+            switch (action & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_POINTER_DOWN: {
+                    gap = calcGap(event);
+                    break;
+                }
+
+                case MotionEvent.ACTION_POINTER_UP: {
+                    float g = calcGap(event);
+                    if (g < gap && (g / gap < 0.5f)) {
+                        finish();
+                    }
+                    break;
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event);
+    }
 }
