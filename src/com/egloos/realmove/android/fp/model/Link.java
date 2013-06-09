@@ -16,7 +16,7 @@ public class Link implements Serializable {
     private static final String TAG = Link.class.getSimpleName();
 
     public enum Event {
-        TOUCH, LONG_TOUCH, SWIPE_LEFT, SWIPE_RIGHT
+        TOUCH, LONG_TOUCH, SWIPE_LEFT, SWIPE_RIGHT, BACK_KEY
     };
 
     public enum Anim {
