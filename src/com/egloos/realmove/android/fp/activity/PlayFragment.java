@@ -15,6 +15,8 @@ import com.example.android.bitmapfun.util.ImageCache;
 import com.example.android.bitmapfun.util.ImageFetcher;
 import com.example.android.bitmapfun.util.ImageWorker;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -142,6 +144,9 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback,
             return;
         }
 
+        Intent data = new Intent();
+        data.putExtra(PageListFragment.EXTRA_SELECTED_PAGE_ID, mPage.getId());
+        mContext.setResult(Activity.RESULT_OK, data);
     }
 
     @Override

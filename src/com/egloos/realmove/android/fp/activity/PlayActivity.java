@@ -36,7 +36,6 @@ public class PlayActivity extends BaseFragmentActivity {
             ft.add(android.R.id.content, mFragment, TAG);
             ft.commit();
         }
-
     }
 
 }

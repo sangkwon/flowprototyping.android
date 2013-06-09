@@ -19,6 +19,7 @@ import com.example.android.bitmapfun.util.ImageCache;
 import com.example.android.bitmapfun.util.ImageFetcher;
 import com.example.android.bitmapfun.util.ImageWorker;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -40,6 +41,8 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
     private static final String TAG = PageEditFragment.class.getSimpleName();
 
     public static final String EXTRA_PAGE_ID = "pageId";
+
+    private static final int REQ_CODE_PLAY = 1;
 
     private Project mProject;
     private Page mPage;
@@ -280,11 +283,25 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
                 Intent intent = new Intent(mContext, PlayActivity.class);
                 intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, mPage.getProjectId());
                 intent.putExtra(PageListFragment.EXTRA_SELECTED_PAGE_ID, mPage.getId());
-                startActivity(intent);
+                startActivityForResult(intent, REQ_CODE_PLAY);
                 return true;
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQ_CODE_PLAY) {
+                int pageId = data.getIntExtra(PageListFragment.EXTRA_SELECTED_PAGE_ID,
+                        mPage.getId());
+                if (pageId != mPage.getId()) {
+                    load(mProject.getId(), pageId);
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }

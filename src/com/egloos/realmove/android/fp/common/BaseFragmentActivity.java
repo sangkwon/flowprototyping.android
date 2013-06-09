@@ -84,20 +84,21 @@ public class BaseFragmentActivity extends SherlockFragmentActivity {
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            navigateUp();
-            return true;
+            if (navigateUp())
+                return true;
+            // else path thru
         }
         return super.onKeyUp(keyCode, event);
     }
 
-    protected void navigateUp() {
+    protected boolean navigateUp() {
         FpLog.d(this.getClass().getSimpleName(), "navigateUp()");
 
         Intent upIntent = NavUtils.getParentActivityIntent(mContext);
-        
+
         if (upIntent == null)
-            return;
-        
+            return false;
+
         if (NavUtils.shouldUpRecreateTask(mContext, upIntent)) {
             TaskStackBuilder.create(mContext)
                     .addNextIntentWithParentStack(upIntent)
@@ -105,6 +106,8 @@ public class BaseFragmentActivity extends SherlockFragmentActivity {
         } else {
             NavUtils.navigateUpTo(mContext, upIntent);
         }
+
+        return true;
     }
 
 }
