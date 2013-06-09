@@ -1,8 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/add"
+        android:icon="@android:drawable/ic_menu_add"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_create"/>
+    <item
         android:id="@+id/play"
-        android:icon="@android:drawable/ic_media_play"
+        android:icon="@android:drawable/ic_menu_slideshow"
         android:showAsAction="ifRoom"
         android:title="@string/menu_play"/>
 

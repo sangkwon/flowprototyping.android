@@ -28,8 +28,7 @@
         </activity>
         <activity
             android:name=".activity.PageListActivity"
-            android:parentActivityName="com.egloos.realmove.android.fp.activity.ProjectListActivity"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:parentActivityName="com.egloos.realmove.android.fp.activity.ProjectListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.egloos.realmove.android.fp.activity.ProjectListActivity" />

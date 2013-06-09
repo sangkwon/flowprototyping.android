@@ -296,8 +296,9 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
             if (requestCode == REQ_CODE_PLAY) {
                 int pageId = data.getIntExtra(PageListFragment.EXTRA_SELECTED_PAGE_ID,
                         mPage.getId());
-                if (pageId != mPage.getId()) {
-                    load(mProject.getId(), pageId);
+                int projectId = data.getIntExtra(PageListFragment.EXTRA_PROJECT_ID, -1);
+                if (projectId != -1 && pageId != mPage.getId()) {
+                    load(projectId, pageId);
                 }
             }
         }
