@@ -2,10 +2,12 @@
 package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
+import com.egloos.realmove.android.fp.activity.PageListFragment.Mode;
 import com.egloos.realmove.android.fp.model.Page;
 import com.example.android.bitmapfun.util.ImageFetcher;
 
 import android.content.Context;
+import android.graphics.drawable.NinePatchDrawable;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import java.io.File;
@@ -39,7 +42,10 @@ public class PageListAdapter extends BaseAdapter {
 
     private int mSelectedPageId;
 
-    public PageListAdapter(Context context, ImageFetcher imageFetcher) {
+    private boolean mActionMode = false;
+    private Mode mMode;
+
+    public PageListAdapter(Context context, ImageFetcher imageFetcher, Mode mode) {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         mWidth = context.getResources().getDimensionPixelSize(R.dimen.page_thumbnail_size);
@@ -48,22 +54,31 @@ public class PageListAdapter extends BaseAdapter {
                 R.dimen.page_thumbnail_spacing);
 
         mImageFetcher = imageFetcher;
+        mMode = mode;
     }
 
     public void setPages(ArrayList<Page> pages) {
         this.mPages = pages;
     }
 
+    public void setActionMode(boolean actionMode) {
+        mActionMode = actionMode;
+    }
+
     @Override
     public int getCount() {
         int size = mPages != null ? mPages.size() : 0;
-        // if (size > 0)
-        // size = 1;
+
+        if (!mActionMode && mMode == Mode.NORMAL)
+            size++;
+
         return size;
     }
 
     @Override
     public Page getItem(int position) {
+        if (mPages == null || position == mPages.size())
+            return null;
         return mPages.get(position);
         // return pages.get(pages.size() - 1);
     }
@@ -98,10 +113,22 @@ public class PageListAdapter extends BaseAdapter {
         }
 
         Page page = getItem(position);
-        holder.text.setText(page.getName());
-        boolean selected = page.getId() == mSelectedPageId || mSelectedPages.contains(page);
-        holder.selectedBox.setVisibility(selected ? View.VISIBLE : View.GONE);
-        mImageFetcher.loadImage(Uri.fromFile(new File(page.getImagePath())), holder.thumb);
+        if (page == null) {
+            /* Add Page */
+            holder.text.setVisibility(View.GONE);
+            holder.selectedBox.setVisibility(View.GONE);
+            holder.thumb.setBackgroundResource(R.drawable.new_page);
+            holder.thumb.setImageDrawable(null);
+        } else {
+            holder.text.setVisibility(View.VISIBLE);
+            holder.text.setText(page.getName());
+            boolean selected = page.getId() == mSelectedPageId || mSelectedPages.contains(page);
+            holder.selectedBox.setVisibility(selected ? View.VISIBLE : View.GONE);
+            mImageFetcher.loadImage(Uri.fromFile(new File(page.getImagePath())), holder.thumb);
+            holder.thumb.setBackgroundDrawable(null);
+            holder.thumb.setScaleType(ScaleType.CENTER_CROP);
+            holder.thumb.setPadding(0, 0, 0, 0);
+        }
 
         return view;
     }

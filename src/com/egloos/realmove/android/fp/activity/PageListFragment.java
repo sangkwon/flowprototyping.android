@@ -43,6 +43,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.GridView;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.Toast;
 
 import java.io.File;
@@ -118,7 +120,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
         mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
         mImageFetcher.setImageFadeIn(false);
 
-        mAdapter = new PageListAdapter(getActivity(), mImageFetcher);
+        mAdapter = new PageListAdapter(getActivity(), mImageFetcher, mMode);
     }
 
     @Override
@@ -291,22 +293,11 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.gallery: {
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
-                startActivityForResult(intent, REQ_CODE_ADD_PAGE_FROM_GALLERY);
+                startAddPageGallery();
                 return true;
             }
             case R.id.camera: {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                File path = getCameraPath();
-                String filename = new SimpleDateFormat("yyyyMMdd_HH:mm:ss_S").format(new Date())
-                        + ".jpg";
-
-                Util.prepareDir(path);
-                mImageCaptureUri = Uri.fromFile(new File(path, filename));
-
-                intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
-                startActivityForResult(intent, REQ_CODE_ADD_PAGE_FROM_CAMERA);
+                startAddPageCamera();
                 return true;
             }
             // case R.id.web: {
@@ -465,7 +456,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
      * @throws Exception
      */
     private void defineProjectMainImage(DBAdapter db) throws Exception {
-        if ( mProject.size() > 0 ) {
+        if (mProject.size() > 0) {
             mProject.setMainImage(mProject.get(0).getImagePath());
         } else {
             mProject.setMainImage(null);
@@ -483,29 +474,85 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Page clickedPage = mAdapter.getItem(position);
-        if (mMode == Mode.NORMAL) {
-            if (mActionMode != null) {
-                selectPageOn(clickedPage);
-            } else {
-                Intent intent = new Intent(getActivity(), PageEditActivity.class);
-                intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, mProject.getId());
-                intent.putExtra(PageEditFragment.EXTRA_PAGE_ID, clickedPage.getId());
-                startActivityForResult(intent, REQ_CODE_PAGE_EDIT);
-            }
-        } else if (mMode == Mode.ONLY_SELECT) {
-            if (getDialog() != null)
-                this.getDialog().dismiss();
+        if (clickedPage != null) {
+            /* page selected */
+            if (mMode == Mode.NORMAL) {
+                if (mActionMode != null) {
+                    selectPageOn(clickedPage);
+                } else {
+                    Intent intent = new Intent(getActivity(), PageEditActivity.class);
+                    intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, mProject.getId());
+                    intent.putExtra(PageEditFragment.EXTRA_PAGE_ID, clickedPage.getId());
+                    startActivityForResult(intent, REQ_CODE_PAGE_EDIT);
+                }
+            } else if (mMode == Mode.ONLY_SELECT) {
+                if (getDialog() != null)
+                    this.getDialog().dismiss();
 
-            if (mSelectCallback != null) {
-                mSelectCallback.pageSelected(clickedPage);
+                if (mSelectCallback != null) {
+                    mSelectCallback.pageSelected(clickedPage);
+                }
             }
+        } else {
+            /* page add selected */
+            showPageAddPopupMenu(view);
         }
     }
+
+    private void showPageAddPopupMenu(View view) {
+        PopupMenu popup = new PopupMenu(mContext, view);
+        android.view.Menu menu = popup.getMenu();
+        popup.getMenuInflater().inflate(R.menu.menu_page_list_add_popup, menu);
+        for (int i = 0; i < menu.size(); i++) {
+            android.view.MenuItem item = menu.getItem(i);
+            item.setOnMenuItemClickListener(listener);
+        }
+        popup.show();
+    }
+
+    private void startAddPageCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File path = getCameraPath();
+        String filename = new SimpleDateFormat("yyyyMMdd_HH:mm:ss_S")
+                .format(new Date())
+                + ".jpg";
+
+        Util.prepareDir(path);
+        mImageCaptureUri = Uri.fromFile(new File(path, filename));
+
+        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+        startActivityForResult(intent, REQ_CODE_ADD_PAGE_FROM_CAMERA);
+    }
+
+    private void startAddPageGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
+        startActivityForResult(intent, REQ_CODE_ADD_PAGE_FROM_GALLERY);
+    }
+
+    android.view.MenuItem.OnMenuItemClickListener listener = new android.view.MenuItem.OnMenuItemClickListener() {
+        public boolean onMenuItemClick(android.view.MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.gallery: {
+                    startAddPageGallery();
+                    return true;
+                }
+                case R.id.camera: {
+                    startAddPageCamera();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+    };
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if (mMode == Mode.NORMAL) {
-            selectPageOn(mAdapter.getItem(position));
+            Page page = mAdapter.getItem(position);
+            if (page != null)
+                selectPageOn(page);
         }
         return true;
     }
@@ -549,6 +596,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             menu.add(R.string.menu_remove).setIcon(android.R.drawable.ic_menu_delete)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
             return true;
         }
 
@@ -588,7 +636,9 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            // do nothing
+            mAdapter.setActionMode(true);
+            mAdapter.notifyDataSetChanged();
+
             return false;
         }
 
@@ -596,6 +646,9 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
         public void onDestroyActionMode(ActionMode mode) {
             mActionMode = null;
             mAdapter.clearSelection();
+            mAdapter.notifyDataSetChanged();
+
+            mAdapter.setActionMode(false);
             mAdapter.notifyDataSetChanged();
         }
 
@@ -646,7 +699,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
                     new File(page.getImagePath()).delete();
 
                 }
-                
+
                 defineProjectMainImage(db);
             } catch (Exception ex) {
                 FpLog.e(TAG, ex);
