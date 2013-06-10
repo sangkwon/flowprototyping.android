@@ -47,6 +47,8 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 
     private ListView mListView;
 
+    private Project mSelectedProject;
+
     public static ProjectListFragment newInstance() {
         return new ProjectListFragment();
     }
@@ -132,37 +134,56 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    /**
+     * 프로젝트 정보입력창을 띄운다.
+     * 
+     * @param project 수정이라면 값을 준다. 추가라면 null
+     */
+    private void showProjectInfoDialog(final Project project) {
+        LayoutInflater factory = LayoutInflater.from(mContext);
+        final View textEntryView = factory.inflate(R.layout.input_project_dialog, null);
+        if (project != null) {
+            TextView txt = (TextView) textEntryView.findViewById(R.id.subject);
+            txt.setText(project.getSubject());
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setView(textEntryView)
+                .setTitle(R.string.input_project_info)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which == DialogInterface.BUTTON_POSITIVE) {
+                                    CharSequence txt = ((TextView) textEntryView
+                                            .findViewById(R.id.subject)).getText();
+                                    if (txt != null) {
+                                        String subject = txt.toString().trim();
+                                        if (subject.length() > 0) {
+                                            if (project == null) {
+                                                createProject(subject);
+                                            } else {
+                                                project.setSubject(subject);
+                                                modifyProject(project);
+                                            }
+                                            return;
+                                        }
+                                    }
+
+                                    Toast.makeText(mContext, R.string.error_subject_empty,
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                        });
+        builder.show();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add: {
-                LayoutInflater factory = LayoutInflater.from(mContext);
-                final View textEntryView = factory.inflate(R.layout.input_project_dialog, null);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setView(textEntryView)
-                        .setTitle(R.string.input_project_info)
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .setPositiveButton(android.R.string.ok,
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        if (which == DialogInterface.BUTTON_POSITIVE) {
-                                            CharSequence txt = ((TextView) textEntryView
-                                                    .findViewById(R.id.subject)).getText();
-                                            if (txt != null) {
-                                                String subject = txt.toString().trim();
-                                                if (subject.length() > 0) {
-                                                    createProject(subject);
-                                                    return;
-                                                }
-                                            }
-
-                                            Toast.makeText(mContext, R.string.error_subject_empty,
-                                                    Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });
-                builder.create().show();
+                showProjectInfoDialog(null);
                 break;
             }
 
@@ -170,7 +191,7 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
         return super.onOptionsItemSelected(item);
     }
 
-    protected void createProject(String subject) {
+    /* package */void createProject(String subject) {
         final Project project = new Project();
         project.setSubject(subject);
         project.setCreated(new Date());
@@ -202,6 +223,36 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
         }.execute();
     }
 
+    /* package */void modifyProject(final Project project) {
+        project.setUpdated(new Date());
+        
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                DBAdapter db = null;
+                try {
+                    db = new DBAdapter(mContext).open();
+                    db.updateProject(project);
+                } catch (Exception e) {
+                    FpLog.e(TAG, e);
+                } finally {
+                    if (db != null)
+                        db.close();
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                load();
+                super.onPostExecute(result);
+            }
+
+        }.execute();
+    }
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Project project = mProjects.get(position);
@@ -213,13 +264,29 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        mSelectedProject = mAdapter.getItem(position);
         mListView.showContextMenu();
         return false;
     }
 
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.export: {
 
+                break;
+            }
+            case R.id.remove: {
+
+                break;
+            }
+
+            case R.id.modify: {
+                showProjectInfoDialog(mSelectedProject);
+                break;
+            }
+
+        }
         return super.onContextItemSelected(item);
     }
 
