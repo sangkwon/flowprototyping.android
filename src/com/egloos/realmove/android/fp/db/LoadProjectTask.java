@@ -16,85 +16,85 @@ import java.util.HashMap;
 
 public class LoadProjectTask extends AsyncTask<Integer, Void, Project> {
 
-    private static final String TAG = LoadProjectTask.class.getSimpleName();
+	private static final String TAG = LoadProjectTask.class.getSimpleName();
 
-    private Context mContext;
-    private Callback mCallback;
-    private Dialog mProgressDialog;
+	private Context mContext;
+	private Callback mCallback;
+	private Dialog mProgressDialog;
 
-    public LoadProjectTask(Context context, Callback callback) {
-        mContext = context;
-        mCallback = callback;
-    }
+	public LoadProjectTask(Context context, Callback callback) {
+		mContext = context;
+		mCallback = callback;
+	}
 
-    @Override
-    protected void onPreExecute() {
-        mProgressDialog = LoadingDialog.show(mContext);
-        super.onPreExecute();
-    }
+	@Override
+	protected void onPreExecute() {
+		mProgressDialog = LoadingDialog.show(mContext);
+		super.onPreExecute();
+	}
 
-    @Override
-    protected Project doInBackground(Integer... params) {
-        int projectId = params[0];
+	@Override
+	protected Project doInBackground(Integer... params) {
+		int projectId = params[0];
 
-        DBAdapter db = null;
-        try {
-            db = new DBAdapter(mContext).open();
-            Project project = db.selectProject(projectId);
-            if (project == null)
-                return null;
+		DBAdapter db = null;
+		try {
+			db = new DBAdapter(mContext).open();
+			Project project = db.selectProject(projectId);
+			if (project == null)
+				return null;
 
-            ArrayList<Page> pages = db.selectPages(projectId);
-            if (pages == null)
-                return project;
+			ArrayList<Page> pages = db.selectPages(projectId);
+			if (pages == null)
+				return project;
 
-            project.addAll(pages);
+			project.addAll(pages);
 
-            int[] pageIds = new int[pages.size()];
-            int count = 0;
-            HashMap<Integer, Page> pageMap = new HashMap<Integer, Page>();
-            for (Page page : pages) {
-                pageIds[count++] = page.getId();
-                pageMap.put(page.getId(), page);
-            }
+			int[] pageIds = new int[pages.size()];
+			int count = 0;
+			HashMap<Integer, Page> pageMap = new HashMap<Integer, Page>();
+			for (Page page : pages) {
+				pageIds[count++] = page.getId();
+				pageMap.put(page.getId(), page);
+			}
 
-            ArrayList<Link> links = db.selectLinks(pageIds);
-            if (links == null)
-                return project;
+			ArrayList<Link> links = db.selectLinks(pageIds);
+			if (links == null)
+				return project;
 
-            for (Link link : links) {
-                Page page = pageMap.get(link.getPageId());
-                page.add(link);
-            }
+			for (Link link : links) {
+				Page page = pageMap.get(link.getPageId());
+				page.add(link);
+			}
 
-            return project;
-        } catch (Exception ex) {
-            FpLog.e(TAG, ex);
-        } finally {
-            if (db != null)
-                db.close();
-        }
-        return null;
-    }
+			return project;
+		} catch (Exception ex) {
+			FpLog.e(TAG, ex);
+		} finally {
+			if (db != null)
+				db.close();
+		}
+		return null;
+	}
 
-    @Override
-    protected void onPostExecute(Project tmpProj) {
-        if (mProgressDialog != null) {
-            try {
-                mProgressDialog.dismiss();
-            } catch (Exception ex) {
-                FpLog.e(TAG, ex);
-            }
-            mProgressDialog = null;
-        }
+	@Override
+	protected void onPostExecute(Project tmpProj) {
+		if (mProgressDialog != null) {
+			try {
+				mProgressDialog.dismiss();
+			} catch (Exception ex) {
+				FpLog.e(TAG, ex);
+			}
+			mProgressDialog = null;
+		}
 
-        if (mCallback != null) {
-            mCallback.onLoad(tmpProj);
-        }
-        super.onPostExecute(tmpProj);
-    }
+		if (mCallback != null) {
+			mCallback.onLoad(tmpProj);
+		}
+		super.onPostExecute(tmpProj);
+	}
 
-    public interface Callback {
-        public void onLoad(Project project);
-    }
+	public interface Callback {
+		public void onLoad(Project project);
+	}
 }

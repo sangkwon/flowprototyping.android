@@ -5,17 +5,17 @@ import android.app.Application;
 
 public class App extends Application {
 
-    private static Application instance = null;
+	private static Application instance = null;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+	@Override
+	public void onCreate() {
+		super.onCreate();
 
-        instance = this;
-    }
+		instance = this;
+	}
 
-    public static Application getInstacne() {
-        return instance;
-    }
+	public static Application getInstacne() {
+		return instance;
+	}
 
 }

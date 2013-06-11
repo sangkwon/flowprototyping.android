@@ -9,10 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -25,110 +22,110 @@ import java.util.ArrayList;
 
 public class ProjectListAdapter extends BaseAdapter implements View.OnClickListener {
 
-    private ImageFetcher mImageFetcher;
-    private Context mContext;
+	private ImageFetcher mImageFetcher;
+	private Context mContext;
 
-    private ArrayList<Project> mProjects;
-    private LayoutInflater mInflater;
-    private Resources mResources;
+	private ArrayList<Project> mProjects;
+	private LayoutInflater mInflater;
+	private Resources mResources;
 
-    public ProjectListAdapter(Context context, ImageFetcher imageFetcher) {
-        this.mImageFetcher = imageFetcher;
-        this.mContext = context;
+	public ProjectListAdapter(Context context, ImageFetcher imageFetcher) {
+		this.mImageFetcher = imageFetcher;
+		this.mContext = context;
 
-        this.mResources = mContext.getResources();
+		this.mResources = mContext.getResources();
 
-        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    }
+		mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	}
 
-    public void setProjects(ArrayList<Project> projects) {
-        this.mProjects = projects;
-    }
+	public void setProjects(ArrayList<Project> projects) {
+		this.mProjects = projects;
+	}
 
-    @Override
-    public int getCount() {
-        if (mProjects == null)
-            return 0;
-        return mProjects.size();
-    }
+	@Override
+	public int getCount() {
+		if (mProjects == null)
+			return 0;
+		return mProjects.size();
+	}
 
-    @Override
-    public Project getItem(int position) {
-        return mProjects.get(position);
-    }
+	@Override
+	public Project getItem(int position) {
+		return mProjects.get(position);
+	}
 
-    @Override
-    public long getItemId(int position) {
-        return getItem(position).getId();
-    }
+	@Override
+	public long getItemId(int position) {
+		return getItem(position).getId();
+	}
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        ViewHolder holder;
-        if (view != null && view.getTag() instanceof ViewHolder) {
-            holder = (ViewHolder) view.getTag();
-        } else {
-            view = mInflater.inflate(R.layout.project_list_row, null);
-            holder = new ViewHolder();
-            holder.layout = view;
-            holder.thumb = (ImageView) view.findViewById(R.id.thumb);
-            holder.subject = (TextView) view.findViewById(R.id.subject);
-            holder.created = (TextView) view.findViewById(R.id.created);
-            holder.btnPlay = view.findViewById(R.id.play);
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		View view = convertView;
+		ViewHolder holder;
+		if (view != null && view.getTag() instanceof ViewHolder) {
+			holder = (ViewHolder) view.getTag();
+		} else {
+			view = mInflater.inflate(R.layout.project_list_row, null);
+			holder = new ViewHolder();
+			holder.layout = view;
+			holder.thumb = (ImageView) view.findViewById(R.id.thumb);
+			holder.subject = (TextView) view.findViewById(R.id.subject);
+			holder.created = (TextView) view.findViewById(R.id.created);
+			holder.btnPlay = view.findViewById(R.id.play);
 
-            holder.btnPlay.setOnClickListener(this);
+			holder.btnPlay.setOnClickListener(this);
 
-            view.setTag(holder);
-        }
+			view.setTag(holder);
+		}
 
-        Project project = getItem(position);
-        holder.subject.setText(project.getSubject());
-        DateFormat df = DateFormat.getDateInstance();
-        holder.created.setText(df.format(project.getCreated()));
-        if (project.getMainImage() != null) {
-            mImageFetcher.loadImage(Uri.fromFile(new File(project.getMainImage())), holder.thumb);
-        } else {
-            holder.thumb.setImageBitmap(null);
-            holder.thumb.setImageDrawable(mResources.getDrawable(R.drawable.ic_launcher));
-        }
+		Project project = getItem(position);
+		holder.subject.setText(project.getSubject());
+		DateFormat df = DateFormat.getDateInstance();
+		holder.created.setText(df.format(project.getCreated()));
+		if (project.getMainImage() != null) {
+			mImageFetcher.loadImage(Uri.fromFile(new File(project.getMainImage())), holder.thumb);
+		} else {
+			holder.thumb.setImageBitmap(null);
+			holder.thumb.setImageDrawable(mResources.getDrawable(R.drawable.ic_launcher));
+		}
 
-        holder.btnPlay.setTag(project);
+		holder.btnPlay.setTag(project);
 
-        return view;
-    }
+		return view;
+	}
 
-    class ViewHolder {
-        View layout;
-        ImageView thumb;
-        TextView subject;
-        TextView created;
-        View btnPlay;
-        View btnEdit;
-    }
+	class ViewHolder {
+		View layout;
+		ImageView thumb;
+		TextView subject;
+		TextView created;
+		View btnPlay;
+		View btnEdit;
+	}
 
-    @Override
-    public void onClick(View view) {
-        Object tag = view.getTag();
-        if (tag == null || !(tag instanceof Project)) {
-            return;
-        }
+	@Override
+	public void onClick(View view) {
+		Object tag = view.getTag();
+		if (tag == null || !(tag instanceof Project)) {
+			return;
+		}
 
-        Project project = (Project) tag;
-        switch (view.getId()) {
-            case R.id.play: {
-                Intent intent = new Intent(mContext, PlayActivity.class);
-                intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, project.getId());
-                mContext.startActivity(intent);
-                break;
-            }
-            case R.id.edit: {
-                Intent intent = new Intent(mContext, PageListActivity.class);
-                intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, project.getId());
-                mContext.startActivity(intent);
-                break;
-            }
-        }
-    }
+		Project project = (Project) tag;
+		switch (view.getId()) {
+			case R.id.play: {
+				Intent intent = new Intent(mContext, PlayActivity.class);
+				intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, project.getId());
+				mContext.startActivity(intent);
+				break;
+			}
+			case R.id.edit: {
+				Intent intent = new Intent(mContext, PageListActivity.class);
+				intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, project.getId());
+				mContext.startActivity(intent);
+				break;
+			}
+		}
+	}
 
 }

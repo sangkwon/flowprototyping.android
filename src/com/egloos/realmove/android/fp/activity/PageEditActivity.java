@@ -11,33 +11,33 @@ import android.widget.Toast;
 
 public class PageEditActivity extends BaseFragmentActivity {
 
-    private static final String TAG = PageEditActivity.class.getSimpleName();
+	private static final String TAG = PageEditActivity.class.getSimpleName();
 
-    private Fragment mFragment;
+	private Fragment mFragment;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-        int projectId = getIntent().getIntExtra(PageListFragment.EXTRA_PROJECT_ID, -1);
-        if (projectId == -1) {
-            Toast.makeText(this, R.string.wrong_project, Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
+		int projectId = getIntent().getIntExtra(PageListFragment.EXTRA_PROJECT_ID, -1);
+		if (projectId == -1) {
+			Toast.makeText(this, R.string.wrong_project, Toast.LENGTH_SHORT).show();
+			finish();
+			return;
+		}
 
-        // requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+		// requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
-        Bundle extra = getIntent().getExtras();
-        int pageId = extra.getInt(PageEditFragment.EXTRA_PAGE_ID);
+		Bundle extra = getIntent().getExtras();
+		int pageId = extra.getInt(PageEditFragment.EXTRA_PAGE_ID);
 
-        if (getSupportFragmentManager().findFragmentByTag(TAG) == null) {
-            final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            mFragment = PageEditFragment.newInstance(projectId, pageId);
-            ft.add(android.R.id.content, mFragment, TAG);
-            ft.commit();
-        }
+		if (getSupportFragmentManager().findFragmentByTag(TAG) == null) {
+			final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			mFragment = PageEditFragment.newInstance(projectId, pageId);
+			ft.add(android.R.id.content, mFragment, TAG);
+			ft.commit();
+		}
 
-    }
+	}
 
 }
