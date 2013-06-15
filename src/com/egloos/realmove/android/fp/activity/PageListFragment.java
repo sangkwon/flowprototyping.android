@@ -674,11 +674,9 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 					}
 
 					mProject.remove(page);
-					_db.setTransactionSuccessful();
-
 					new File(page.getImagePath()).delete();
-
 				}
+				_db.setTransactionSuccessful();
 
 				defineProjectMainImage(db);
 			} catch (Exception ex) {
