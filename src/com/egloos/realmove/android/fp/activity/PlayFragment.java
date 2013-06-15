@@ -9,6 +9,7 @@ import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
+import com.egloos.realmove.android.fp.view.LinkImagePlayView;
 import com.egloos.realmove.android.fp.view.LinkImageView;
 import com.example.android.bitmapfun.util.ImageCache;
 import com.example.android.bitmapfun.util.ImageFetcher;
@@ -30,11 +31,13 @@ import java.io.File;
 
 public class PlayFragment extends BaseFragment implements ImageWorker.Callback, LinkImageView.OnLinkClickListener {
 
+	public static final String DIR_CACHE = "page_view2";
+
 	private static final String TAG = PlayFragment.class.getSimpleName();
 
 	private int mWidth;
 	private int mHeight;
-	private LinkImageView mPageView;
+	private LinkImagePlayView mPageView;
 	private ImageWorker mImageFetcher;
 
 	private ActionBar mActionBar;
@@ -70,7 +73,7 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback, 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.play_fragment, container, false);
-		mPageView = (LinkImageView) view.findViewById(R.id.page);
+		mPageView = (LinkImagePlayView) view.findViewById(R.id.page);
 		mPageView.setOnLinkClickListener(this);
 		mPageView.setLinkShow(false);
 
@@ -92,12 +95,12 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback, 
 
 		FpLog.d(TAG, "prepareCache()", mWidth, mHeight);
 
-		ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(mContext, "page_view");
+		ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(mContext, DIR_CACHE);
 		cacheParams.setMemCacheSizePercent(0.25f);
 
 		mImageFetcher = new ImageFetcher(mContext, mWidth, mHeight);
 		mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
-		// mImageFetcher.setImageFadeIn(false);
+		mImageFetcher.setImageFadeIn(false);
 		mImageFetcher.setCallback(this);
 	}
 
@@ -157,8 +160,6 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback, 
 		if (link != null) {
 			int pageId = link.getTargetPageId();
 			displayPage(pageId);
-		} else {
-			mPageView.blinkLink();
 		}
 		return false;
 	}

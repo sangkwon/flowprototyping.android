@@ -129,7 +129,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
 		FpLog.d(TAG, "prepareCache()", mWidth, mHeight);
 
-		ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(mContext, "page_view");
+		ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(mContext, PlayFragment.DIR_CACHE);
 		cacheParams.setMemCacheSizePercent(0.25f);
 
 		mImageFetcher = new ImageFetcher(mContext, mWidth, mHeight);

@@ -53,37 +53,6 @@ public class LinkImageView extends ImageView {
 		invalidate();
 	}
 
-	enum BlinkState {
-		READY, BLINKING
-	}
-
-	private BlinkState mBlinkState = BlinkState.READY;
-	private Handler mHandler = new Handler();
-	private Runnable mBlinkStopper = new Runnable() {
-		public void run() {
-			stopBlinkLink();
-		}
-	};
-
-	/**
-	 * 링크를 살짝 반짝거리게 한다.
-	 */
-	public void blinkLink() {
-		if (mBlinkState == BlinkState.READY) {
-			mBlinkState = BlinkState.BLINKING;
-			mHandler.postDelayed(mBlinkStopper, 700);
-			invalidate();
-		}
-	}
-
-	public void stopBlinkLink() {
-		if (mBlinkState == BlinkState.BLINKING) {
-			mHandler.removeCallbacks(mBlinkStopper);
-			mBlinkState = BlinkState.READY;
-			invalidate();
-		}
-	}
-
 	/** these for performance of onDraw() */
 	Paint paint = new Paint();
 	Rect rect = new Rect();
@@ -100,15 +69,6 @@ public class LinkImageView extends ImageView {
 				int len = mLinks.size();
 				for (int i = 0; i < len; i++) {
 					drawLink(canvas, paint, mLinks.get(i));
-				}
-			} else {
-				if (mBlinkState == BlinkState.BLINKING) {
-					paint.setColor(0x4033b5e5);
-
-					int len = mLinks.size();
-					for (int i = 0; i < len; i++) {
-						drawLink(canvas, paint, mLinks.get(i));
-					}
 				}
 			}
 		}
@@ -169,24 +129,6 @@ public class LinkImageView extends ImageView {
 
 	public interface OnLinkClickListener {
 		public boolean onLinkClicked(Link link);
-	}
-
-	@Override
-	public void setImageResource(int resId) {
-		stopBlinkLink();
-		super.setImageResource(resId);
-	}
-
-	@Override
-	public void setImageDrawable(Drawable drawable) {
-		stopBlinkLink();
-		super.setImageDrawable(drawable);
-	}
-
-	@Override
-	public void setImageBitmap(Bitmap bm) {
-		stopBlinkLink();
-		super.setImageBitmap(bm);
 	}
 
 }
