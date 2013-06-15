@@ -70,6 +70,7 @@ public class LinkImageEditView extends LinkImageView implements OnMenuItemClickL
 		, SELECTING_CORNER // DOWN이벤트: 모서리가 터치된 상태
 		, SELECTING_TWICE // DOWN이벤트: 두번째 터치된 상태 - UP되면 unselect
 		, SELECTING_EMPTY // DOWN이벤트: 빈 곳을 터치한 상태
+		, SELECTING_EMPTY_UNSELECT // DOWN이벤트: 선택했다가 빈 곳을 터치해서 unselect 하는 상태
 
 		, SHOWING_CONTEXT_MENU // ContextMenu 가 표시된 상태
 
@@ -218,8 +219,13 @@ public class LinkImageEditView extends LinkImageView implements OnMenuItemClickL
 						setState(State.SELECTING_LINK);
 					}
 				} else {
-					setState(State.SELECTING_EMPTY);
-					unselectLink();
+					if ( selected == null ) {
+						setState(State.SELECTING_EMPTY);
+						unselectLink();
+					} else {
+						setState(State.SELECTING_EMPTY_UNSELECT);
+						unselectLink();
+					}
 				}
 				invalidate();
 				break;
