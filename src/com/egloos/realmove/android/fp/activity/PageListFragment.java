@@ -30,11 +30,18 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BlurMaskFilter;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,6 +90,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 	private ImageFetcher mImageFetcher;
 	private ActionMode mActionMode;
 	private View mContentView;
+	private GridView mGridView;
 
 	private Uri mImageCaptureUri;
 
@@ -117,6 +125,8 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 		mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
 		mImageFetcher.setImageFadeIn(false);
 
+		prepareBgCache();
+
 		mAdapter = new PageListAdapter(getActivity(), mImageFetcher, mMode);
 	}
 
@@ -145,19 +155,19 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 	private View createView(LayoutInflater inflater, ViewGroup container) {
 		FpLog.d(TAG, "createView()");
 		final View view = inflater.inflate(R.layout.page_list_fragment, container, false);
-		final GridView gridView = (GridView) view.findViewById(R.id.grid);
-		gridView.setAdapter(mAdapter);
-		gridView.setOnItemClickListener(this);
-		gridView.setOnItemLongClickListener(this);
+		mGridView = (GridView) view.findViewById(R.id.grid);
+		mGridView.setAdapter(mAdapter);
+		mGridView.setOnItemClickListener(this);
+		mGridView.setOnItemLongClickListener(this);
 
-		gridView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+		mGridView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
 			public void onGlobalLayout() {
 				// FpLog.e(TAG, "onGlobalLayout()");
 				if (mAdapter.getNumColumns() == 0) {
-					final int numColumns = (int) Math.floor(gridView.getWidth() / (mAdapter.getWidth() + mAdapter.getColumnSpacing()));
+					final int numColumns = (int) Math.floor(mGridView.getWidth() / (mAdapter.getWidth() + mAdapter.getColumnSpacing()));
 					if (numColumns > 0) {
-						final int columnWidth = (gridView.getWidth() / numColumns) - mAdapter.getColumnSpacing();
+						final int columnWidth = (mGridView.getWidth() / numColumns) - mAdapter.getColumnSpacing();
 						final int columnHeight = (int) (columnWidth * 1.1f);
 
 						mAdapter.setNumColumns(numColumns);
@@ -181,14 +191,14 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 		load(projectId);
 
+		if (mMode == Mode.NORMAL) {
+			getSherlockActivity().getActionBar().setHomeButtonEnabled(true);
+		}
+
 		/* Dialog인 경우에는 onCreateDialog()에서 이미 생성되었다 */
 		if (mContentView == null) {
 			mContentView = createView(inflater, container);
 			return mContentView;
-		}
-
-		if (mMode == Mode.NORMAL) {
-			getSherlockActivity().getActionBar().setHomeButtonEnabled(true);
 		}
 
 		return super.onCreateView(inflater, container, savedInstanceState);
@@ -235,7 +245,9 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 		if (mMode == Mode.NORMAL) {
 			getSherlockActivity().getActionBar().setTitle(mProject.getSubject());
+			setListBackground();
 		}
+
 	}
 
 	private static void storeWorkingProject(Context context, int id) {
@@ -755,6 +767,293 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 	public interface SelectCallback {
 		public void pageSelected(Page page);
+	}
+
+	private ImageFetcher mBgFetcher;
+
+	private void prepareBgCache() {
+		DisplayMetrics displayMetrics = new DisplayMetrics();
+		getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+		int mWidth = displayMetrics.widthPixels;
+		int mHeight = displayMetrics.heightPixels;
+
+		ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(mContext, PlayFragment.DIR_CACHE);
+		cacheParams.setMemCacheSizePercent(0.25f);
+
+		mBgFetcher = new ImageFetcher(mContext, mWidth, mHeight);
+		mBgFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
+		mBgFetcher.setImageFadeIn(false);
+	}
+
+	private void setListBackground() {
+		FpLog.d(TAG, "setListBackground()");
+
+		final String path = mProject == null ? null : mProject.getMainImage();
+		if (true || path == null)
+			return;
+
+		new AsyncTask<Void, Void, Bitmap>() {
+			@Override
+			protected Bitmap doInBackground(Void... params) {
+				FpLog.d(TAG, "doInBackground()", path);
+				Bitmap bitmap = mImageFetcher.processBitmapFile(Uri.fromFile(new File(path)));
+				if (bitmap == null)
+					return null;
+
+				// Bitmap newBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+				// Canvas canvas = new Canvas(newBitmap);
+				// Paint paint = new Paint();
+				// paint.setMaskFilter(new BlurMaskFilter(1f, BlurMaskFilter.Blur.NORMAL));
+				//
+				// canvas.drawBitmap(bitmap, 0, 0, paint);
+				Bitmap newBitmap = fastblur(bitmap, 30);
+
+				bitmap.recycle();
+
+				return newBitmap;
+			}
+
+			@Override
+			protected void onPostExecute(Bitmap result) {
+				FpLog.d(TAG, "onPostExecute()", result);
+				if (result != null) {
+					mGridView.setBackgroundDrawable(new BitmapDrawable(mContext.getResources(), result));
+				}
+				super.onPostExecute(result);
+			}
+		}.execute();
+	}
+
+	public Bitmap fastblur(Bitmap sentBitmap, int radius) {
+
+		// Stack Blur v1.0 from
+		// http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html
+		//
+		// Java Author: Mario Klingemann <mario at quasimondo.com>
+		// http://incubator.quasimondo.com
+		// created Feburary 29, 2004
+		// Android port : Yahel Bouaziz <yahel at kayenko.com>
+		// http://www.kayenko.com
+		// ported april 5th, 2012
+
+		// This is a compromise between Gaussian Blur and Box blur
+		// It creates much better looking blurs than Box Blur, but is
+		// 7x faster than my Gaussian Blur implementation.
+		//
+		// I called it Stack Blur because this describes best how this
+		// filter works internally: it creates a kind of moving stack
+		// of colors whilst scanning through the image. Thereby it
+		// just has to add one new block of color to the right side
+		// of the stack and remove the leftmost color. The remaining
+		// colors on the topmost layer of the stack are either added on
+		// or reduced by one, depending on if they are on the right or
+		// on the left side of the stack.
+		//
+		// If you are using this algorithm in your code please add
+		// the following line:
+		//
+		// Stack Blur Algorithm by Mario Klingemann <mario@quasimondo.com>
+
+		Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
+
+		if (radius < 1) {
+			return (null);
+		}
+
+		int w = bitmap.getWidth();
+		int h = bitmap.getHeight();
+
+		int[] pix = new int[w * h];
+		Log.e("pix", w + " " + h + " " + pix.length);
+		bitmap.getPixels(pix, 0, w, 0, 0, w, h);
+
+		int wm = w - 1;
+		int hm = h - 1;
+		int wh = w * h;
+		int div = radius + radius + 1;
+
+		int r[] = new int[wh];
+		int g[] = new int[wh];
+		int b[] = new int[wh];
+		int rsum, gsum, bsum, x, y, i, p, yp, yi, yw;
+		int vmin[] = new int[Math.max(w, h)];
+
+		int divsum = (div + 1) >> 1;
+		divsum *= divsum;
+		int dv[] = new int[256 * divsum];
+		for (i = 0; i < 256 * divsum; i++) {
+			dv[i] = (i / divsum);
+		}
+
+		yw = yi = 0;
+
+		int[][] stack = new int[div][3];
+		int stackpointer;
+		int stackstart;
+		int[] sir;
+		int rbs;
+		int r1 = radius + 1;
+		int routsum, goutsum, boutsum;
+		int rinsum, ginsum, binsum;
+
+		for (y = 0; y < h; y++) {
+			rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
+			for (i = -radius; i <= radius; i++) {
+				p = pix[yi + Math.min(wm, Math.max(i, 0))];
+				sir = stack[i + radius];
+				sir[0] = (p & 0xff0000) >> 16;
+				sir[1] = (p & 0x00ff00) >> 8;
+				sir[2] = (p & 0x0000ff);
+				rbs = r1 - Math.abs(i);
+				rsum += sir[0] * rbs;
+				gsum += sir[1] * rbs;
+				bsum += sir[2] * rbs;
+				if (i > 0) {
+					rinsum += sir[0];
+					ginsum += sir[1];
+					binsum += sir[2];
+				} else {
+					routsum += sir[0];
+					goutsum += sir[1];
+					boutsum += sir[2];
+				}
+			}
+			stackpointer = radius;
+
+			for (x = 0; x < w; x++) {
+
+				r[yi] = dv[rsum];
+				g[yi] = dv[gsum];
+				b[yi] = dv[bsum];
+
+				rsum -= routsum;
+				gsum -= goutsum;
+				bsum -= boutsum;
+
+				stackstart = stackpointer - radius + div;
+				sir = stack[stackstart % div];
+
+				routsum -= sir[0];
+				goutsum -= sir[1];
+				boutsum -= sir[2];
+
+				if (y == 0) {
+					vmin[x] = Math.min(x + radius + 1, wm);
+				}
+				p = pix[yw + vmin[x]];
+
+				sir[0] = (p & 0xff0000) >> 16;
+				sir[1] = (p & 0x00ff00) >> 8;
+				sir[2] = (p & 0x0000ff);
+
+				rinsum += sir[0];
+				ginsum += sir[1];
+				binsum += sir[2];
+
+				rsum += rinsum;
+				gsum += ginsum;
+				bsum += binsum;
+
+				stackpointer = (stackpointer + 1) % div;
+				sir = stack[(stackpointer) % div];
+
+				routsum += sir[0];
+				goutsum += sir[1];
+				boutsum += sir[2];
+
+				rinsum -= sir[0];
+				ginsum -= sir[1];
+				binsum -= sir[2];
+
+				yi++;
+			}
+			yw += w;
+		}
+		for (x = 0; x < w; x++) {
+			rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
+			yp = -radius * w;
+			for (i = -radius; i <= radius; i++) {
+				yi = Math.max(0, yp) + x;
+
+				sir = stack[i + radius];
+
+				sir[0] = r[yi];
+				sir[1] = g[yi];
+				sir[2] = b[yi];
+
+				rbs = r1 - Math.abs(i);
+
+				rsum += r[yi] * rbs;
+				gsum += g[yi] * rbs;
+				bsum += b[yi] * rbs;
+
+				if (i > 0) {
+					rinsum += sir[0];
+					ginsum += sir[1];
+					binsum += sir[2];
+				} else {
+					routsum += sir[0];
+					goutsum += sir[1];
+					boutsum += sir[2];
+				}
+
+				if (i < hm) {
+					yp += w;
+				}
+			}
+			yi = x;
+			stackpointer = radius;
+			for (y = 0; y < h; y++) {
+				// Preserve alpha channel: ( 0xff000000 & pix[yi] )
+				pix[yi] = (0xff000000 & pix[yi]) | (dv[rsum] << 16) | (dv[gsum] << 8) | dv[bsum];
+
+				rsum -= routsum;
+				gsum -= goutsum;
+				bsum -= boutsum;
+
+				stackstart = stackpointer - radius + div;
+				sir = stack[stackstart % div];
+
+				routsum -= sir[0];
+				goutsum -= sir[1];
+				boutsum -= sir[2];
+
+				if (x == 0) {
+					vmin[y] = Math.min(y + r1, hm) * w;
+				}
+				p = x + vmin[y];
+
+				sir[0] = r[p];
+				sir[1] = g[p];
+				sir[2] = b[p];
+
+				rinsum += sir[0];
+				ginsum += sir[1];
+				binsum += sir[2];
+
+				rsum += rinsum;
+				gsum += ginsum;
+				bsum += binsum;
+
+				stackpointer = (stackpointer + 1) % div;
+				sir = stack[stackpointer];
+
+				routsum += sir[0];
+				goutsum += sir[1];
+				boutsum += sir[2];
+
+				rinsum -= sir[0];
+				ginsum -= sir[1];
+				binsum -= sir[2];
+
+				yi += w;
+			}
+		}
+
+		Log.e("pix", w + " " + h + " " + pix.length);
+		bitmap.setPixels(pix, 0, w, 0, 0, w, h);
+
+		return (bitmap);
 	}
 
 }

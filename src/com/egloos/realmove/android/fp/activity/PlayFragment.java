@@ -39,6 +39,7 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback, 
 	private int mHeight;
 	private LinkImagePlayView mPageView;
 	private ImageWorker mImageFetcher;
+	private ImageWorker mBgFetcher;
 
 	private ActionBar mActionBar;
 
@@ -102,6 +103,9 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback, 
 		mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
 		mImageFetcher.setImageFadeIn(false);
 		mImageFetcher.setCallback(this);
+		
+		mBgFetcher = new ImageFetcher(mContext, mWidth, mHeight);
+		
 	}
 
 	private void load(int projectId) {

@@ -251,7 +251,7 @@ public class ImageFetcher extends ImageResizer {
 		return bitmap;
 	}
 
-	private Bitmap processBitmapFile(Uri uri) {
+	public Bitmap processBitmapFile(Uri uri) {
 		String path = uri.getPath();
 		return decodeSampledBitmapFromFile(path, mImageWidth, mImageHeight, getImageCache());
 	}
