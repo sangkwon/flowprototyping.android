@@ -98,6 +98,7 @@ public class PageListAdapter extends BaseAdapter {
 			holder = new ViewHolder();
 			holder.thumb = (ImageView) view.findViewById(R.id.thumb);
 			holder.text = (TextView) view.findViewById(R.id.text);
+			holder.add = view.findViewById(R.id.add);
 			holder.selectedBox = view.findViewById(R.id.selectedBox);
 
 			view.setLayoutParams(mImageViewLayoutParams);
@@ -114,10 +115,12 @@ public class PageListAdapter extends BaseAdapter {
 			/* Add Page */
 			holder.text.setVisibility(View.GONE);
 			holder.selectedBox.setVisibility(View.GONE);
-			holder.thumb.setBackgroundResource(R.drawable.new_page);
-			holder.thumb.setImageDrawable(null);
+			holder.thumb.setVisibility(View.GONE);
+			holder.add.setVisibility(View.VISIBLE);
 		} else {
 			holder.text.setVisibility(View.VISIBLE);
+			holder.thumb.setVisibility(View.VISIBLE);
+			holder.add.setVisibility(View.GONE);
 			holder.text.setText(page.getName());
 			boolean selected = page.getId() == mSelectedPageId || mSelectedPages.contains(page);
 			holder.selectedBox.setVisibility(selected ? View.VISIBLE : View.GONE);
@@ -134,6 +137,7 @@ public class PageListAdapter extends BaseAdapter {
 		ImageView thumb;
 		TextView text;
 		View selectedBox;
+		View add;
 	}
 
 	/**

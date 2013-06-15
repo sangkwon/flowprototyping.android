@@ -159,7 +159,9 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback, 
 		FpLog.d(TAG, "onClickLink()", link);
 		if (link != null) {
 			int pageId = link.getTargetPageId();
-			displayPage(pageId);
+			if (pageId != Link.NO_TARGET_SPECIFIED) {
+				displayPage(pageId);
+			}
 		}
 		return false;
 	}
