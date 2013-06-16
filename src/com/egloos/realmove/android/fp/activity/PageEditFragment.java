@@ -8,6 +8,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.ImageUtil;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Link;
@@ -15,8 +16,6 @@ import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
 import com.egloos.realmove.android.fp.view.LinkImageEditView;
 import com.egloos.realmove.android.fp.view.LinkImageEditView.OnLinkChangeListener;
-import com.example.android.bitmapfun.util.ImageCache;
-import com.example.android.bitmapfun.util.ImageFetcher;
 import com.example.android.bitmapfun.util.ImageWorker;
 
 import android.app.Activity;
@@ -127,15 +126,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 		mWidth = displayMetrics.widthPixels;
 		mHeight = displayMetrics.heightPixels;
 
-		FpLog.d(TAG, "prepareCache()", mWidth, mHeight);
-
-		ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(mContext, PlayFragment.DIR_CACHE);
-		cacheParams.setMemCacheSizePercent(0.25f);
-
-		mImageFetcher = new ImageFetcher(mContext, mWidth, mHeight);
-		mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
-		mImageFetcher.setImageFadeIn(false);
-		mImageFetcher.setCallback(this);
+		mImageFetcher = ImageUtil.createCache(mContext, getFragmentManager(), ImageUtil.CACHE_DIR_PAGE_VIEW, mWidth, mHeight, this);
 	}
 
 	@Override
@@ -291,11 +282,11 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 					ArrayList<Link> linkRemove = new ArrayList<Link>();
 					for (Link link : links) {
 						if (link.getTargetPageId() == Link.NO_TARGET_SPECIFIED) {
-							linkRemove.add(link);							
+							linkRemove.add(link);
 						}
 					}
-					
-					if ( linkRemove.size() > 0 ) {
+
+					if (linkRemove.size() > 0) {
 						links.removeAll(linkRemove);
 						mPageView.invalidate();
 					}

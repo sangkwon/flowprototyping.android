@@ -16,7 +16,6 @@ import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
 import com.egloos.realmove.android.fp.util.ProjectManager;
 import com.egloos.realmove.android.fp.util.Util;
-import com.example.android.bitmapfun.util.ImageCache;
 import com.example.android.bitmapfun.util.ImageFetcher;
 
 import android.app.Activity;
@@ -38,7 +37,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -113,14 +111,8 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu((mMode == Mode.NORMAL));
 
-		ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(getActivity(), "page_list");
-		cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
-
-		// The ImageFetcher takes care of loading images into our ImageView children asynchronously
 		int size = getActivity().getResources().getDimensionPixelSize(R.dimen.page_thumbnail_size);
-		mImageFetcher = new ImageFetcher(getActivity(), size, size);
-		mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
-		mImageFetcher.setImageFadeIn(false);
+		mImageFetcher = (ImageFetcher) ImageUtil.createCache(mContext, getFragmentManager(), ImageUtil.CACHE_DIR_PAGE_LIST, size, size, null);
 
 		mAdapter = new PageListAdapter(getActivity(), mImageFetcher, mMode);
 	}
@@ -241,7 +233,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 		if (mMode == Mode.NORMAL) {
 			getSherlockActivity().getActionBar().setTitle(mProject.getSubject());
-			//setListBackground();
+			// setListBackground();
 		}
 
 	}

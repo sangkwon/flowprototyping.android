@@ -26,6 +26,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -191,7 +192,7 @@ public abstract class ImageWorker {
 			bitmapWorkerTask.cancel(true);
 			if (BuildConfig.DEBUG) {
 				final Object bitmapData = bitmapWorkerTask.data;
-				//Log.d(TAG, "cancelWork - cancelled work for " + bitmapData);
+				// Log.d(TAG, "cancelWork - cancelled work for " + bitmapData);
 			}
 		}
 	}
@@ -208,7 +209,7 @@ public abstract class ImageWorker {
 			if (bitmapData == null || !bitmapData.equals(data)) {
 				bitmapWorkerTask.cancel(true);
 				if (BuildConfig.DEBUG) {
-					//Log.d(TAG, "cancelPotentialWork - cancelled work for " + data);
+					// Log.d(TAG, "cancelPotentialWork - cancelled work for " + data);
 				}
 			} else {
 				// The same work is already in progress.
@@ -250,7 +251,7 @@ public abstract class ImageWorker {
 		@Override
 		protected BitmapDrawable doInBackground(Object... params) {
 			if (BuildConfig.DEBUG) {
-				//Log.d(TAG, "doInBackground - starting work");
+				// Log.d(TAG, "doInBackground - starting work");
 			}
 
 			data = params[0];
@@ -304,7 +305,7 @@ public abstract class ImageWorker {
 			}
 
 			if (BuildConfig.DEBUG) {
-				//Log.d(TAG, "doInBackground - finished work");
+				// Log.d(TAG, "doInBackground - finished work");
 			}
 
 			return drawable;
@@ -325,7 +326,7 @@ public abstract class ImageWorker {
 
 			if (value != null && imageView != null) {
 				if (BuildConfig.DEBUG) {
-					//Log.d(TAG, "onPostExecute - setting bitmap");
+					// Log.d(TAG, "onPostExecute - setting bitmap");
 				}
 				setImageDrawable(imageView, value);
 			}

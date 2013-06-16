@@ -5,6 +5,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.ImageUtil;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
@@ -30,8 +31,6 @@ import android.widget.Toast;
 import java.io.File;
 
 public class PlayFragment extends BaseFragment implements ImageWorker.Callback, LinkImageView.OnLinkClickListener {
-
-	public static final String DIR_CACHE = "page_view2";
 
 	private static final String TAG = PlayFragment.class.getSimpleName();
 
@@ -94,18 +93,7 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback, 
 		mWidth = displayMetrics.widthPixels;
 		mHeight = displayMetrics.heightPixels;
 
-		FpLog.d(TAG, "prepareCache()", mWidth, mHeight);
-
-		ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(mContext, DIR_CACHE);
-		cacheParams.setMemCacheSizePercent(0.25f);
-
-		mImageFetcher = new ImageFetcher(mContext, mWidth, mHeight);
-		mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
-		mImageFetcher.setImageFadeIn(false);
-		mImageFetcher.setCallback(this);
-		
-		mBgFetcher = new ImageFetcher(mContext, mWidth, mHeight);
-		
+		mImageFetcher = ImageUtil.createCache(mContext, getFragmentManager(), ImageUtil.CACHE_DIR_PAGE_VIEW, mWidth, mHeight, this);
 	}
 
 	private void load(int projectId) {

@@ -7,12 +7,14 @@ import com.actionbarsherlock.view.MenuItem;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.ImageUtil;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.LoadProjectListTask;
 import com.egloos.realmove.android.fp.db.LoadProjectListTask.Callback;
 import com.egloos.realmove.android.fp.model.Project;
 import com.example.android.bitmapfun.util.ImageCache;
 import com.example.android.bitmapfun.util.ImageFetcher;
+import com.example.android.bitmapfun.util.ImageWorker;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -39,7 +41,7 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 	private static final String TAG = ProjectListFragment.class.getSimpleName();
 
 	private ProjectListAdapter mAdapter;
-	private ImageFetcher mImageFetcher;
+	private ImageWorker mImageFetcher;
 
 	private ArrayList<Project> mProjects;
 
@@ -56,16 +58,11 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 
-		ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(getActivity(), "page_list");
-		cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
-
-		// The ImageFetcher takes care of loading images into our ImageView children asynchronously
 		int size = getActivity().getResources().getDimensionPixelSize(R.dimen.page_thumbnail_size);
-		mImageFetcher = new ImageFetcher(getActivity(), size, size);
-		mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
-		mImageFetcher.setImageFadeIn(false);
 
-		mAdapter = new ProjectListAdapter(getActivity(), mImageFetcher);
+		mImageFetcher = ImageUtil.createCache(mContext, getFragmentManager(), ImageUtil.CACHE_DIR_PAGE_LIST, size, size, null);
+
+		mAdapter = new ProjectListAdapter(getActivity(), (ImageFetcher) mImageFetcher);
 	}
 
 	/**
