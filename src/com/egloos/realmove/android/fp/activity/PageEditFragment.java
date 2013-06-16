@@ -286,7 +286,20 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 				return true;
 			}
 			case R.id.remove_unlink: {
-				
+				ArrayList<Link> links = mPage.getLinks();
+				if (links != null) {
+					ArrayList<Link> linkRemove = new ArrayList<Link>();
+					for (Link link : links) {
+						if (link.getTargetPageId() == Link.NO_TARGET_SPECIFIED) {
+							linkRemove.add(link);							
+						}
+					}
+					
+					if ( linkRemove.size() > 0 ) {
+						links.removeAll(linkRemove);
+						mPageView.invalidate();
+					}
+				}
 				return true;
 			}
 		}
