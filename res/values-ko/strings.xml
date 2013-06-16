@@ -8,7 +8,7 @@
     <string name="menu_gallery">갤러리</string>
     <string name="menu_camera">카메라</string>
     <string name="menu_web">웹</string>
-    <string name="menu_edit">수정</string>
+    <string name="menu_edit">편집</string>
     <string name="menu_remove">삭제</string>
     <string name="menu_link_to">연결</string>
     <string name="menu_create">링크 추가</string>
@@ -29,5 +29,6 @@
     <string name="subject">제목</string>
     <string name="menu_export">내보내기</string>
     <string name="menu_rename">이름 변경</string>
+    <string name="menu_setting">설정</string>
 
 </resources>

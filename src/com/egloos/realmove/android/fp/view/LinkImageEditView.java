@@ -219,7 +219,7 @@ public class LinkImageEditView extends LinkImageView implements OnMenuItemClickL
 						setState(State.SELECTING_LINK);
 					}
 				} else {
-					if ( selected == null ) {
+					if (selected == null) {
 						setState(State.SELECTING_EMPTY);
 						unselectLink();
 					} else {
@@ -336,6 +336,13 @@ public class LinkImageEditView extends LinkImageView implements OnMenuItemClickL
 		}
 		return y * ry;
 
+	}
+
+	public Link createNewLink() {
+		float x = getWidth() / 2;
+		float y = getHeight() / 2;
+
+		return createNewLink(x, y);
 	}
 
 	private Link createNewLink(float x, float y) {

@@ -281,6 +281,14 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 				startActivityForResult(intent, REQ_CODE_PLAY);
 				return true;
 			}
+			case R.id.add: {
+				mPageView.createNewLink();
+				return true;
+			}
+			case R.id.remove_unlink: {
+				
+				return true;
+			}
 		}
 		return super.onOptionsItemSelected(item);
 	}

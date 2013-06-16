@@ -30,5 +30,6 @@
     <string name="thumbnail">Thumbnail</string>
     <string name="menu_export">Export</string>
     <string name="menu_rename">Rename</string>
+    <string name="menu_setting">Setting</string>
 
 </resources>
