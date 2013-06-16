@@ -80,10 +80,9 @@ public class LinkImagePlayView extends LinkImageView implements OnLinkClickListe
 
 		if (mLinks != null) {
 			if (mBlinkState == BlinkState.BLINKING) {
-				paint.setColor(0x8033b5e5);
-
 				int len = mLinks.size();
 				for (int i = 0; i < len; i++) {
+					paint.setColor(0x4033b5e5);
 					drawLink(canvas, paint, mLinks.get(i));
 				}
 			}
@@ -95,10 +94,8 @@ public class LinkImagePlayView extends LinkImageView implements OnLinkClickListe
 	@Override
 	protected void drawLink(Canvas canvas, Paint paint, Link link) {
 		if (mBlinkState == BlinkState.BLINKING) {
-			if (link == mBlinkingLink || mBlinkingLink == null) {
-				blinkPaint.setColor(0x4033b5e5);
-				super.drawLink(canvas, blinkPaint, link);
-				return;
+			if (link == mBlinkingLink ) {
+				paint.setColor(0x40aa66cc);
 			}
 		}
 		super.drawLink(canvas, paint, link);
