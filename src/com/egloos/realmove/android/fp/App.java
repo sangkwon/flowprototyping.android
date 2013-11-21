@@ -2,6 +2,7 @@
 package com.egloos.realmove.android.fp;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import android.app.Application;
@@ -17,6 +18,7 @@ public class App extends Application {
 
 		instance = this;
 
+		initImageCache(getApplicationContext());
 	}
 
 	public static Application getInstacne() {
@@ -30,8 +32,10 @@ public class App extends Application {
 				.build();
 
 		ImageLoaderConfiguration conf = new ImageLoaderConfiguration.Builder(context)
+				.discCacheSize(50 * 1024 * 1024)
+				.discCacheFileCount(100)
 				.defaultDisplayImageOptions(options).build();
 
-		// FIXME is this enough?
+		ImageLoader.getInstance().init(conf);
 	}
 }

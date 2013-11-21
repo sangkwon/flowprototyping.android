@@ -3,12 +3,11 @@ package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.model.Project;
-import com.example.android.bitmapfun.util.ImageFetcher;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,21 +15,18 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.util.ArrayList;
 
 public class ProjectListAdapter extends BaseAdapter implements View.OnClickListener {
 
-	private ImageFetcher mImageFetcher;
 	private Context mContext;
 
 	private ArrayList<Project> mProjects;
 	private LayoutInflater mInflater;
 	private Resources mResources;
 
-	public ProjectListAdapter(Context context, ImageFetcher imageFetcher) {
-		this.mImageFetcher = imageFetcher;
+	public ProjectListAdapter(Context context) {
 		this.mContext = context;
 
 		this.mResources = mContext.getResources();
@@ -84,7 +80,7 @@ public class ProjectListAdapter extends BaseAdapter implements View.OnClickListe
 		DateFormat df = DateFormat.getDateInstance();
 		holder.created.setText(df.format(project.getCreated()));
 		if (project.getMainImage() != null) {
-			mImageFetcher.loadImage(Uri.fromFile(new File(project.getMainImage())), holder.thumb);
+			ImageLoader.getInstance().displayImage(project.getMainImage(), holder.thumb);
 		} else {
 			holder.thumb.setImageBitmap(null);
 			holder.thumb.setImageDrawable(mResources.getDrawable(R.drawable.ic_launcher));

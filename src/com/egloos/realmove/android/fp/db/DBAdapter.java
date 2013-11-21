@@ -21,7 +21,7 @@ public class DBAdapter {
 	private static final String TAG = DBAdapter.class.getSimpleName();
 
 	private static final String DB_NAME = "fp";
-	private static final int DB_VERSION = 1;
+	private static final int DB_VERSION = 2;
 
 	private static final String TBL_PROJECTS = "project";
 	private static final String TBL_PAGES = "pages";
@@ -38,10 +38,10 @@ public class DBAdapter {
 
 	private static final String PROJECT_ID = "proj_id";
 	private static final String NAME = "name";
-	private static final String IMAGE_PATH = "imagePath";
+	private static final String IMAGE_URI = "imageUri";
 
 	private static final String CREATE_TBL_PAGE = "CREATE TABLE " + TBL_PAGES + " (" + ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
-			+ PROJECT_ID + " INTEGER," + NAME + " TEXT," + IMAGE_PATH + " TEXT);";
+			+ PROJECT_ID + " INTEGER," + NAME + " TEXT," + IMAGE_URI + " TEXT);";
 
 	private static final String EVENT = "event";
 	private static final String PAGE_ID = "page_id";
@@ -199,7 +199,7 @@ public class DBAdapter {
 		Cursor cursor = null;
 		try {
 			String[] projection = new String[] {
-					ID, PROJECT_ID, NAME, IMAGE_PATH
+					ID, PROJECT_ID, NAME, IMAGE_URI
 			};
 			cursor = mDb.query(TBL_PAGES, projection, PROJECT_ID + "=" + projectId, null, null, null, null, null);
 			ArrayList<Page> pages = new ArrayList<Page>();
@@ -208,7 +208,7 @@ public class DBAdapter {
 				page.setId(cursor.getInt(0));
 				page.setProjectId(cursor.getInt(1));
 				page.setName(cursor.getString(2));
-				page.setImagePath(cursor.getString(3));
+				page.setImageUri(cursor.getString(3));
 				pages.add(page);
 			}
 			return pages;
@@ -225,7 +225,7 @@ public class DBAdapter {
 		Cursor cursor = null;
 		try {
 			String[] projection = new String[] {
-					ID, PROJECT_ID, NAME, IMAGE_PATH
+					ID, PROJECT_ID, NAME, IMAGE_URI
 			};
 			cursor = mDb.query(TBL_PAGES, projection, ID + "=" + pageId, null, null, null, null, null);
 			if (cursor.moveToNext()) {
@@ -233,7 +233,7 @@ public class DBAdapter {
 				page.setId(cursor.getInt(0));
 				page.setProjectId(cursor.getInt(1));
 				page.setName(cursor.getString(2));
-				page.setImagePath(cursor.getString(3));
+				page.setImageUri(cursor.getString(3));
 				return page;
 			}
 		} catch (Exception ex) {
@@ -312,7 +312,7 @@ public class DBAdapter {
 		ContentValues values = new ContentValues();
 		values.put(PROJECT_ID, page.getProjectId());
 		values.put(NAME, page.getName());
-		values.put(IMAGE_PATH, page.getImagePath());
+		values.put(IMAGE_URI, page.getImageUri());
 
 		mDb.update(TBL_PAGES, values, ID + "=" + page.getId(), null);
 	}
@@ -355,7 +355,7 @@ public class DBAdapter {
 		ContentValues values = new ContentValues();
 		values.put(PROJECT_ID, page.getProjectId());
 		values.put(NAME, page.getName());
-		values.put(IMAGE_PATH, page.getImagePath());
+		values.put(IMAGE_URI, page.getImageUri());
 		mDb.insert(TBL_PAGES, null, values);
 
 		int newId = getLastId(TBL_PAGES);

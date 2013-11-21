@@ -19,7 +19,7 @@ public class Page implements Serializable {
 	private int id;
 	private ArrayList<Link> links;
 	private String name;
-	private String imagePath;
+	private String imageUri;
 
 	public int getProjectId() {
 		return projectId;
@@ -59,12 +59,12 @@ public class Page implements Serializable {
 		links.add(link);
 	}
 
-	public String getImagePath() {
-		return imagePath;
+	public String getImageUri() {
+		return imageUri;
 	}
 
-	public void setImagePath(String imagePath) {
-		this.imagePath = imagePath;
+	public void setImageUri(String imagePath) {
+		this.imageUri = imagePath;
 	}
 
 	public JSONObject toJSONObject() {
@@ -73,7 +73,7 @@ public class Page implements Serializable {
 
 			jsonObj.putOpt("id", this.getId());
 			jsonObj.putOpt("name", this.getName());
-			jsonObj.putOpt("imagePath", this.getImagePath());
+			jsonObj.putOpt("imageUri", this.getImageUri());
 
 			JSONArray linkObj = new JSONArray();
 			if (links != null) {
@@ -102,7 +102,7 @@ public class Page implements Serializable {
 			page.setId(jsonObj.getInt("id"));
 			page.setName(jsonObj.optString("name"));
 			page.setProjectId(projectId);
-			page.setImagePath(jsonObj.optString("imagePath"));
+			page.setImageUri(jsonObj.optString("imagePath"));
 
 			JSONArray linksObj = jsonObj.optJSONArray("links");
 			if (linksObj != null) {

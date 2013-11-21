@@ -8,7 +8,6 @@ import com.actionbarsherlock.view.MenuItem;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
-import com.egloos.realmove.android.fp.common.ImageUtil;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Link;
@@ -16,12 +15,13 @@ import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
 import com.egloos.realmove.android.fp.view.LinkImageEditView;
 import com.egloos.realmove.android.fp.view.LinkImageEditView.OnLinkChangeListener;
-import com.example.android.bitmapfun.util.ImageWorker;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -31,10 +31,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 
-public class PageEditFragment extends BaseFragment implements OnLinkChangeListener, ImageWorker.Callback, PageListFragment.SelectCallback {
+public class PageEditFragment extends BaseFragment implements OnLinkChangeListener, PageListFragment.SelectCallback {
 
 	private static final String TAG = PageEditFragment.class.getSimpleName();
 
@@ -47,7 +46,6 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
 	private int mWidth;
 	private int mHeight;
-	private ImageWorker mImageFetcher;
 	private LinkImageEditView mPageView;
 
 	private ActionBar mActionBar;
@@ -113,7 +111,28 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
 				mActionBar.setTitle(mPage.getName());
 
-				mImageFetcher.loadImage(Uri.fromFile(new File(mPage.getImagePath())), mPageView);
+				ImageLoader.getInstance().displayImage(mPage.getImageUri(), mPageView, new ImageLoadingListener() {
+
+					@Override
+					public void onLoadingStarted(String imageUri, View view) {
+						// do nothing
+					}
+
+					@Override
+					public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+						onLoadImage(false, mPageView, null);
+					}
+
+					@Override
+					public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+						onLoadImage(true, mPageView, loadedImage);
+					}
+
+					@Override
+					public void onLoadingCancelled(String imageUri, View view) {
+						onLoadImage(false, mPageView, null);
+					}
+				});
 			}
 		});
 	}
@@ -123,22 +142,14 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 		getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 		mWidth = displayMetrics.widthPixels;
 		mHeight = displayMetrics.heightPixels;
-
-		mImageFetcher = ImageUtil.createCache(mContext, getFragmentManager(), ImageUtil.CACHE_DIR_PAGE_VIEW, mWidth, mHeight, this);
 	}
 
 	@Override
 	public void onDestroyView() {
-		if (mImageFetcher != null) {
-			mImageFetcher.closeCache();
-			mImageFetcher = null;
-		}
-
 		super.onDestroyView();
 	}
 
-	@Override
-	public void onLoadImage(boolean success, final ImageView pageView, final BitmapDrawable bd) {
+	public void onLoadImage(boolean success, final ImageView pageView, final Bitmap bd) {
 		if (success) {
 			ArrayList<Link> links = mPage.getLinks();
 			if (links == null) {

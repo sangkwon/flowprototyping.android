@@ -5,21 +5,19 @@ import com.actionbarsherlock.app.ActionBar;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
-import com.egloos.realmove.android.fp.common.ImageUtil;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
 import com.egloos.realmove.android.fp.view.LinkImagePlayView;
 import com.egloos.realmove.android.fp.view.LinkImageView;
-import com.example.android.bitmapfun.util.ImageCache;
-import com.example.android.bitmapfun.util.ImageFetcher;
-import com.example.android.bitmapfun.util.ImageWorker;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -28,17 +26,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.File;
-
-public class PlayFragment extends BaseFragment implements ImageWorker.Callback, LinkImageView.OnLinkClickListener {
+public class PlayFragment extends BaseFragment implements LinkImageView.OnLinkClickListener {
 
 	private static final String TAG = PlayFragment.class.getSimpleName();
 
 	private int mWidth;
 	private int mHeight;
 	private LinkImagePlayView mPageView;
-	private ImageWorker mImageFetcher;
-	private ImageWorker mBgFetcher;
 
 	private ActionBar mActionBar;
 
@@ -92,8 +86,6 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback, 
 		getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 		mWidth = displayMetrics.widthPixels;
 		mHeight = displayMetrics.heightPixels;
-
-		mImageFetcher = ImageUtil.createCache(mContext, getFragmentManager(), ImageUtil.CACHE_DIR_PAGE_VIEW, mWidth, mHeight, this);
 	}
 
 	private void load(int projectId) {
@@ -124,13 +116,33 @@ public class PlayFragment extends BaseFragment implements ImageWorker.Callback, 
 		if (mPage != null) {
 			mPageView.setLinks(mPage.getLinks());
 
-			mImageFetcher.loadImage(Uri.fromFile(new File(mPage.getImagePath())), mPageView);
+			ImageLoader.getInstance().displayImage(mPage.getImageUri(), mPageView, new ImageLoadingListener() {
+
+				@Override
+				public void onLoadingStarted(String imageUri, View view) {
+					// do nothing
+				}
+
+				@Override
+				public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+					onLoadImage(false, mPageView, null);
+				}
+
+				@Override
+				public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+					onLoadImage(true, mPageView, loadedImage);
+				}
+
+				@Override
+				public void onLoadingCancelled(String imageUri, View view) {
+					onLoadImage(false, mPageView, null);
+				}
+			});
 			setState(State.PRELOAD);
 		}
 	}
 
-	@Override
-	public void onLoadImage(boolean success, ImageView imageView, final BitmapDrawable bd) {
+	public void onLoadImage(boolean success, ImageView imageView, final Bitmap bitmap) {
 		setState(State.AFTERLOAD);
 
 		if (!success) {

@@ -16,7 +16,7 @@ import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
 import com.egloos.realmove.android.fp.util.ProjectManager;
 import com.egloos.realmove.android.fp.util.Util;
-import com.example.android.bitmapfun.util.ImageFetcher;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -82,7 +82,6 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 	private int mSelectedPageId;
 
 	private PageListAdapter mAdapter;
-	private ImageFetcher mImageFetcher;
 	private ActionMode mActionMode;
 	private View mContentView;
 	private GridView mGridView;
@@ -112,9 +111,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 		setHasOptionsMenu((mMode == Mode.NORMAL));
 
 		int size = getActivity().getResources().getDimensionPixelSize(R.dimen.page_thumbnail_size);
-		mImageFetcher = (ImageFetcher) ImageUtil.createCache(mContext, getFragmentManager(), ImageUtil.CACHE_DIR_PAGE_LIST, size, size, null);
-
-		mAdapter = new PageListAdapter(getActivity(), mImageFetcher, mMode);
+		mAdapter = new PageListAdapter(getActivity(), mMode);
 	}
 
 	@Override
@@ -198,11 +195,6 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 	@Override
 	public void onDestroy() {
-		if (mImageFetcher != null) {
-			mImageFetcher.closeCache();
-			mImageFetcher = null;
-		}
-
 		mGridView = null;
 		mAdapter = null;
 		super.onDestroy();
@@ -408,7 +400,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 				return false;
 
 			String newPath = newFile.getAbsolutePath();
-			page.setImagePath(newPath);
+			page.setImageUri("file://" + newPath);
 
 			boolean success = false;
 
@@ -444,7 +436,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 	 */
 	private void defineProjectMainImage(DBAdapter db) throws Exception {
 		if (mProject.size() > 0) {
-			mProject.setMainImage(mProject.get(0).getImagePath());
+			mProject.setMainImage(mProject.get(0).getImageUri());
 		} else {
 			mProject.setMainImage(null);
 		}
@@ -674,7 +666,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 					}
 
 					mProject.remove(page);
-					new File(page.getImagePath()).delete();
+					new File(page.getImageUri()).delete();
 				}
 				_db.setTransactionSuccessful();
 
@@ -768,7 +760,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 			@Override
 			protected Bitmap doInBackground(Void... params) {
 				FpLog.d(TAG, "doInBackground()", path);
-				Bitmap bitmap = mImageFetcher.processBitmapFile(Uri.fromFile(new File(path)));
+				Bitmap bitmap = ImageLoader.getInstance().loadImageSync(path);
 				if (bitmap == null)
 					return null;
 				Bitmap newBitmap = ImageUtil.fastblur(bitmap, 70);

@@ -7,14 +7,10 @@ import com.actionbarsherlock.view.MenuItem;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.FpLog;
-import com.egloos.realmove.android.fp.common.ImageUtil;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.LoadProjectListTask;
 import com.egloos.realmove.android.fp.db.LoadProjectListTask.Callback;
 import com.egloos.realmove.android.fp.model.Project;
-import com.example.android.bitmapfun.util.ImageCache;
-import com.example.android.bitmapfun.util.ImageFetcher;
-import com.example.android.bitmapfun.util.ImageWorker;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -41,7 +37,6 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 	private static final String TAG = ProjectListFragment.class.getSimpleName();
 
 	private ProjectListAdapter mAdapter;
-	private ImageWorker mImageFetcher;
 
 	private ArrayList<Project> mProjects;
 
@@ -60,9 +55,7 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 
 		int size = getActivity().getResources().getDimensionPixelSize(R.dimen.page_thumbnail_size);
 
-		mImageFetcher = ImageUtil.createCache(mContext, getFragmentManager(), ImageUtil.CACHE_DIR_PAGE_LIST, size, size, null);
-
-		mAdapter = new ProjectListAdapter(getActivity(), (ImageFetcher) mImageFetcher);
+		mAdapter = new ProjectListAdapter(getActivity());
 	}
 
 	/**
@@ -113,11 +106,6 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 
 	@Override
 	public void onDestroy() {
-		if (mImageFetcher != null) {
-			mImageFetcher.closeCache();
-			mImageFetcher = null;
-		}
-
 		mAdapter = null;
 		super.onDestroy();
 	}

@@ -1,31 +1,12 @@
 
 package com.egloos.realmove.android.fp.common;
 
-import com.example.android.bitmapfun.util.ImageCache;
-import com.example.android.bitmapfun.util.ImageFetcher;
-import com.example.android.bitmapfun.util.ImageWorker;
-
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.v4.app.FragmentManager;
 
 public class ImageUtil {
 
 	public static String CACHE_DIR_PAGE_LIST = "page_list";
 	public static String CACHE_DIR_PAGE_VIEW = "page_view";
-
-	public static ImageFetcher createCache(Context context, FragmentManager fm, String dir, int width, int height, ImageWorker.Callback callback) {
-		ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(context, dir);
-		cacheParams.setMemCacheSizePercent(0.25f);
-
-		ImageFetcher imageFetcher = new ImageFetcher(context, width, height);
-		imageFetcher.addImageCache(fm, cacheParams);
-		imageFetcher.setImageFadeIn(false);
-		imageFetcher.setCallback(callback);
-
-		return imageFetcher;
-
-	}
 
 	public static Bitmap fastblur(Bitmap sentBitmap, int radius) {
 

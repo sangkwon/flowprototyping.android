@@ -4,10 +4,9 @@ package com.egloos.realmove.android.fp.activity;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.activity.PageListFragment.Mode;
 import com.egloos.realmove.android.fp.model.Page;
-import com.example.android.bitmapfun.util.ImageFetcher;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -33,7 +31,6 @@ public class PageListAdapter extends BaseAdapter {
 	private int mWidth;
 	private int mHeight;
 	private int mColumnSpacing;
-	private ImageFetcher mImageFetcher;
 	GridView.LayoutParams mImageViewLayoutParams = new GridView.LayoutParams(android.widget.AbsListView.LayoutParams.MATCH_PARENT,
 			android.widget.AbsListView.LayoutParams.MATCH_PARENT);
 	private int mNumColumns;
@@ -43,14 +40,12 @@ public class PageListAdapter extends BaseAdapter {
 	private boolean mActionMode = false;
 	private Mode mMode;
 
-	public PageListAdapter(Context context, ImageFetcher imageFetcher, Mode mode) {
+	public PageListAdapter(Context context, Mode mode) {
 		mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		mWidth = context.getResources().getDimensionPixelSize(R.dimen.page_thumbnail_size);
 		mHeight = mWidth;
 		mColumnSpacing = context.getResources().getDimensionPixelSize(R.dimen.page_thumbnail_spacing);
-
-		mImageFetcher = imageFetcher;
 		mMode = mode;
 	}
 
@@ -124,7 +119,7 @@ public class PageListAdapter extends BaseAdapter {
 			holder.text.setText(page.getName());
 			boolean selected = page.getId() == mSelectedPageId || mSelectedPages.contains(page);
 			holder.selectedBox.setVisibility(selected ? View.VISIBLE : View.GONE);
-			mImageFetcher.loadImage(Uri.fromFile(new File(page.getImagePath())), holder.thumb);
+			ImageLoader.getInstance().displayImage(page.getImageUri(), holder.thumb);
 			holder.thumb.setBackgroundDrawable(null);
 			holder.thumb.setScaleType(ScaleType.CENTER_CROP);
 			holder.thumb.setPadding(0, 0, 0, 0);
@@ -151,7 +146,6 @@ public class PageListAdapter extends BaseAdapter {
 		}
 		mHeight = height;
 		mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, mHeight);
-		mImageFetcher.setHeight(height);
 		notifyDataSetChanged();
 	}
 
@@ -161,7 +155,6 @@ public class PageListAdapter extends BaseAdapter {
 
 	public void setWidth(int width) {
 		this.mWidth = width;
-		mImageFetcher.setWidth(width);
 	}
 
 	public void setNumColumns(int numColumns) {
