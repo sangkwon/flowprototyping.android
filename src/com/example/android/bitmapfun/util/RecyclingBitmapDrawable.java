@@ -24,8 +24,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
 /**
- * A BitmapDrawable that keeps track of whether it is being displayed or cached. When the drawable is no longer being displayed or cached,
- * {@link Bitmap#recycle() recycle()} will be called on this drawable's bitmap.
+ * A BitmapDrawable that keeps track of whether it is being displayed or cached. When the drawable is no longer being displayed or cached, {@link Bitmap#recycle() recycle()} will
+ * be called on this drawable's bitmap.
  */
 public class RecyclingBitmapDrawable extends BitmapDrawable {
 
@@ -41,8 +41,7 @@ public class RecyclingBitmapDrawable extends BitmapDrawable {
 	}
 
 	/**
-	 * Notify the drawable that the displayed state has changed. Internally a count is kept so that the drawable knows when it is no longer being
-	 * displayed.
+	 * Notify the drawable that the displayed state has changed. Internally a count is kept so that the drawable knows when it is no longer being displayed.
 	 * 
 	 * @param isDisplayed - Whether the drawable is being displayed or not
 	 */

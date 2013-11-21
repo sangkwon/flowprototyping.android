@@ -80,11 +80,9 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 		mActionBar.setDisplayHomeAsUpEnabled(true);
 
 		/*
-		 * // Hide and show the ActionBar as the visibility changes mPageView.setOnSystemUiVisibilityChangeListener( new
-		 * View.OnSystemUiVisibilityChangeListener() {
-		 * @Override public void onSystemUiVisibilityChange(int vis) { if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0) { mActionBar.hide(); } else {
-		 * mActionBar.show(); } } }); if (Utils.hasJellyBean()) { // Start low profile mode and hide ActionBar
-		 * mPageView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE); }
+		 * // Hide and show the ActionBar as the visibility changes mPageView.setOnSystemUiVisibilityChangeListener( new View.OnSystemUiVisibilityChangeListener() {
+		 * @Override public void onSystemUiVisibilityChange(int vis) { if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0) { mActionBar.hide(); } else { mActionBar.show(); } } }); if
+		 * (Utils.hasJellyBean()) { // Start low profile mode and hide ActionBar mPageView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE); }
 		 */
 
 		// mActionBar.hide();

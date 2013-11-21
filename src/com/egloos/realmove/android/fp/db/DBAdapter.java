@@ -133,7 +133,7 @@ public class DBAdapter {
 
 	public int getLastId(String tableName) {
 		String[] projection = new String[] {
-			"MAX(" + ID + ")"
+				"MAX(" + ID + ")"
 		};
 		Cursor cursor = mDb.query(tableName, projection, null, null, null, null, null, null);
 		if (cursor.moveToNext()) {

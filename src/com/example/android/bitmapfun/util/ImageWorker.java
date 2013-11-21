@@ -35,8 +35,8 @@ import android.widget.ImageView;
 import java.lang.ref.WeakReference;
 
 /**
- * This class wraps up completing some arbitrary long running work when loading a bitmap to an ImageView. It handles things like using a memory and
- * disk cache, running the work in a background thread and setting a placeholder image.
+ * This class wraps up completing some arbitrary long running work when loading a bitmap to an ImageView. It handles things like using a memory and disk cache, running the work in
+ * a background thread and setting a placeholder image.
  */
 public abstract class ImageWorker {
 	private static final String TAG = "ImageWorker";
@@ -76,10 +76,9 @@ public abstract class ImageWorker {
 	}
 
 	/**
-	 * Load an image specified by the data parameter into an ImageView (override {@link ImageWorker#processBitmap(Object)} to define the processing
-	 * logic). A memory and disk cache will be used if an {@link ImageCache} has been added using
-	 * {@link ImageWorker#addImageCache(FragmentManager, ImageCache.ImageCacheParams)}. If the image is found in the memory cache, it is set
-	 * immediately, otherwise an {@link AsyncTask} will be created to asynchronously load the bitmap.
+	 * Load an image specified by the data parameter into an ImageView (override {@link ImageWorker#processBitmap(Object)} to define the processing logic). A memory and disk cache
+	 * will be used if an {@link ImageCache} has been added using {@link ImageWorker#addImageCache(FragmentManager, ImageCache.ImageCacheParams)}. If the image is found in the
+	 * memory cache, it is set immediately, otherwise an {@link AsyncTask} will be created to asynchronously load the bitmap.
 	 * 
 	 * @param data The URL of the image to download.
 	 * @param imageView The ImageView to bind the downloaded image to.
@@ -166,8 +165,8 @@ public abstract class ImageWorker {
 	}
 
 	/**
-	 * Subclasses should override this to define any processing or work that must happen to produce the final bitmap. This will be executed in a
-	 * background thread and be long running. For example, you could resize a large bitmap here, or pull down an image from the network.
+	 * Subclasses should override this to define any processing or work that must happen to produce the final bitmap. This will be executed in a background thread and be long
+	 * running. For example, you could resize a large bitmap here, or pull down an image from the network.
 	 * 
 	 * @param data The data to identify which image to process, as provided by {@link ImageWorker#loadImage(Object, ImageView)}
 	 * @return The processed bitmap
@@ -198,8 +197,8 @@ public abstract class ImageWorker {
 	}
 
 	/**
-	 * Returns true if the current work has been canceled or if there was no work in progress on this image view. Returns false if the work in
-	 * progress deals with the same data. The work is not stopped in that case.
+	 * Returns true if the current work has been canceled or if there was no work in progress on this image view. Returns false if the work in progress deals with the same data.
+	 * The work is not stopped in that case.
 	 */
 	public static boolean cancelPotentialWork(Object data, ImageView imageView) {
 		final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
@@ -356,9 +355,8 @@ public abstract class ImageWorker {
 	}
 
 	/**
-	 * A custom Drawable that will be attached to the imageView while the work is in progress. Contains a reference to the actual worker task, so that
-	 * it can be stopped if a new binding is required, and makes sure that only the last started worker process can bind its result, independently of
-	 * the finish order.
+	 * A custom Drawable that will be attached to the imageView while the work is in progress. Contains a reference to the actual worker task, so that it can be stopped if a new
+	 * binding is required, and makes sure that only the last started worker process can bind its result, independently of the finish order.
 	 */
 	private static class AsyncDrawable extends BitmapDrawable {
 		private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
@@ -396,11 +394,11 @@ public abstract class ImageWorker {
 	}
 
 	/**
-	 * Pause any ongoing background work. This can be used as a temporary measure to improve performance. For example background work could be paused
-	 * when a ListView or GridView is being scrolled using a {@link android.widget.AbsListView.OnScrollListener} to keep scrolling smooth.
+	 * Pause any ongoing background work. This can be used as a temporary measure to improve performance. For example background work could be paused when a ListView or GridView is
+	 * being scrolled using a {@link android.widget.AbsListView.OnScrollListener} to keep scrolling smooth.
 	 * <p>
-	 * If work is paused, be sure setPauseWork(false) is called again before your fragment or activity is destroyed (for example during
-	 * {@link android.app.Activity#onPause()}), or there is a risk the background thread will never finish.
+	 * If work is paused, be sure setPauseWork(false) is called again before your fragment or activity is destroyed (for example during {@link android.app.Activity#onPause()}), or
+	 * there is a risk the background thread will never finish.
 	 */
 	public void setPauseWork(boolean pauseWork) {
 		synchronized (mPauseWorkLock) {

@@ -46,8 +46,8 @@ import java.util.Iterator;
 
 /**
  * This class handles disk and memory caching of bitmaps in conjunction with the {@link ImageWorker} class and its subclasses. Use
- * {@link ImageCache#getInstance(FragmentManager, ImageCacheParams)} to get an instance of this class, although usually a cache should be added
- * directly to an {@link ImageWorker} by calling {@link ImageWorker#addImageCache(FragmentManager, ImageCacheParams)}.
+ * {@link ImageCache#getInstance(FragmentManager, ImageCacheParams)} to get an instance of this class, although usually a cache should be added directly to an {@link ImageWorker}
+ * by calling {@link ImageWorker#addImageCache(FragmentManager, ImageCacheParams)}.
  */
 public class ImageCache {
 	private static final String TAG = "ImageCache";
@@ -87,8 +87,7 @@ public class ImageCache {
 	}
 
 	/**
-	 * Return an {@link ImageCache} instance. A {@link RetainFragment} is used to retain the ImageCache object across configuration changes such as a
-	 * change in device orientation.
+	 * Return an {@link ImageCache} instance. A {@link RetainFragment} is used to retain the ImageCache object across configuration changes such as a change in device orientation.
 	 * 
 	 * @param fragmentManager The fragment manager to use when dealing with the retained fragment.
 	 * @param cacheParams The cache parameters to use if the ImageCache needs instantiation.
@@ -172,8 +171,8 @@ public class ImageCache {
 	}
 
 	/**
-	 * Initializes the disk cache. Note that this includes disk access so this should not be executed on the main/UI thread. By default an ImageCache
-	 * does not initialize the disk cache when it is created, instead you should call initDiskCache() to initialize it on a background thread.
+	 * Initializes the disk cache. Note that this includes disk access so this should not be executed on the main/UI thread. By default an ImageCache does not initialize the disk
+	 * cache when it is created, instead you should call initDiskCache() to initialize it on a background thread.
 	 */
 	public void initDiskCache() {
 		// Set up disk cache
@@ -360,8 +359,7 @@ public class ImageCache {
 	}
 
 	/**
-	 * Clears both the memory and disk cache associated with this ImageCache object. Note that this includes disk access so this should not be
-	 * executed on the main/UI thread.
+	 * Clears both the memory and disk cache associated with this ImageCache object. Note that this includes disk access so this should not be executed on the main/UI thread.
 	 */
 	public void clearCache() {
 		if (mMemoryCache != null) {
@@ -389,8 +387,7 @@ public class ImageCache {
 	}
 
 	/**
-	 * Flushes the disk cache associated with this ImageCache object. Note that this includes disk access so this should not be executed on the
-	 * main/UI thread.
+	 * Flushes the disk cache associated with this ImageCache object. Note that this includes disk access so this should not be executed on the main/UI thread.
 	 */
 	public void flush() {
 		synchronized (mDiskCacheLock) {
@@ -408,8 +405,7 @@ public class ImageCache {
 	}
 
 	/**
-	 * Closes the disk cache associated with this ImageCache object. Note that this includes disk access so this should not be executed on the main/UI
-	 * thread.
+	 * Closes the disk cache associated with this ImageCache object. Note that this includes disk access so this should not be executed on the main/UI thread.
 	 */
 	public void close() {
 		synchronized (mDiskCacheLock) {
@@ -447,19 +443,17 @@ public class ImageCache {
 		 * {@link ImageWorker#addImageCache(FragmentManager, ImageCacheParams)}.
 		 * 
 		 * @param context A context to use.
-		 * @param diskCacheDirectoryName A unique subdirectory name that will be appended to the application cache directory. Usually "cache" or
-		 *            "images" is sufficient.
+		 * @param diskCacheDirectoryName A unique subdirectory name that will be appended to the application cache directory. Usually "cache" or "images" is sufficient.
 		 */
 		public ImageCacheParams(Context context, String diskCacheDirectoryName) {
 			diskCacheDir = getDiskCacheDir(context, diskCacheDirectoryName);
 		}
 
 		/**
-		 * Sets the memory cache size based on a percentage of the max available VM memory. Eg. setting percent to 0.2 would set the memory cache to
-		 * one fifth of the available memory. Throws {@link IllegalArgumentException} if percent is < 0.05 or > .8. memCacheSize is stored in
-		 * kilobytes instead of bytes as this will eventually be passed to construct a LruCache which takes an int in its constructor. This value
-		 * should be chosen carefully based on a number of factors Refer to the corresponding Android Training class for more discussion:
-		 * http://developer.android.com/training/displaying-bitmaps/
+		 * Sets the memory cache size based on a percentage of the max available VM memory. Eg. setting percent to 0.2 would set the memory cache to one fifth of the available
+		 * memory. Throws {@link IllegalArgumentException} if percent is < 0.05 or > .8. memCacheSize is stored in kilobytes instead of bytes as this will eventually be passed to
+		 * construct a LruCache which takes an int in its constructor. This value should be chosen carefully based on a number of factors Refer to the corresponding Android
+		 * Training class for more discussion: http://developer.android.com/training/displaying-bitmaps/
 		 * 
 		 * @param percent Percent of available app memory to use to size memory cache
 		 */
@@ -610,8 +604,7 @@ public class ImageCache {
 	}
 
 	/**
-	 * A simple non-UI Fragment that stores a single Object and is retained over configuration changes. It will be used to retain the ImageCache
-	 * object.
+	 * A simple non-UI Fragment that stores a single Object and is retained over configuration changes. It will be used to retain the ImageCache object.
 	 */
 	public static class RetainFragment extends Fragment {
 		private Object mObject;

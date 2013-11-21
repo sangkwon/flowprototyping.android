@@ -29,8 +29,8 @@ import android.util.Log;
 import java.io.FileDescriptor;
 
 /**
- * A simple subclass of {@link ImageWorker} that resizes images from resources given a target width and height. Useful for when the input images might
- * be too large to simply load directly into memory.
+ * A simple subclass of {@link ImageWorker} that resizes images from resources given a target width and height. Useful for when the input images might be too large to simply load
+ * directly into memory.
  */
 public class ImageResizer extends ImageWorker {
 	private static final String TAG = "ImageResizer";
@@ -89,8 +89,7 @@ public class ImageResizer extends ImageWorker {
 	}
 
 	/**
-	 * The main processing method. This happens in a background task. In this case we are just sampling down the bitmap and returning it from a
-	 * resource.
+	 * The main processing method. This happens in a background task. In this case we are just sampling down the bitmap and returning it from a resource.
 	 * 
 	 * @param resId
 	 * @return
@@ -115,8 +114,7 @@ public class ImageResizer extends ImageWorker {
 	 * @param reqWidth The requested width of the resulting bitmap
 	 * @param reqHeight The requested height of the resulting bitmap
 	 * @param cache The ImageCache used to find candidate bitmaps for use with inBitmap
-	 * @return A bitmap sampled down from the original with the same aspect ratio and dimensions that are equal to or greater than the requested width
-	 *         and height
+	 * @return A bitmap sampled down from the original with the same aspect ratio and dimensions that are equal to or greater than the requested width and height
 	 */
 	public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight, ImageCache cache) {
 
@@ -145,8 +143,7 @@ public class ImageResizer extends ImageWorker {
 	 * @param reqWidth The requested width of the resulting bitmap
 	 * @param reqHeight The requested height of the resulting bitmap
 	 * @param cache The ImageCache used to find candidate bitmaps for use with inBitmap
-	 * @return A bitmap sampled down from the original with the same aspect ratio and dimensions that are equal to or greater than the requested width
-	 *         and height
+	 * @return A bitmap sampled down from the original with the same aspect ratio and dimensions that are equal to or greater than the requested width and height
 	 */
 	public static Bitmap decodeSampledBitmapFromFile(String filename, int reqWidth, int reqHeight, ImageCache cache) {
 
@@ -175,8 +172,7 @@ public class ImageResizer extends ImageWorker {
 	 * @param reqWidth The requested width of the resulting bitmap
 	 * @param reqHeight The requested height of the resulting bitmap
 	 * @param cache The ImageCache used to find candidate bitmaps for use with inBitmap
-	 * @return A bitmap sampled down from the original with the same aspect ratio and dimensions that are equal to or greater than the requested width
-	 *         and height
+	 * @return A bitmap sampled down from the original with the same aspect ratio and dimensions that are equal to or greater than the requested width and height
 	 */
 	public static Bitmap decodeSampledBitmapFromDescriptor(FileDescriptor fileDescriptor, int reqWidth, int reqHeight, ImageCache cache) {
 
@@ -219,10 +215,10 @@ public class ImageResizer extends ImageWorker {
 	}
 
 	/**
-	 * Calculate an inSampleSize for use in a {@link BitmapFactory.Options} object when decoding bitmaps using the decode* methods from
-	 * {@link BitmapFactory}. This implementation calculates the closest inSampleSize that will result in the final decoded bitmap having a width and
-	 * height equal to or larger than the requested width and height. This implementation does not ensure a power of 2 is returned for inSampleSize
-	 * which can be faster when decoding but results in a larger bitmap which isn't as useful for caching purposes.
+	 * Calculate an inSampleSize for use in a {@link BitmapFactory.Options} object when decoding bitmaps using the decode* methods from {@link BitmapFactory}. This implementation
+	 * calculates the closest inSampleSize that will result in the final decoded bitmap having a width and height equal to or larger than the requested width and height. This
+	 * implementation does not ensure a power of 2 is returned for inSampleSize which can be faster when decoding but results in a larger bitmap which isn't as useful for caching
+	 * purposes.
 	 * 
 	 * @param options An options object with out* params already populated (run through a decode* method with inJustDecodeBounds==true
 	 * @param reqWidth The requested width of the resulting bitmap

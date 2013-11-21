@@ -49,33 +49,31 @@ import java.util.concurrent.TimeUnit;
 
 /**
  ****************************************************************************** Taken from the JB source code, can be found in: libcore/luni/src/main/java/libcore/io/DiskLruCache.java or direct link:
- * https://android.googlesource.com/platform/libcore/+/android-4.1.1_r1/luni/src/main/java/libcore/io/DiskLruCache.java A cache that uses a bounded
- * amount of space on a filesystem. Each cache entry has a string key and a fixed number of values. Values are byte sequences, accessible as streams
- * or files. Each value must be between {@code 0} and {@code Integer.MAX_VALUE} bytes in length.
+ * https://android.googlesource.com/platform/libcore/+/android-4.1.1_r1/luni/src/main/java/libcore/io/DiskLruCache.java A cache that uses a bounded amount of space on a filesystem.
+ * Each cache entry has a string key and a fixed number of values. Values are byte sequences, accessible as streams or files. Each value must be between {@code 0} and
+ * {@code Integer.MAX_VALUE} bytes in length.
  * <p>
- * The cache stores its data in a directory on the filesystem. This directory must be exclusive to the cache; the cache may delete or overwrite files
- * from its directory. It is an error for multiple processes to use the same cache directory at the same time.
+ * The cache stores its data in a directory on the filesystem. This directory must be exclusive to the cache; the cache may delete or overwrite files from its directory. It is an
+ * error for multiple processes to use the same cache directory at the same time.
  * <p>
- * This cache limits the number of bytes that it will store on the filesystem. When the number of stored bytes exceeds the limit, the cache will
- * remove entries in the background until the limit is satisfied. The limit is not strict: the cache may temporarily exceed it while waiting for files
- * to be deleted. The limit does not include filesystem overhead or the cache journal so space-sensitive applications should set a conservative limit.
+ * This cache limits the number of bytes that it will store on the filesystem. When the number of stored bytes exceeds the limit, the cache will remove entries in the background
+ * until the limit is satisfied. The limit is not strict: the cache may temporarily exceed it while waiting for files to be deleted. The limit does not include filesystem overhead
+ * or the cache journal so space-sensitive applications should set a conservative limit.
  * <p>
- * Clients call {@link #edit} to create or update the values of an entry. An entry may have only one editor at one time; if a value is not available
- * to be edited then {@link #edit} will return null.
+ * Clients call {@link #edit} to create or update the values of an entry. An entry may have only one editor at one time; if a value is not available to be edited then {@link #edit}
+ * will return null.
  * <ul>
- * <li>When an entry is being <strong>created</strong> it is necessary to supply a full set of values; the empty value should be used as a placeholder
- * if necessary.
+ * <li>When an entry is being <strong>created</strong> it is necessary to supply a full set of values; the empty value should be used as a placeholder if necessary.
  * <li>When an entry is being <strong>edited</strong>, it is not necessary to supply data for every value; values default to their previous value.
  * </ul>
- * Every {@link #edit} call must be matched by a call to {@link Editor#commit} or {@link Editor#abort}. Committing is atomic: a read observes the full
- * set of values as they were before or after the commit, but never a mix of values.
+ * Every {@link #edit} call must be matched by a call to {@link Editor#commit} or {@link Editor#abort}. Committing is atomic: a read observes the full set of values as they were
+ * before or after the commit, but never a mix of values.
  * <p>
- * Clients call {@link #get} to read a snapshot of an entry. The read will observe the value at the time that {@link #get} was called. Updates and
- * removals after the call do not impact ongoing reads.
+ * Clients call {@link #get} to read a snapshot of an entry. The read will observe the value at the time that {@link #get} was called. Updates and removals after the call do not
+ * impact ongoing reads.
  * <p>
- * This class is tolerant of some I/O errors. If files are missing from the filesystem, the corresponding entries will be dropped from the cache. If
- * an error occurs while writing a cache value, the edit will fail silently. Callers should handle other problems by catching {@code IOException} and
- * responding appropriately.
+ * This class is tolerant of some I/O errors. If files are missing from the filesystem, the corresponding entries will be dropped from the cache. If an error occurs while writing a
+ * cache value, the edit will fail silently. Callers should handle other problems by catching {@code IOException} and responding appropriately.
  */
 public final class DiskLruCache implements Closeable {
 	static final String JOURNAL_FILE = "journal";
@@ -92,18 +90,16 @@ public final class DiskLruCache implements Closeable {
 	private static final int IO_BUFFER_SIZE = 8 * 1024;
 
 	/*
-	 * This cache uses a journal file named "journal". A typical journal file looks like this: libcore.io.DiskLruCache 1 100 2 CLEAN
-	 * 3400330d1dfc7f3f7f4b8d4d803dfcf6 832 21054 DIRTY 335c4c6028171cfddfbaae1a9c313c52 CLEAN 335c4c6028171cfddfbaae1a9c313c52 3934 2342 REMOVE
-	 * 335c4c6028171cfddfbaae1a9c313c52 DIRTY 1ab96a171faeeee38496d8b330771a7a CLEAN 1ab96a171faeeee38496d8b330771a7a 1600 234 READ
-	 * 335c4c6028171cfddfbaae1a9c313c52 READ 3400330d1dfc7f3f7f4b8d4d803dfcf6 The first five lines of the journal form its header. They are the
-	 * constant string "libcore.io.DiskLruCache", the disk cache's version, the application's version, the value count, and a blank line. Each of the
-	 * subsequent lines in the file is a record of the state of a cache entry. Each line contains space-separated values: a state, a key, and optional
-	 * state-specific values. o DIRTY lines track that an entry is actively being created or updated. Every successful DIRTY action should be followed
-	 * by a CLEAN or REMOVE action. DIRTY lines without a matching CLEAN or REMOVE indicate that temporary files may need to be deleted. o CLEAN lines
-	 * track a cache entry that has been successfully published and may be read. A publish line is followed by the lengths of each of its values. o
-	 * READ lines track accesses for LRU. o REMOVE lines track entries that have been deleted. The journal file is appended to as cache operations
-	 * occur. The journal may occasionally be compacted by dropping redundant lines. A temporary file named "journal.tmp" will be used during
-	 * compaction; that file should be deleted if it exists when the cache is opened.
+	 * This cache uses a journal file named "journal". A typical journal file looks like this: libcore.io.DiskLruCache 1 100 2 CLEAN 3400330d1dfc7f3f7f4b8d4d803dfcf6 832 21054
+	 * DIRTY 335c4c6028171cfddfbaae1a9c313c52 CLEAN 335c4c6028171cfddfbaae1a9c313c52 3934 2342 REMOVE 335c4c6028171cfddfbaae1a9c313c52 DIRTY 1ab96a171faeeee38496d8b330771a7a CLEAN
+	 * 1ab96a171faeeee38496d8b330771a7a 1600 234 READ 335c4c6028171cfddfbaae1a9c313c52 READ 3400330d1dfc7f3f7f4b8d4d803dfcf6 The first five lines of the journal form its header.
+	 * They are the constant string "libcore.io.DiskLruCache", the disk cache's version, the application's version, the value count, and a blank line. Each of the subsequent lines
+	 * in the file is a record of the state of a cache entry. Each line contains space-separated values: a state, a key, and optional state-specific values. o DIRTY lines track
+	 * that an entry is actively being created or updated. Every successful DIRTY action should be followed by a CLEAN or REMOVE action. DIRTY lines without a matching CLEAN or
+	 * REMOVE indicate that temporary files may need to be deleted. o CLEAN lines track a cache entry that has been successfully published and may be read. A publish line is
+	 * followed by the lengths of each of its values. o READ lines track accesses for LRU. o REMOVE lines track entries that have been deleted. The journal file is appended to as
+	 * cache operations occur. The journal may occasionally be compacted by dropping redundant lines. A temporary file named "journal.tmp" will be used during compaction; that file
+	 * should be deleted if it exists when the cache is opened.
 	 */
 
 	private final File directory;
@@ -118,8 +114,8 @@ public final class DiskLruCache implements Closeable {
 	private int redundantOpCount;
 
 	/**
-	 * To differentiate between old and current snapshots, each entry is given a sequence number each time an edit is committed. A snapshot is stale
-	 * if its sequence number is not equal to its entry's sequence number.
+	 * To differentiate between old and current snapshots, each entry is given a sequence number each time an edit is committed. A snapshot is stale if its sequence number is not
+	 * equal to its entry's sequence number.
 	 */
 	private long nextSequenceNumber = 0;
 
@@ -340,8 +336,7 @@ public final class DiskLruCache implements Closeable {
 	}
 
 	/**
-	 * Computes the initial size and collects garbage as a part of opening the cache. Dirty entries are assumed to be inconsistent and will be
-	 * deleted.
+	 * Computes the initial size and collects garbage as a part of opening the cache. Dirty entries are assumed to be inconsistent and will be deleted.
 	 */
 	private void processJournal() throws IOException {
 		deleteIfExists(journalFileTmp);
@@ -408,8 +403,7 @@ public final class DiskLruCache implements Closeable {
 	}
 
 	/**
-	 * Returns a snapshot of the entry named {@code key}, or null if it doesn't exist is not currently readable. If a value is returned, it is moved
-	 * to the head of the LRU queue.
+	 * Returns a snapshot of the entry named {@code key}, or null if it doesn't exist is not currently readable. If a value is returned, it is moved to the head of the LRU queue.
 	 */
 	public synchronized Snapshot get(String key) throws IOException {
 		checkNotClosed();
@@ -424,8 +418,7 @@ public final class DiskLruCache implements Closeable {
 		}
 
 		/*
-		 * Open all streams eagerly to guarantee that we see a single published snapshot. If we opened streams lazily then the streams could come from
-		 * different edits.
+		 * Open all streams eagerly to guarantee that we see a single published snapshot. If we opened streams lazily then the streams could come from different edits.
 		 */
 		InputStream[] ins = new InputStream[valueCount];
 		try {
@@ -491,8 +484,7 @@ public final class DiskLruCache implements Closeable {
 	}
 
 	/**
-	 * Returns the number of bytes currently being used to store the values in this cache. This may be greater than the max size if a background
-	 * deletion is pending.
+	 * Returns the number of bytes currently being used to store the values in this cache. This may be greater than the max size if a background deletion is pending.
 	 */
 	public synchronized long size() {
 		return size;
@@ -637,8 +629,7 @@ public final class DiskLruCache implements Closeable {
 	}
 
 	/**
-	 * Closes the cache and deletes all of its stored values. This will delete all files in the cache directory including files that weren't created
-	 * by the cache.
+	 * Closes the cache and deletes all of its stored values. This will delete all files in the cache directory including files that weren't created by the cache.
 	 */
 	public void delete() throws IOException {
 		close();
@@ -670,8 +661,7 @@ public final class DiskLruCache implements Closeable {
 		}
 
 		/**
-		 * Returns an editor for this snapshot's entry, or null if either the entry has changed since this snapshot was created or if another edit is
-		 * in progress.
+		 * Returns an editor for this snapshot's entry, or null if either the entry has changed since this snapshot was created or if another edit is in progress.
 		 */
 		public Editor edit() throws IOException {
 			return DiskLruCache.this.edit(key, sequenceNumber);
@@ -734,8 +724,8 @@ public final class DiskLruCache implements Closeable {
 		}
 
 		/**
-		 * Returns a new unbuffered output stream to write the value at {@code index}. If the underlying output stream encounters errors when writing
-		 * to the filesystem, this edit will be aborted when {@link #commit} is called. The returned output stream does not throw IOExceptions.
+		 * Returns a new unbuffered output stream to write the value at {@code index}. If the underlying output stream encounters errors when writing to the filesystem, this edit
+		 * will be aborted when {@link #commit} is called. The returned output stream does not throw IOExceptions.
 		 */
 		public OutputStream newOutputStream(int index) throws IOException {
 			synchronized (DiskLruCache.this) {

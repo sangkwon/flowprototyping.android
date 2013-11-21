@@ -94,7 +94,7 @@ public class LinkImagePlayView extends LinkImageView implements OnLinkClickListe
 	@Override
 	protected void drawLink(Canvas canvas, Paint paint, Link link) {
 		if (mBlinkState == BlinkState.BLINKING) {
-			if (link == mBlinkingLink ) {
+			if (link == mBlinkingLink) {
 				paint.setColor(0x40aa66cc);
 			}
 		}
