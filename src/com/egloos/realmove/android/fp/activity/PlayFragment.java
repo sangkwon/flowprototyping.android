@@ -74,7 +74,7 @@ public class PlayFragment extends BaseFragment implements LinkImageView.OnLinkCl
 
 		prepareCache();
 
-		mActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
+		mActionBar = getBaseActivity().getSupportActionBar();
 		mActionBar.hide();
 
 		load(getArguments().getInt(PageListFragment.EXTRA_PROJECT_ID));

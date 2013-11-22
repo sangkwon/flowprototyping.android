@@ -178,7 +178,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 		load(projectId);
 
 		if (mMode == Mode.NORMAL) {
-			ActionBar actionBar = ((BaseActivity) getActivity()).getSupportActionBar();
+			ActionBar actionBar = getBaseActivity().getSupportActionBar();
 			actionBar.setHomeButtonEnabled(true);
 		}
 
@@ -227,7 +227,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 		}.start();
 
 		if (mMode == Mode.NORMAL) {
-			ActionBar actionBar = ((BaseActivity) getActivity()).getSupportActionBar();
+			ActionBar actionBar = getBaseActivity().getSupportActionBar();
 			actionBar.setTitle(mProject.getSubject());
 			// setListBackground();
 		}
@@ -564,7 +564,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 	private void setActionMode(boolean actionOn) {
 		if (actionOn) {
-			mActionMode = ((BaseActivity) getActivity()).startSupportActionMode(new ActionModeCallback());
+			mActionMode = getBaseActivity().startSupportActionMode(new ActionModeCallback());
 		} else {
 			mActionMode.finish();
 		}

@@ -75,4 +75,8 @@ public class BaseFragment extends DialogFragment {
 		super.onResume();
 	}
 
+	public BaseActivity getBaseActivity() {
+		return (BaseActivity) getActivity();
+	}
+
 }

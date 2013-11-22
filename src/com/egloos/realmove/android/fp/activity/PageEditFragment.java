@@ -72,7 +72,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
 		prepareCache();
 
-		mActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
+		mActionBar = getBaseActivity().getSupportActionBar();
 
 		// Hide title text and set home as up
 		mActionBar.setDisplayShowTitleEnabled(true);
