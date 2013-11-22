@@ -163,7 +163,10 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 				showProjectInfoDialog(null);
 				break;
 			}
+			case R.id.setting: {
 
+				break;
+			}
 		}
 		return super.onOptionsItemSelected(item);
 	}
