@@ -2,7 +2,7 @@
 package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
-import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
+import com.egloos.realmove.android.fp.common.BaseActivity;
 import com.egloos.realmove.android.fp.common.FpLog;
 
 import android.os.Bundle;
@@ -11,7 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
-public class PlayActivity extends BaseFragmentActivity {
+public class PlayActivity extends BaseActivity {
 
 	private static final String TAG = PlayActivity.class.getSimpleName();
 

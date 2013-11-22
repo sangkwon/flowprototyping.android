@@ -1,6 +1,8 @@
 
 package com.egloos.realmove.android.fp.common;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.app.Activity;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
@@ -10,9 +12,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 
-public class BaseFragmentActivity extends ActionBarActivity {
+public class BaseActivity extends ActionBarActivity {
 
-	protected BaseFragmentActivity mContext = null;
+	protected BaseActivity mContext = null;
 	protected boolean mActivate = false;
 
 	@Override
@@ -42,6 +44,18 @@ public class BaseFragmentActivity extends ActionBarActivity {
 		mContext = null;
 
 		super.onDestroy();
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		EasyTracker.getInstance(this).activityStart(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		EasyTracker.getInstance(this).activityStop(this);
 	}
 
 	@Override

@@ -2,13 +2,13 @@
 package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
-import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
+import com.egloos.realmove.android.fp.common.BaseActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 
-public class PageListActivity extends BaseFragmentActivity {
+public class PageListActivity extends BaseActivity {
 
 	private static final String TAG = PageListActivity.class.getSimpleName();
 

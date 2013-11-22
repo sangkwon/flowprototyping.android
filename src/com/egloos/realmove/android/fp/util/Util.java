@@ -1,7 +1,9 @@
 
 package com.egloos.realmove.android.fp.util;
 
+import com.egloos.realmove.android.fp.App;
 import com.egloos.realmove.android.fp.common.FpLog;
+import com.google.analytics.tracking.android.EasyTracker;
 
 import android.app.Activity;
 import android.content.Context;
@@ -147,4 +149,5 @@ public class Util {
 		window.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 		return displayMetrics;
 	}
+
 }

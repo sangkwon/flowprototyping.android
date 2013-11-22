@@ -2,14 +2,14 @@
 package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
-import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
+import com.egloos.realmove.android.fp.common.BaseActivity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 
-public class PageEditActivity extends BaseFragmentActivity {
+public class PageEditActivity extends BaseActivity {
 
 	private static final String TAG = PageEditActivity.class.getSimpleName();
 

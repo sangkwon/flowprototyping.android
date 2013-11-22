@@ -3,7 +3,7 @@ package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
-import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
+import com.egloos.realmove.android.fp.common.BaseActivity;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
@@ -72,7 +72,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
 		prepareCache();
 
-		mActionBar = ((BaseFragmentActivity) getActivity()).getSupportActionBar();
+		mActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
 
 		// Hide title text and set home as up
 		mActionBar.setDisplayShowTitleEnabled(true);

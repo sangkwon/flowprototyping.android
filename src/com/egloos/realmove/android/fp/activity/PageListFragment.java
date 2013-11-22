@@ -3,7 +3,7 @@ package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
-import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
+import com.egloos.realmove.android.fp.common.BaseActivity;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.common.ImageUtil;
 import com.egloos.realmove.android.fp.db.DBAdapter;
@@ -178,7 +178,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 		load(projectId);
 
 		if (mMode == Mode.NORMAL) {
-			ActionBar actionBar = ((BaseFragmentActivity) getActivity()).getSupportActionBar();
+			ActionBar actionBar = ((BaseActivity) getActivity()).getSupportActionBar();
 			actionBar.setHomeButtonEnabled(true);
 		}
 
@@ -227,7 +227,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 		}.start();
 
 		if (mMode == Mode.NORMAL) {
-			ActionBar actionBar = ((BaseFragmentActivity) getActivity()).getSupportActionBar();
+			ActionBar actionBar = ((BaseActivity) getActivity()).getSupportActionBar();
 			actionBar.setTitle(mProject.getSubject());
 			// setListBackground();
 		}
@@ -564,7 +564,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 	private void setActionMode(boolean actionOn) {
 		if (actionOn) {
-			mActionMode = ((BaseFragmentActivity) getActivity()).startSupportActionMode(new ActionModeCallback());
+			mActionMode = ((BaseActivity) getActivity()).startSupportActionMode(new ActionModeCallback());
 		} else {
 			mActionMode.finish();
 		}

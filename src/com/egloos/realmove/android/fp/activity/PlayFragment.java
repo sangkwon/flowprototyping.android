@@ -3,7 +3,7 @@ package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
-import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
+import com.egloos.realmove.android.fp.common.BaseActivity;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Link;
@@ -74,7 +74,7 @@ public class PlayFragment extends BaseFragment implements LinkImageView.OnLinkCl
 
 		prepareCache();
 
-		mActionBar = ((BaseFragmentActivity) getActivity()).getSupportActionBar();
+		mActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
 		mActionBar.hide();
 
 		load(getArguments().getInt(PageListFragment.EXTRA_PROJECT_ID));
