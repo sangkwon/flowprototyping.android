@@ -7,6 +7,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 
 public class App extends Application {
 
@@ -28,7 +29,8 @@ public class App extends Application {
 	private static void initImageCache(Context context) {
 		DisplayImageOptions options = new DisplayImageOptions.Builder()
 				.cacheInMemory(true)
-				.cacheOnDisc(false)
+				.cacheOnDisc(true)
+				.showImageOnLoading(new ColorDrawable(0x00000000))
 				.build();
 
 		ImageLoaderConfiguration conf = new ImageLoaderConfiguration.Builder(context)
