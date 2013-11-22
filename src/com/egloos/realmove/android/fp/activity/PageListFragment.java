@@ -1,12 +1,9 @@
 
 package com.egloos.realmove.android.fp.activity;
 
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
+import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.common.ImageUtil;
 import com.egloos.realmove.android.fp.db.DBAdapter;
@@ -37,7 +34,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBar;
+import android.support.v7.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -176,7 +178,8 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 		load(projectId);
 
 		if (mMode == Mode.NORMAL) {
-			getSherlockActivity().getActionBar().setHomeButtonEnabled(true);
+			ActionBar actionBar = ((BaseFragmentActivity) getActivity()).getSupportActionBar();
+			actionBar.setHomeButtonEnabled(true);
 		}
 
 		/* Dialog인 경우에는 onCreateDialog()에서 이미 생성되었다 */
@@ -224,7 +227,8 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 		}.start();
 
 		if (mMode == Mode.NORMAL) {
-			getSherlockActivity().getActionBar().setTitle(mProject.getSubject());
+			ActionBar actionBar = ((BaseFragmentActivity) getActivity()).getSupportActionBar();
+			actionBar.setTitle(mProject.getSubject());
 			// setListBackground();
 		}
 
@@ -560,7 +564,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 	private void setActionMode(boolean actionOn) {
 		if (actionOn) {
-			mActionMode = getSherlockActivity().startActionMode(new ActionModeCallback());
+			mActionMode = ((BaseFragmentActivity) getActivity()).startSupportActionMode(new ActionModeCallback());
 		} else {
 			mActionMode.finish();
 		}

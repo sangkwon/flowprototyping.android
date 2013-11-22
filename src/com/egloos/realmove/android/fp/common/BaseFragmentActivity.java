@@ -1,17 +1,16 @@
 
 package com.egloos.realmove.android.fp.common;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
-
 import android.app.Activity;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 
-public class BaseFragmentActivity extends SherlockFragmentActivity {
+public class BaseFragmentActivity extends ActionBarActivity {
 
 	protected BaseFragmentActivity mContext = null;
 	protected boolean mActivate = false;

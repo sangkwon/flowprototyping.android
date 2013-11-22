@@ -1,9 +1,9 @@
 
 package com.egloos.realmove.android.fp.activity;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
+import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Link;
@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,7 +74,7 @@ public class PlayFragment extends BaseFragment implements LinkImageView.OnLinkCl
 
 		prepareCache();
 
-		mActionBar = getSherlockActivity().getSupportActionBar();
+		mActionBar = ((BaseFragmentActivity) getActivity()).getSupportActionBar();
 		mActionBar.hide();
 
 		load(getArguments().getInt(PageListFragment.EXTRA_PROJECT_ID));

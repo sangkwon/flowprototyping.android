@@ -1,12 +1,9 @@
 
 package com.egloos.realmove.android.fp.activity;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
+import com.egloos.realmove.android.fp.common.BaseFragmentActivity;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
@@ -24,8 +21,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -71,17 +72,17 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
 		prepareCache();
 
-		mActionBar = getSherlockActivity().getSupportActionBar();
+		mActionBar = ((BaseFragmentActivity) getActivity()).getSupportActionBar();
 
 		// Hide title text and set home as up
 		mActionBar.setDisplayShowTitleEnabled(true);
 		mActionBar.setDisplayHomeAsUpEnabled(true);
 
-		/*
-		 * // Hide and show the ActionBar as the visibility changes mPageView.setOnSystemUiVisibilityChangeListener( new View.OnSystemUiVisibilityChangeListener() {
-		 * @Override public void onSystemUiVisibilityChange(int vis) { if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0) { mActionBar.hide(); } else { mActionBar.show(); } } }); if
-		 * (Utils.hasJellyBean()) { // Start low profile mode and hide ActionBar mPageView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE); }
-		 */
+		/* // Hide and show the ActionBar as the visibility changes mPageView.setOnSystemUiVisibilityChangeListener( new
+		 * View.OnSystemUiVisibilityChangeListener() {
+		 * @Override public void onSystemUiVisibilityChange(int vis) { if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0) { mActionBar.hide(); } else {
+		 * mActionBar.show(); } } }); if (Utils.hasJellyBean()) { // Start low profile mode and hide ActionBar
+		 * mPageView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE); } */
 
 		// mActionBar.hide();
 
