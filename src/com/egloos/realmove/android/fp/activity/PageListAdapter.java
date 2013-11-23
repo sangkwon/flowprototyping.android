@@ -59,12 +59,16 @@ public class PageListAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		int size = mPages != null ? mPages.size() : 0;
+		if (mPages == null) {
+			return 0;
+		} else {
+			int size = mPages.size();
 
-		if (!mActionMode && mMode == Mode.NORMAL)
-			size++;
+			if (!mActionMode && mMode == Mode.NORMAL)
+				size++;
 
-		return size;
+			return size;
+		}
 	}
 
 	@Override
