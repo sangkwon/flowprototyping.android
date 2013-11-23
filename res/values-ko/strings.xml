@@ -3,6 +3,7 @@
 
     <string name="app_name">FlowPrototyping</string>
     <string name="no_image">이미지 없음</string>
+    <string name="menu_add_project">프로젝트 추가</string>
     <string name="menu_add_page">페이지 추가</string>
     <string name="menu_play">재생</string>
     <string name="menu_gallery">갤러리</string>
