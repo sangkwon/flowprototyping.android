@@ -1,9 +1,10 @@
 
 package com.egloos.realmove.android.fp.activity;
 
+import com.aviary.android.feather.FeatherActivity;
+import com.aviary.android.feather.library.Constants;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
-import com.egloos.realmove.android.fp.common.BaseActivity;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.common.ImageUtil;
 import com.egloos.realmove.android.fp.db.DBAdapter;
@@ -68,6 +69,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 	private static final int REQ_CODE_ADD_PAGE_FROM_GALLERY = 2;
 	private static final int REQ_CODE_ADD_PAGE_FROM_CAMERA = 3;
+	private static final int REQ_CODE_ADD_PAGE_AVIARY = 4;
 	private static final int REQ_CODE_PAGE_EDIT = 100;
 
 	public enum Mode {
@@ -112,7 +114,6 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu((mMode == Mode.NORMAL));
 
-		int size = getActivity().getResources().getDimensionPixelSize(R.dimen.page_thumbnail_size);
 		mAdapter = new PageListAdapter(getActivity(), mMode);
 	}
 
@@ -322,27 +323,38 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		FpLog.d(TAG, "onActivityResult() ", requestCode, resultCode, data);
 		if (resultCode == Activity.RESULT_OK) {
-			switch (requestCode) {
-				case REQ_CODE_ADD_PAGE_FROM_GALLERY: {
-					Uri uri = data.getData();
-					if (uri != null) {
+			try {
+				switch (requestCode) {
+					case REQ_CODE_ADD_PAGE_FROM_GALLERY: {
+						Uri uri = data.getData();
+						Intent newIntent = new Intent(mContext, FeatherActivity.class);
+						newIntent.setData(uri);
+						newIntent.putExtra(Constants.EXTRA_OUTPUT_QUALITY, 88);
+						startActivityForResult(newIntent, REQ_CODE_ADD_PAGE_AVIARY);
+						break;
+					}
+					case REQ_CODE_ADD_PAGE_FROM_CAMERA: {
+						imageScan(mImageCaptureUri);
+						CopyPictureTask task = new CopyPictureTask();
+						task.execute(mImageCaptureUri);
+						mImageCaptureUri = null;
+						break;
+					}
+					case REQ_CODE_PAGE_EDIT: {
+						load(mProject.getId());
+						// TODO 반영하기
+						break;
+					}
+					case REQ_CODE_ADD_PAGE_AVIARY: {
+						Uri uri = data.getData();
 						CopyPictureTask task = new CopyPictureTask();
 						task.execute(uri);
+						break;
 					}
-					break;
 				}
-				case REQ_CODE_ADD_PAGE_FROM_CAMERA: {
-					imageScan(mImageCaptureUri);
-					CopyPictureTask task = new CopyPictureTask();
-					task.execute(mImageCaptureUri);
-					mImageCaptureUri = null;
-					break;
-				}
-				case REQ_CODE_PAGE_EDIT: {
-					load(mProject.getId());
-					// TODO 반영하기
-					break;
-				}
+			} catch (Exception ex) {
+				Toast.makeText(getActivity(), R.string.fail_to_add, Toast.LENGTH_SHORT).show();
+				FpLog.e(TAG, ex);
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.MotionEvent;
+import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
 
 public class PlayActivity extends BaseActivity {
@@ -38,6 +39,9 @@ public class PlayActivity extends BaseActivity {
 			ft.add(android.R.id.content, mFragment, TAG);
 			ft.commit();
 		}
+		
+        // Set up activity to go full screen
+        getWindow().addFlags(LayoutParams.FLAG_FULLSCREEN);
 	}
 
 	private float gap = 0;

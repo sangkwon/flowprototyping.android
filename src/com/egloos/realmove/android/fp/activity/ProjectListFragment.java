@@ -53,8 +53,6 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 
-		int size = getActivity().getResources().getDimensionPixelSize(R.dimen.page_thumbnail_size);
-
 		mAdapter = new ProjectListAdapter(getActivity());
 	}
 

@@ -15,9 +15,12 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.util.DisplayMetrics;
@@ -65,6 +68,7 @@ public class PlayFragment extends BaseFragment implements LinkImageView.OnLinkCl
 		return fragment;
 	}
 
+	@SuppressLint("InlinedApi")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.play_fragment, container, false);
@@ -78,6 +82,12 @@ public class PlayFragment extends BaseFragment implements LinkImageView.OnLinkCl
 		mActionBar.hide();
 
 		load(getArguments().getInt(PageListFragment.EXTRA_PROJECT_ID));
+
+		if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
+			view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+//		} else {
+//			view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+		}
 
 		return view;
 	}
