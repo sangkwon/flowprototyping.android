@@ -5,8 +5,8 @@ import com.aviary.android.feather.FeatherActivity;
 import com.aviary.android.feather.library.Constants;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
-import com.egloos.realmove.android.fp.common.L;
 import com.egloos.realmove.android.fp.common.ImageUtil;
+import com.egloos.realmove.android.fp.common.L;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Link;
@@ -34,6 +34,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.view.ActionMode;
@@ -317,8 +318,23 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 	}
 
 	private static File getCameraPath() {
-		File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+		//File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+		File path = new File( Environment.getExternalStorageDirectory() + "/FlowPrototype/" );
 		return path;
+	}
+
+	private static Uri getCameraFullPath(String prefix) {
+		String filename;
+		if (prefix == null || prefix.length() == 0) {
+			filename = new SimpleDateFormat("yyyyMMdd_HH:mm:ss_S").format(new Date()) + ".jpg";
+		} else {
+			filename = prefix + "_" + new SimpleDateFormat("yyyyMMdd_HH:mm:ss_S").format(new Date()) + ".jpg";
+		}
+
+		File path = getCameraPath();
+
+		Util.prepareDir(path);
+		return Uri.fromFile(new File(path, filename));
 	}
 
 	private void startAviary(Uri uri) {
@@ -326,6 +342,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 			Intent newIntent = new Intent(getActivity(), FeatherActivity.class);
 			newIntent.setData(uri);
 			newIntent.putExtra(Constants.EXTRA_OUTPUT_QUALITY, 88);
+			newIntent.putExtra(Constants.EXTRA_OUTPUT, getCameraFullPath("edited"));
 			startActivityForResult(newIntent, REQ_CODE_ADD_PAGE_AVIARY);
 		} catch (Exception ex) {
 			Toast.makeText(getActivity(), R.string.fail_to_add, Toast.LENGTH_SHORT).show();
@@ -340,13 +357,24 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 			switch (requestCode) {
 				case REQ_CODE_ADD_PAGE_FROM_GALLERY: {
 					Uri uri = data.getData();
-					startAviary(uri);
+					SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+					if (pref.getBoolean(getString(R.string.pref_key_use_aviary), true)) {
+						startAviary(uri);
+					} else {
+						CopyPictureTask task = new CopyPictureTask();
+						task.execute(uri);
+					}
 					break;
 				}
 				case REQ_CODE_ADD_PAGE_FROM_CAMERA: {
 					imageScan(mImageCaptureUri);
-					CopyPictureTask task = new CopyPictureTask();
-					task.execute(mImageCaptureUri);
+					SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+					if (pref.getBoolean(getString(R.string.pref_key_use_aviary), true)) {
+						startAviary(mImageCaptureUri);
+					} else {
+						CopyPictureTask task = new CopyPictureTask();
+						task.execute(mImageCaptureUri);
+					}
 					mImageCaptureUri = null;
 					break;
 				}
@@ -357,6 +385,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 				}
 				case REQ_CODE_ADD_PAGE_AVIARY: {
 					Uri uri = data.getData();
+					imageScan(uri);
 					CopyPictureTask task = new CopyPictureTask();
 					task.execute(uri);
 					break;
@@ -513,11 +542,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 	private void startAddPageCamera() {
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		File path = getCameraPath();
-		String filename = new SimpleDateFormat("yyyyMMdd_HH:mm:ss_S").format(new Date()) + ".jpg";
-
-		Util.prepareDir(path);
-		mImageCaptureUri = Uri.fromFile(new File(path, filename));
+		mImageCaptureUri = getCameraFullPath(null);
 
 		intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
 		startActivityForResult(intent, REQ_CODE_ADD_PAGE_FROM_CAMERA);
