@@ -20,25 +20,31 @@ public class App extends Application {
 
 	private static Application instance = null;
 
+	private int mMaxHeight = MAX_CACHE_HEIGHT;
+	private int mMaxWidth = MAX_CACHE_WIDTH;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
 
 		instance = this;
 
-		initImageCache(getApplicationContext());
+		this.initImageCache();
 	}
 
 	public static Application getInstacne() {
 		return instance;
 	}
 
-	private static void initImageCache(Context context) {
-		int maxHeight = MAX_CACHE_HEIGHT;
-		int maxWidth = MAX_CACHE_WIDTH;
+	public int getMaxWidth() {
+		return mMaxWidth;
+	}
 
-		//TODO calculates actual display size
-		
+	public int getMaxHeight() {
+		return mMaxHeight;
+	}
+
+	private void initImageCache() {
 		DisplayImageOptions options = new DisplayImageOptions.Builder()
 				.cacheInMemory(false)
 				.cacheOnDisc(true)
@@ -47,11 +53,11 @@ public class App extends Application {
 				.bitmapConfig(Bitmap.Config.RGB_565)
 				.build();
 
-		ImageLoaderConfiguration conf = new ImageLoaderConfiguration.Builder(context)
+		ImageLoaderConfiguration conf = new ImageLoaderConfiguration.Builder(getApplicationContext())
 				.discCacheSize(50 * 1024 * 1024)
 				.discCacheFileCount(100)
-				.discCacheExtraOptions(maxWidth, maxHeight, CompressFormat.JPEG, 75, null)
-				.memoryCacheExtraOptions(maxWidth, maxHeight)
+				.discCacheExtraOptions(getMaxWidth(), getMaxHeight(), CompressFormat.JPEG, 75, null)
+				.memoryCacheExtraOptions(getMaxWidth(), getMaxHeight())
 				.threadPriority(Thread.MIN_PRIORITY)
 				.defaultDisplayImageOptions(options)
 				.build();

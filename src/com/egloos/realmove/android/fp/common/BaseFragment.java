@@ -1,7 +1,6 @@
 
 package com.egloos.realmove.android.fp.common;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -10,13 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public class BaseFragment extends DialogFragment {
-	protected Activity mContext = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// FpLog.d(this.getClass().getSimpleName(), "onCreate() called");
 		super.onCreate(savedInstanceState);
-		mContext = getActivity();
 	}
 
 	@Override
@@ -37,11 +34,19 @@ public class BaseFragment extends DialogFragment {
 	}
 
 	protected void finishActivity() {
-		mContext.finish();
+		try {
+			getActivity().finish();
+		} catch (Exception ex) {
+			// do nothing
+		}
 	}
 
 	protected void finishMe() {
-		getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+		try {
+			getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+		} catch (Exception ex) {
+			// do nothing
+		}
 	}
 
 	@Override
@@ -54,7 +59,6 @@ public class BaseFragment extends DialogFragment {
 	public void onDestroy() {
 		// FpLog.d(this.getClass().getSimpleName(), "onDestroy() called");
 		super.onDestroy();
-		mContext = null;
 	}
 
 	@Override

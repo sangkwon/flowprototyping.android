@@ -1,0 +1,31 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <header
+        android:fragment="com.example.android.apis.preference.PreferenceWithHeaders$Prefs1Fragment"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:summary="An example of some preferences."
+        android:title="Prefs 1" />
+    <header
+        android:fragment="com.example.android.apis.preference.PreferenceWithHeaders$Prefs2Fragment"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:summary="Some other preferences you can see."
+        android:title="Prefs 2" >
+
+        <!--
+             Arbitrary key/value pairs can be included with a header as
+             arguments to its fragment.
+        -->
+        <extra
+            android:name="someKey"
+            android:value="someHeaderValue" />
+    </header>
+    <header
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:summary="Launches an Intent."
+        android:title="Intent" >
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://www.android.com" />
+    </header>
+
+</preference-headers>

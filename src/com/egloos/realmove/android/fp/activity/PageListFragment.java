@@ -205,7 +205,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 	}
 
 	private void load(int projectId) {
-		ProjectHolder.getInstance().load(mContext, projectId, this);
+		ProjectHolder.getInstance().load(getActivity(), projectId, this);
 	}
 
 	public void onLoad(Project tmpProj) {
@@ -223,7 +223,9 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 		new Thread() {
 			@Override
 			public void run() {
-				storeWorkingProject(mContext, mProject.getId());
+				if (getActivity() != null) {
+					storeWorkingProject(getActivity(), mProject.getId());
+				}
 			}
 		}.start();
 
@@ -294,7 +296,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 			// }
 			case R.id.play:
 				if (mProject.size() > 1) {
-					Intent intent = new Intent(mContext, PlayActivity.class);
+					Intent intent = new Intent(getActivity(), PlayActivity.class);
 					intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, mProject.getId());
 					intent.putExtra(PageListFragment.EXTRA_SELECTED_PAGE_ID, mProject.get(0).getId());
 					startActivity(intent);
@@ -319,42 +321,46 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 		return path;
 	}
 
+	private void startAviary(Uri uri) {
+		try {
+			Intent newIntent = new Intent(getActivity(), FeatherActivity.class);
+			newIntent.setData(uri);
+			newIntent.putExtra(Constants.EXTRA_OUTPUT_QUALITY, 88);
+			startActivityForResult(newIntent, REQ_CODE_ADD_PAGE_AVIARY);
+		} catch (Exception ex) {
+			Toast.makeText(getActivity(), R.string.fail_to_add, Toast.LENGTH_SHORT).show();
+			FpLog.e(TAG, ex);
+		}
+	}
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		FpLog.d(TAG, "onActivityResult() ", requestCode, resultCode, data);
 		if (resultCode == Activity.RESULT_OK) {
-			try {
-				switch (requestCode) {
-					case REQ_CODE_ADD_PAGE_FROM_GALLERY: {
-						Uri uri = data.getData();
-						Intent newIntent = new Intent(mContext, FeatherActivity.class);
-						newIntent.setData(uri);
-						newIntent.putExtra(Constants.EXTRA_OUTPUT_QUALITY, 88);
-						startActivityForResult(newIntent, REQ_CODE_ADD_PAGE_AVIARY);
-						break;
-					}
-					case REQ_CODE_ADD_PAGE_FROM_CAMERA: {
-						imageScan(mImageCaptureUri);
-						CopyPictureTask task = new CopyPictureTask();
-						task.execute(mImageCaptureUri);
-						mImageCaptureUri = null;
-						break;
-					}
-					case REQ_CODE_PAGE_EDIT: {
-						load(mProject.getId());
-						// TODO 반영하기
-						break;
-					}
-					case REQ_CODE_ADD_PAGE_AVIARY: {
-						Uri uri = data.getData();
-						CopyPictureTask task = new CopyPictureTask();
-						task.execute(uri);
-						break;
-					}
+			switch (requestCode) {
+				case REQ_CODE_ADD_PAGE_FROM_GALLERY: {
+					Uri uri = data.getData();
+					startAviary(uri);
+					break;
 				}
-			} catch (Exception ex) {
-				Toast.makeText(getActivity(), R.string.fail_to_add, Toast.LENGTH_SHORT).show();
-				FpLog.e(TAG, ex);
+				case REQ_CODE_ADD_PAGE_FROM_CAMERA: {
+					imageScan(mImageCaptureUri);
+					CopyPictureTask task = new CopyPictureTask();
+					task.execute(mImageCaptureUri);
+					mImageCaptureUri = null;
+					break;
+				}
+				case REQ_CODE_PAGE_EDIT: {
+					load(mProject.getId());
+					// TODO 반영하기
+					break;
+				}
+				case REQ_CODE_ADD_PAGE_AVIARY: {
+					Uri uri = data.getData();
+					CopyPictureTask task = new CopyPictureTask();
+					task.execute(uri);
+					break;
+				}
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
@@ -424,7 +430,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 				mProject.add(page);
 				DBAdapter db = null;
 				try {
-					db = new DBAdapter(mContext).open();
+					db = new DBAdapter(getActivity()).open();
 					success = db.insertPage(page) >= 0;
 
 					if (mProject.getMainImage() == null || mProject.getMainImage().length() == 0) {
@@ -495,7 +501,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 	}
 
 	private void showPageAddPopupMenu(View view) {
-		PopupMenu popup = new PopupMenu(mContext, view);
+		PopupMenu popup = new PopupMenu(getActivity(), view);
 		android.view.Menu menu = popup.getMenu();
 		popup.getMenuInflater().inflate(R.menu.menu_page_list_add_popup, menu);
 		for (int i = 0; i < menu.size(); i++) {
@@ -656,7 +662,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 			DBAdapter db = null;
 			SQLiteDatabase _db = null;
 			try {
-				db = new DBAdapter(mContext).open();
+				db = new DBAdapter(getActivity()).open();
 
 				_db = db.getDb();
 				_db.beginTransaction();
@@ -791,7 +797,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 				FpLog.d(TAG, "onPostExecute()", result);
 				if (result != null) {
 					try {
-						mGridView.setBackgroundDrawable(new BitmapDrawable(mContext.getResources(), result));
+						mGridView.setBackgroundDrawable(new BitmapDrawable(getActivity().getResources(), result));
 					} catch (Exception ex) {
 						FpLog.e(TAG, ex);
 					}

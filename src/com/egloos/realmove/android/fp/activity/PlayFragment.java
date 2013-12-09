@@ -34,8 +34,6 @@ public class PlayFragment extends BaseFragment implements LinkImageView.OnLinkCl
 
 	private static final String TAG = PlayFragment.class.getSimpleName();
 
-	private int mWidth;
-	private int mHeight;
 	private LinkImagePlayView mPageView;
 
 	private ActionBar mActionBar;
@@ -76,8 +74,6 @@ public class PlayFragment extends BaseFragment implements LinkImageView.OnLinkCl
 		mPageView.setOnLinkClickListener(this);
 		mPageView.setLinkShow(false);
 
-		prepareCache();
-
 		mActionBar = getBaseActivity().getSupportActionBar();
 		mActionBar.hide();
 
@@ -85,22 +81,15 @@ public class PlayFragment extends BaseFragment implements LinkImageView.OnLinkCl
 
 		if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
 			view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-//		} else {
-//			view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+			// } else {
+			// view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 		}
 
 		return view;
 	}
 
-	private void prepareCache() {
-		DisplayMetrics displayMetrics = new DisplayMetrics();
-		getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-		mWidth = displayMetrics.widthPixels;
-		mHeight = displayMetrics.heightPixels;
-	}
-
 	private void load(int projectId) {
-		ProjectHolder.getInstance().load(mContext, projectId, new ProjectHolder.Callback() {
+		ProjectHolder.getInstance().load(getActivity(), projectId, new ProjectHolder.Callback() {
 			public void onLoad(Project project) {
 				if (project == null) {
 					Toast.makeText(getActivity(), R.string.error_on_loading_project, Toast.LENGTH_SHORT).show();
@@ -161,11 +150,11 @@ public class PlayFragment extends BaseFragment implements LinkImageView.OnLinkCl
 			return;
 		}
 
-		if (mContext != null) {
+		if (getActivity() != null) {
 			Intent data = new Intent();
 			data.putExtra(PageListFragment.EXTRA_PROJECT_ID, mProject.getId());
 			data.putExtra(PageListFragment.EXTRA_SELECTED_PAGE_ID, mPage.getId());
-			mContext.setResult(Activity.RESULT_OK, data);
+			getActivity().setResult(Activity.RESULT_OK, data);
 		}
 	}
 

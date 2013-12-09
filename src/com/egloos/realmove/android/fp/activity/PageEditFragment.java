@@ -3,7 +3,6 @@ package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
-import com.egloos.realmove.android.fp.common.BaseActivity;
 import com.egloos.realmove.android.fp.common.FpLog;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
@@ -94,18 +93,18 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 	}
 
 	private void load(final int projectId, final int pageId) {
-		ProjectHolder.getInstance().load(mContext, projectId, new ProjectHolder.Callback() {
+		ProjectHolder.getInstance().load(getActivity(), projectId, new ProjectHolder.Callback() {
 			@Override
 			public void onLoad(Project project) {
 				if (project == null) {
-					Toast.makeText(mContext, R.string.fail_to_load_page, Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), R.string.fail_to_load_page, Toast.LENGTH_SHORT).show();
 					finishActivity();
 				}
 
 				mProject = project;
 				mPage = project.findPage(pageId);
 				if (mPage == null) {
-					Toast.makeText(mContext, R.string.fail_to_load_page, Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), R.string.fail_to_load_page, Toast.LENGTH_SHORT).show();
 					finishActivity();
 					return;
 				}
@@ -178,10 +177,10 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			synchronized (mContext) {
+			synchronized (getActivity()) {
 				DBAdapter db = null;
 				try {
-					db = new DBAdapter(mContext).open();
+					db = new DBAdapter(getActivity()).open();
 					switch (mCommand) {
 						case DELETE:
 							db.deleteLink(mLink.getId());
@@ -276,7 +275,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.play: {
-				Intent intent = new Intent(mContext, PlayActivity.class);
+				Intent intent = new Intent(getActivity(), PlayActivity.class);
 				intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, mPage.getProjectId());
 				intent.putExtra(PageListFragment.EXTRA_SELECTED_PAGE_ID, mPage.getId());
 				startActivityForResult(intent, REQ_CODE_PLAY);

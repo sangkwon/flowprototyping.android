@@ -120,14 +120,14 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 	 * @param project 수정이라면 값을 준다. 추가라면 null
 	 */
 	private void showProjectInfoDialog(final Project project) {
-		LayoutInflater factory = LayoutInflater.from(mContext);
+		LayoutInflater factory = LayoutInflater.from(getActivity());
 		final View textEntryView = factory.inflate(R.layout.input_project_dialog, null);
 		if (project != null) {
 			TextView txt = (TextView) textEntryView.findViewById(R.id.subject);
 			txt.setText(project.getSubject());
 		}
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setView(textEntryView).setTitle(R.string.input_project_info).setNegativeButton(android.R.string.cancel, null)
 				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
@@ -146,7 +146,11 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 								}
 							}
 
-							Toast.makeText(mContext, R.string.error_subject_empty, Toast.LENGTH_SHORT).show();
+							try {
+								Toast.makeText(getActivity(), R.string.error_subject_empty, Toast.LENGTH_SHORT).show();
+							} catch (Exception ex) {
+								// do nothing
+							}
 						}
 					}
 
@@ -162,7 +166,7 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 				break;
 			}
 			case R.id.setting: {
-
+				getActivity().startActivity(new Intent(getActivity(), SettingActivity.class));
 				break;
 			}
 		}
@@ -180,7 +184,7 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 			protected Void doInBackground(Void... params) {
 				DBAdapter db = null;
 				try {
-					db = new DBAdapter(mContext).open();
+					db = new DBAdapter(getActivity()).open();
 					db.insertProject(project);
 				} catch (Exception e) {
 					FpLog.e(TAG, e);
@@ -210,7 +214,7 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 			protected Void doInBackground(Void... params) {
 				DBAdapter db = null;
 				try {
-					db = new DBAdapter(mContext).open();
+					db = new DBAdapter(getActivity()).open();
 					db.updateProject(project);
 				} catch (Exception e) {
 					FpLog.e(TAG, e);
@@ -235,9 +239,9 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Project project = mProjects.get(position);
 
-		Intent intent = new Intent(mContext, PageListActivity.class);
+		Intent intent = new Intent(getActivity(), PageListActivity.class);
 		intent.putExtra(PageListFragment.EXTRA_PROJECT_ID, project.getId());
-		mContext.startActivity(intent);
+		getActivity().startActivity(intent);
 	}
 
 	@Override
@@ -270,7 +274,7 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		android.view.MenuInflater inflater = new android.view.MenuInflater(mContext);
+		android.view.MenuInflater inflater = new android.view.MenuInflater(getActivity());
 		inflater.inflate(R.menu.menu_project_list_context, menu);
 		super.onCreateContextMenu(menu, v, menuInfo);
 	}

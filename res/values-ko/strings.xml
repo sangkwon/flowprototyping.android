@@ -31,5 +31,7 @@
     <string name="menu_export">내보내기</string>
     <string name="menu_rename">이름 변경</string>
     <string name="menu_setting">설정</string>
+    <string name="pref_summary_use_aviary">페이지 추가시, 이미지 에디터 사용</string>
+    <string name="pref_title_use_aviary">이미지 에디터 사용</string>
 
 </resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="entries_list_preference"><item>1</item></array>
+    <array name="entryvalues_list_preference">&lt;item&gt;1&lt;/item&gt;</array>
+</resources>

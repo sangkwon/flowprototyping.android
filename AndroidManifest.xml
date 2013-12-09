@@ -41,14 +41,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.egloos.realmove.android.fp.activity.PageListActivity" />
         </activity>
-        <activity android:name=".activity.PlayActivity" >
-        </activity>
+        <activity android:name=".activity.PlayActivity" />
+        <activity android:name=".activity.SettingActivity" />
         <activity
             android:name="com.aviary.android.feather.FeatherActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:hardwareAccelerated="true"
             android:largeHeap="true"
-            android:process=":aviarysdk"
             android:screenOrientation="unspecified"
             android:theme="@style/AviaryTheme" />
 

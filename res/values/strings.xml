@@ -31,5 +31,9 @@
     <string name="menu_export">Export</string>
     <string name="menu_rename">Rename</string>
     <string name="menu_setting">Setting</string>
+    <string name="pref_key_use_aviary">use_aviary</string>
+    <string name="pref_summary_use_aviary">Crop, Retouching on add page</string>
+    <string name="pref_title_use_aviary">Use image editor</string>
+    <string name="pref_title_1">수정 설정</string>
 
 </resources>
