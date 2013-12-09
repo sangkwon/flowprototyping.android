@@ -3,7 +3,7 @@ package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.LoadProjectListTask;
 import com.egloos.realmove.android.fp.db.LoadProjectListTask.Callback;
@@ -64,7 +64,7 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 	 * @return
 	 */
 	private View createView(LayoutInflater inflater, ViewGroup container) {
-		FpLog.d(TAG, "createView()");
+		L.d(TAG, "createView()");
 		final View view = inflater.inflate(R.layout.project_list_fragment, container, false);
 
 		mListView = (ListView) view.findViewById(android.R.id.list);
@@ -78,7 +78,7 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		FpLog.d(TAG, "onCreateView()");
+		L.d(TAG, "onCreateView()");
 
 		load();
 
@@ -187,7 +187,7 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 					db = new DBAdapter(getActivity()).open();
 					db.insertProject(project);
 				} catch (Exception e) {
-					FpLog.e(TAG, e);
+					L.e(TAG, e);
 				} finally {
 					if (db != null)
 						db.close();
@@ -217,7 +217,7 @@ public class ProjectListFragment extends BaseFragment implements Callback, OnIte
 					db = new DBAdapter(getActivity()).open();
 					db.updateProject(project);
 				} catch (Exception e) {
-					FpLog.e(TAG, e);
+					L.e(TAG, e);
 				} finally {
 					if (db != null)
 						db.close();

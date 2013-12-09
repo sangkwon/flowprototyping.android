@@ -2,7 +2,7 @@
 package com.egloos.realmove.android.fp.view;
 
 import com.egloos.realmove.android.fp.R;
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Link.SelectArea;
 import com.egloos.realmove.android.fp.model.RectPosition;
@@ -82,7 +82,7 @@ public class LinkImageEditView extends LinkImageView implements OnMenuItemClickL
 
 	private void setState(State state) {
 		this.state = state;
-		FpLog.d(TAG, "setState()", state);
+		L.d(TAG, "setState()", state);
 	}
 
 	private State getState() {

@@ -1,7 +1,7 @@
 
 package com.egloos.realmove.android.fp.model;
 
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -85,7 +85,7 @@ public class Page implements Serializable {
 
 			return jsonObj;
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 			return null;
 		}
 	}
@@ -112,7 +112,7 @@ public class Page implements Serializable {
 			}
 			return page;
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		}
 		return null;
 	}

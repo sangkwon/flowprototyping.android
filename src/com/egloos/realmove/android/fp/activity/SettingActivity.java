@@ -2,6 +2,7 @@
 package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
+import com.egloos.realmove.android.fp.common.L;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -20,8 +21,6 @@ public class SettingActivity extends PreferenceActivity {
 		// Display the fragment as the main content.
 		getFragmentManager().beginTransaction().replace(android.R.id.content,
 				new PrefsFragment()).commit();
-
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
 	}
 
 	public static class PrefsFragment extends PreferenceFragment {

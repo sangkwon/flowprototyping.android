@@ -14,7 +14,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 
-public class FpLog {
+public class L {
 
 	public static boolean _DEBUGMODE = BuildConfig.DEBUG;
 

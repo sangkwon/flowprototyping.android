@@ -4,7 +4,7 @@ package com.egloos.realmove.android.fp.activity;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
 import com.egloos.realmove.android.fp.common.BaseActivity;
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
@@ -160,7 +160,7 @@ public class PlayFragment extends BaseFragment implements LinkImageView.OnLinkCl
 
 	@Override
 	public boolean onLinkClicked(Link link) {
-		FpLog.d(TAG, "onClickLink()", link);
+		L.d(TAG, "onClickLink()", link);
 		if (link != null) {
 			int pageId = link.getTargetPageId();
 			if (pageId != Link.NO_TARGET_SPECIFIED) {

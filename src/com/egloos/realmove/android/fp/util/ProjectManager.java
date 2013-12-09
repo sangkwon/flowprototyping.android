@@ -2,7 +2,7 @@
 package com.egloos.realmove.android.fp.util;
 
 import com.egloos.realmove.android.fp.App;
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 import com.egloos.realmove.android.fp.model.Project;
 
 import org.json.JSONObject;
@@ -41,7 +41,7 @@ public class ProjectManager {
 			JSONObject jsonObj = new JSONObject(sw.toString());
 			return Project.fromJSONObject(jsonObj);
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		} finally {
 			try {
 				if (fi != null)
@@ -56,7 +56,7 @@ public class ProjectManager {
 	public static boolean writeMetaFile(Project project) {
 		PrintWriter out = null;
 		try {
-			FpLog.d(TAG, "saveMetaFile()");
+			L.d(TAG, "saveMetaFile()");
 			File path = getProjectPath(project.getId());
 			if (!Util.prepareDir(path))
 				return false;
@@ -68,7 +68,7 @@ public class ProjectManager {
 
 			return true;
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		} finally {
 			if (out != null) {
 				try {

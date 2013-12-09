@@ -1,7 +1,7 @@
 
 package com.egloos.realmove.android.fp.model;
 
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 
 import org.json.JSONObject;
 
@@ -138,7 +138,7 @@ public class Link implements Serializable {
 
 			return jsonObj;
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 			return null;
 		}
 	}
@@ -155,13 +155,13 @@ public class Link implements Serializable {
 			link.setPosition(RectPosition.fromJSONObject(jsonObj.optJSONObject("position")));
 			return link;
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		}
 		return null;
 	}
 
 	public boolean checkPos(int left, int right, int top, int bottom) {
-		FpLog.d(TAG, "checkPos()", right - left, bottom - top);
+		L.d(TAG, "checkPos()", right - left, bottom - top);
 		if (left >= 0 && right < MAX_WIDTH && top >= 0 && bottom < MAX_HEIGHT && right - left > 96 && bottom - top > 96) {
 			position.setLeft(left);
 			position.setRight(right);

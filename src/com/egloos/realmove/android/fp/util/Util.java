@@ -2,7 +2,7 @@
 package com.egloos.realmove.android.fp.util;
 
 import com.egloos.realmove.android.fp.App;
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 import com.google.analytics.tracking.android.EasyTracker;
 
 import android.app.Activity;
@@ -113,7 +113,7 @@ public class Util {
 
 			return true;
 		} catch (IOException ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		}
 		return false;
 	}
@@ -133,7 +133,7 @@ public class Util {
 			return false;
 		} else {
 			boolean created = dir.mkdir();
-			FpLog.d(TAG, "prepareDir", dir, created);
+			L.d(TAG, "prepareDir", dir, created);
 			if (!created) {
 				File parent = dir.getParentFile();
 				if ("/".equals(parent.getAbsoluteFile()))

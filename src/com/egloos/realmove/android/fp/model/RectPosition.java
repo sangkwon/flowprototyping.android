@@ -1,7 +1,7 @@
 
 package com.egloos.realmove.android.fp.model;
 
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 
 import org.json.JSONObject;
 
@@ -69,7 +69,7 @@ public class RectPosition implements Serializable {
 
 			return jsonObj;
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 			return null;
 		}
 	}
@@ -85,7 +85,7 @@ public class RectPosition implements Serializable {
 			rect.setRight(jsonObj.getInt("right"));
 			return rect;
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		}
 		return null;
 	}

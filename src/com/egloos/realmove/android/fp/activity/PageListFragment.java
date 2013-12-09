@@ -5,7 +5,7 @@ import com.aviary.android.feather.FeatherActivity;
 import com.aviary.android.feather.library.Constants;
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 import com.egloos.realmove.android.fp.common.ImageUtil;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
@@ -119,7 +119,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		FpLog.d(TAG, "onCreateDialog()");
+		L.d(TAG, "onCreateDialog()");
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle(R.string.select_page_to_link);
 
@@ -140,7 +140,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 	 * @return
 	 */
 	private View createView(LayoutInflater inflater, ViewGroup container) {
-		FpLog.d(TAG, "createView()");
+		L.d(TAG, "createView()");
 		final View view = inflater.inflate(R.layout.page_list_fragment, container, false);
 		mGridView = (GridView) view.findViewById(R.id.grid);
 		mGridView.setAdapter(mAdapter);
@@ -160,7 +160,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 						mAdapter.setNumColumns(numColumns);
 						mAdapter.setWidth(columnWidth);
 						mAdapter.setHeight(columnHeight);
-						FpLog.d(TAG, "GridView size reset: width=" + columnWidth + " height=" + columnHeight);
+						L.d(TAG, "GridView size reset: width=" + columnWidth + " height=" + columnHeight);
 					}
 				}
 			}
@@ -171,7 +171,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		FpLog.d(TAG, "onCreateView()");
+		L.d(TAG, "onCreateView()");
 
 		int projectId = getArguments().getInt(PageListFragment.EXTRA_PROJECT_ID, 0);
 		mSelectedPageId = getArguments().getInt(PageListFragment.EXTRA_SELECTED_PAGE_ID, Link.NO_TARGET_SPECIFIED);
@@ -244,7 +244,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 			editor.putInt(SP_KEY_WORKING_PROJ, id);
 			editor.commit();
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		}
 	}
 
@@ -254,7 +254,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 			int id = pref.getInt(SP_KEY_WORKING_PROJ, 0);
 			return id;
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		}
 		return 0;
 	}
@@ -329,13 +329,13 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 			startActivityForResult(newIntent, REQ_CODE_ADD_PAGE_AVIARY);
 		} catch (Exception ex) {
 			Toast.makeText(getActivity(), R.string.fail_to_add, Toast.LENGTH_SHORT).show();
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		}
 	}
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		FpLog.d(TAG, "onActivityResult() ", requestCode, resultCode, data);
+		L.d(TAG, "onActivityResult() ", requestCode, resultCode, data);
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
 				case REQ_CODE_ADD_PAGE_FROM_GALLERY: {
@@ -379,14 +379,14 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 				if (cursor.moveToFirst()) {
 					String path = cursor.getString(pathColIdx);
 					String name = cursor.getString(nameColIdx);
-					FpLog.d(TAG, "copyGalleryImage() ", "name=", name, "path=", path);
+					L.d(TAG, "copyGalleryImage() ", "name=", name, "path=", path);
 					if (path != null && name != null) {
 						return addToProject(name, path);
 					}
 				}
 			}
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		} finally {
 			if (cursor != null) {
 				cursor.close();
@@ -438,7 +438,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 					}
 
 				} catch (Exception e) {
-					FpLog.e(TAG, e);
+					L.e(TAG, e);
 				} finally {
 					if (db != null)
 						db.close();
@@ -694,7 +694,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 				defineProjectMainImage(db);
 			} catch (Exception ex) {
-				FpLog.e(TAG, ex);
+				L.e(TAG, ex);
 			} finally {
 				if (_db != null)
 					_db.endTransaction();
@@ -772,7 +772,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 	}
 
 	private void setListBackground() {
-		FpLog.d(TAG, "setListBackground()");
+		L.d(TAG, "setListBackground()");
 
 		final String path = mProject == null ? null : mProject.getMainImage();
 		if (path == null)
@@ -781,7 +781,7 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 		new AsyncTask<Void, Void, Bitmap>() {
 			@Override
 			protected Bitmap doInBackground(Void... params) {
-				FpLog.d(TAG, "doInBackground()", path);
+				L.d(TAG, "doInBackground()", path);
 				Bitmap bitmap = ImageLoader.getInstance().loadImageSync(path);
 				if (bitmap == null)
 					return null;
@@ -794,12 +794,12 @@ public class PageListFragment extends BaseFragment implements OnItemClickListene
 
 			@Override
 			protected void onPostExecute(Bitmap result) {
-				FpLog.d(TAG, "onPostExecute()", result);
+				L.d(TAG, "onPostExecute()", result);
 				if (result != null) {
 					try {
 						mGridView.setBackgroundDrawable(new BitmapDrawable(getActivity().getResources(), result));
 					} catch (Exception ex) {
-						FpLog.e(TAG, ex);
+						L.e(TAG, ex);
 					}
 				}
 				super.onPostExecute(result);

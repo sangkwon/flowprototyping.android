@@ -1,7 +1,7 @@
 
 package com.egloos.realmove.android.fp.db;
 
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
@@ -69,7 +69,7 @@ public class LoadProjectTask extends AsyncTask<Integer, Void, Project> {
 
 			return project;
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		} finally {
 			if (db != null)
 				db.close();
@@ -83,7 +83,7 @@ public class LoadProjectTask extends AsyncTask<Integer, Void, Project> {
 			try {
 				mProgressDialog.dismiss();
 			} catch (Exception ex) {
-				FpLog.e(TAG, ex);
+				L.e(TAG, ex);
 			}
 			mProgressDialog = null;
 		}

@@ -1,7 +1,7 @@
 
 package com.egloos.realmove.android.fp.db;
 
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 import com.egloos.realmove.android.fp.model.Project;
 import com.egloos.realmove.android.fp.view.LoadingDialog;
 
@@ -37,7 +37,7 @@ public class LoadProjectListTask extends AsyncTask<Void, Void, ArrayList<Project
 			db = new DBAdapter(mContext).open();
 			return db.selectProjects();
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		} finally {
 			if (db != null)
 				db.close();
@@ -51,7 +51,7 @@ public class LoadProjectListTask extends AsyncTask<Void, Void, ArrayList<Project
 			try {
 				mProgressDialog.dismiss();
 			} catch (Exception ex) {
-				FpLog.e(TAG, ex);
+				L.e(TAG, ex);
 			}
 			mProgressDialog = null;
 		}

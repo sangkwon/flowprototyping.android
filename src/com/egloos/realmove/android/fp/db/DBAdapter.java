@@ -1,7 +1,7 @@
 
 package com.egloos.realmove.android.fp.db;
 
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 import com.egloos.realmove.android.fp.model.Link;
 import com.egloos.realmove.android.fp.model.Page;
 import com.egloos.realmove.android.fp.model.Project;
@@ -64,7 +64,7 @@ public class DBAdapter {
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			FpLog.i(TAG, "onCreate()");
+			L.i(TAG, "onCreate()");
 			db.beginTransaction();
 			try {
 				db.execSQL(CREATE_TBL_PROJECT);
@@ -75,7 +75,7 @@ public class DBAdapter {
 
 				db.setTransactionSuccessful();
 			} catch (Exception ex) {
-				FpLog.e(TAG, ex);
+				L.e(TAG, ex);
 			} finally {
 				db.endTransaction();
 			}
@@ -83,12 +83,12 @@ public class DBAdapter {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			FpLog.i(TAG, "onUpgrade()");
+			L.i(TAG, "onUpgrade()");
 			db.beginTransaction();
 			try {
 				// TODO
 			} catch (Exception e) {
-				FpLog.e(TAG, e);
+				L.e(TAG, e);
 			} finally {
 				db.endTransaction();
 			}
@@ -109,7 +109,7 @@ public class DBAdapter {
 			dbHelper = new DatabaseHelper(mContext);
 			mDb = dbHelper.getWritableDatabase();
 		} catch (SQLException ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 			throw ex;
 		}
 		return this;
@@ -161,7 +161,7 @@ public class DBAdapter {
 			}
 			return projects;
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		} finally {
 			if (cursor != null)
 				cursor.close();
@@ -187,7 +187,7 @@ public class DBAdapter {
 				return project;
 			}
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		} finally {
 			if (cursor != null)
 				cursor.close();
@@ -213,7 +213,7 @@ public class DBAdapter {
 			}
 			return pages;
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		} finally {
 			if (cursor != null)
 				cursor.close();
@@ -237,7 +237,7 @@ public class DBAdapter {
 				return page;
 			}
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		} finally {
 			if (cursor != null)
 				cursor.close();
@@ -286,7 +286,7 @@ public class DBAdapter {
 			}
 			return links;
 		} catch (Exception ex) {
-			FpLog.e(TAG, ex);
+			L.e(TAG, ex);
 		} finally {
 			if (cursor != null)
 				cursor.close();

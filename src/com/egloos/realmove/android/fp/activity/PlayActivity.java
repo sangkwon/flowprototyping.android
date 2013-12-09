@@ -3,7 +3,7 @@ package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseActivity;
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -56,7 +56,7 @@ public class PlayActivity extends BaseActivity {
 	public boolean dispatchTouchEvent(MotionEvent event) {
 		// FpLog.d(TAG, "dispatchTouchEvent()", event.getAction(), event.getPointerCount());
 		if (event.getPointerCount() == 2) {
-			FpLog.d(TAG, "dispatchTouchEvent()", event.getAction() & MotionEvent.ACTION_MASK, event.getX(0), event.getX(1));
+			L.d(TAG, "dispatchTouchEvent()", event.getAction() & MotionEvent.ACTION_MASK, event.getX(0), event.getX(1));
 			int action = event.getAction();
 			switch (action & MotionEvent.ACTION_MASK) {
 				case MotionEvent.ACTION_POINTER_DOWN: {

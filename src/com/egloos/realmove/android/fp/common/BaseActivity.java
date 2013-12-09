@@ -20,9 +20,9 @@ public class BaseActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		FpLog.d(this.getClass().getSimpleName(), "onCreate() called", this.getIntent());
+		L.d(this.getClass().getSimpleName(), "onCreate() called", this.getIntent());
 
-		FpLog.setStrictPolicy();
+		L.setStrictPolicy();
 
 		mContext = this;
 	}
@@ -60,25 +60,25 @@ public class BaseActivity extends ActionBarActivity {
 
 	@Override
 	public boolean onNavigateUp() {
-		FpLog.d(this.getClass().getSimpleName(), "onNavigateUp()");
+		L.d(this.getClass().getSimpleName(), "onNavigateUp()");
 		return super.onNavigateUp();
 	}
 
 	@Override
 	public boolean navigateUpToFromChild(Activity child, Intent upIntent) {
-		FpLog.d(this.getClass().getSimpleName(), "navigateUpToFromChild()");
+		L.d(this.getClass().getSimpleName(), "navigateUpToFromChild()");
 		return super.navigateUpToFromChild(child, upIntent);
 	}
 
 	@Override
 	public void onPrepareNavigateUpTaskStack(TaskStackBuilder builder) {
-		FpLog.d(this.getClass().getSimpleName(), "onPrepareNavigateUpTaskStack()");
+		L.d(this.getClass().getSimpleName(), "onPrepareNavigateUpTaskStack()");
 		super.onPrepareNavigateUpTaskStack(builder);
 	}
 
 	@Override
 	public void onCreateNavigateUpTaskStack(TaskStackBuilder builder) {
-		FpLog.d(this.getClass().getSimpleName(), "onCreateNavigateUpTaskStack()");
+		L.d(this.getClass().getSimpleName(), "onCreateNavigateUpTaskStack()");
 		super.onCreateNavigateUpTaskStack(builder);
 	}
 
@@ -104,7 +104,7 @@ public class BaseActivity extends ActionBarActivity {
 	}
 
 	protected boolean navigateUp() {
-		FpLog.d(this.getClass().getSimpleName(), "navigateUp()");
+		L.d(this.getClass().getSimpleName(), "navigateUp()");
 
 		Intent upIntent = NavUtils.getParentActivityIntent(mContext);
 

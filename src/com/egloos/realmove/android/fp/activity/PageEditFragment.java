@@ -3,7 +3,7 @@ package com.egloos.realmove.android.fp.activity;
 
 import com.egloos.realmove.android.fp.R;
 import com.egloos.realmove.android.fp.common.BaseFragment;
-import com.egloos.realmove.android.fp.common.FpLog;
+import com.egloos.realmove.android.fp.common.L;
 import com.egloos.realmove.android.fp.db.DBAdapter;
 import com.egloos.realmove.android.fp.db.ProjectHolder;
 import com.egloos.realmove.android.fp.model.Link;
@@ -196,7 +196,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 					}
 					return true;
 				} catch (Exception ex) {
-					FpLog.e(TAG, ex);
+					L.e(TAG, ex);
 					return false;
 				} finally {
 					if (db != null)
@@ -217,20 +217,20 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
 	@Override
 	public void linkAdded(Link link) {
-		FpLog.d(TAG, "linkAdded()");
+		L.d(TAG, "linkAdded()");
 		link.setPageId(mPage.getId());
 		new LinkTask(link, Command.INSERT).execute();
 	}
 
 	@Override
 	public void linkRemoved(Link link) {
-		FpLog.d(TAG, "linkRemoved()");
+		L.d(TAG, "linkRemoved()");
 		new LinkTask(link, Command.DELETE).execute();
 	}
 
 	@Override
 	public void linkModified(Link link) {
-		FpLog.d(TAG, "linkModified()");
+		L.d(TAG, "linkModified()");
 		new LinkTask(link, Command.MODIFY).execute();
 	}
 
@@ -257,7 +257,7 @@ public class PageEditFragment extends BaseFragment implements OnLinkChangeListen
 
 	@Override
 	public void pageSelected(Page page) {
-		FpLog.d(TAG, "pageSelected");
+		L.d(TAG, "pageSelected");
 		if (page != null && mSelectedLink != null) {
 			mSelectedLink.setTargetPageId(page.getId());
 		}
