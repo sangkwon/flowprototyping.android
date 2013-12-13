@@ -3,6 +3,7 @@
 
     <string name="app_name">FlowPrototyping</string>
     <string name="no_image">No Image</string>
+    <string name="menu_add_project">Add Project</string>
     <string name="menu_add_page">Add page</string>
     <string name="menu_play">Play</string>
     <string name="menu_gallery">Gallery</string>
