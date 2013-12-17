@@ -4,10 +4,10 @@ package com.egloos.realmove.android.fp.common;
 import com.google.analytics.tracking.android.EasyTracker;
 
 import android.app.Activity;
-import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -56,30 +56,6 @@ public class BaseActivity extends ActionBarActivity {
 	public void onStop() {
 		super.onStop();
 		EasyTracker.getInstance(this).activityStop(this);
-	}
-
-	@Override
-	public boolean onNavigateUp() {
-		L.d(this.getClass().getSimpleName(), "onNavigateUp()");
-		return super.onNavigateUp();
-	}
-
-	@Override
-	public boolean navigateUpToFromChild(Activity child, Intent upIntent) {
-		L.d(this.getClass().getSimpleName(), "navigateUpToFromChild()");
-		return super.navigateUpToFromChild(child, upIntent);
-	}
-
-	@Override
-	public void onPrepareNavigateUpTaskStack(TaskStackBuilder builder) {
-		L.d(this.getClass().getSimpleName(), "onPrepareNavigateUpTaskStack()");
-		super.onPrepareNavigateUpTaskStack(builder);
-	}
-
-	@Override
-	public void onCreateNavigateUpTaskStack(TaskStackBuilder builder) {
-		L.d(this.getClass().getSimpleName(), "onCreateNavigateUpTaskStack()");
-		super.onCreateNavigateUpTaskStack(builder);
 	}
 
 	@Override
